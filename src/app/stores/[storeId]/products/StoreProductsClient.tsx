@@ -69,6 +69,7 @@ interface FilterState {
   isBestseller: boolean;
   isFeatured: boolean;
   searchTerm: string | null;
+  organic?: boolean | null;
 }
 
 export function StoreProductsClient({ storeId }: { storeId: string }) {
@@ -91,6 +92,7 @@ export function StoreProductsClient({ storeId }: { storeId: string }) {
     isBestseller: false,
     isFeatured: false,
     searchTerm: "",
+    organic: null,
   });
 
   const [sortBy, setSortBy] = useState("createdAt");
@@ -142,6 +144,7 @@ export function StoreProductsClient({ storeId }: { storeId: string }) {
         inStock: filters.inStock,
         isBestseller: filters.isBestseller || undefined,
         isFeatured: filters.isFeatured || undefined,
+        organic: filters.organic !== null && filters.organic !== undefined ? filters.organic : undefined,
         discountIds:
           filters.selectedDiscounts.length > 0
             ? filters.selectedDiscounts
@@ -196,6 +199,7 @@ export function StoreProductsClient({ storeId }: { storeId: string }) {
       isBestseller: false,
       isFeatured: false,
       searchTerm: "",
+      organic: null,
     });
     setCurrentPage(0);
   };

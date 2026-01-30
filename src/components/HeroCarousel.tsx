@@ -103,10 +103,10 @@ const HeroCarousel = ({ landingData }: HeroCarouselProps) => {
 
   if (carouselItems.length === 0) {
     return (
-      <section className="relative bg-gradient-to-r from-blue-600 to-blue-800 text-white h-96">
+      <section className="relative bg-gradient-to-r from-green-600 to-green-800 text-white h-96">
         <div className="container mx-auto px-4 py-16 flex items-center justify-center">
           <div className="text-center">
-            <h1 className="text-4xl font-bold mb-4">Welcome to ShopSphere</h1>
+            <h1 className="text-4xl font-bold mb-4">Welcome to Agrochain</h1>
             <p className="text-xl text-white/90 mb-8">
               Discover amazing products and deals
             </p>
@@ -127,7 +127,7 @@ const HeroCarousel = ({ landingData }: HeroCarouselProps) => {
   const currentItem = carouselItems[currentIndex];
 
   return (
-    <section className="relative bg-gradient-to-r from-blue-600 to-blue-800 text-white h-96 overflow-hidden">
+    <section className="relative bg-gradient-to-r from-green-600 to-green-800 text-white h-96 overflow-hidden">
       {/* Background Image */}
       <div
         className="absolute inset-0 bg-cover bg-center bg-no-repeat transition-all duration-1000 ease-in-out"
@@ -138,7 +138,7 @@ const HeroCarousel = ({ landingData }: HeroCarouselProps) => {
       />
 
       {/* Overlay */}
-      <div className="absolute inset-0 bg-gradient-to-r from-blue-900/80 to-blue-800/60" />
+      <div className="absolute inset-0 bg-gradient-to-r from-green-900/80 to-green-800/60" />
 
       {/* Content */}
       <div className="relative container mx-auto px-4 py-16 h-full flex items-center">
@@ -188,7 +188,7 @@ const HeroCarousel = ({ landingData }: HeroCarouselProps) => {
                 <Button
                   size="lg"
                   variant="outline"
-                  className="border-white text-blue-500 font-semibold px-8 py-3 text-lg"
+                  className="border-white text-green-500 font-semibold px-8 py-3 text-lg"
                 >
                   Shop All
                 </Button>

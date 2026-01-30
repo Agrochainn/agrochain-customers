@@ -73,7 +73,7 @@ const ActiveDiscounts = () => {
         <Link href="/discounts">
           <Button
             variant="link"
-            className="text-blue-600 hover:text-blue-800 p-0 h-auto"
+            className="text-green-600 hover:text-green-800 p-0 h-auto"
           >
             See more
           </Button>
@@ -151,7 +151,7 @@ const ActiveDiscounts = () => {
                       <Percent className="h-4 w-4 text-gray-400" />
                       <div>
                         <p className="text-gray-500 text-xs">Code</p>
-                        <p className="font-medium font-mono text-blue-600">
+                        <p className="font-medium font-mono text-green-600">
                           {discount.discountCode}
                         </p>
                       </div>

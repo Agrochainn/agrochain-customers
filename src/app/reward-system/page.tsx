@@ -111,7 +111,7 @@ export default function RewardSystemPage() {
           {rewardSystem.isPercentageBasedEnabled && rewardSystem.percentageRate && (
             <Card>
               <CardHeader className="text-center">
-                <Percent className="h-8 w-8 text-blue-500 mx-auto mb-2" />
+                <Percent className="h-8 w-8 text-green-500 mx-auto mb-2" />
                 <CardTitle className="text-lg">Purchase Rewards</CardTitle>
               </CardHeader>
               <CardContent className="text-center">
@@ -183,7 +183,7 @@ export default function RewardSystemPage() {
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
-                    <Package className="h-5 w-5 text-blue-500" />
+                    <Package className="h-5 w-5 text-green-500" />
                     Quantity-Based Rewards
                   </CardTitle>
                   <CardDescription>
@@ -294,8 +294,8 @@ export default function RewardSystemPage() {
                   </p>
                 </div>
               </div>
-              <div className="p-4 bg-blue-50 rounded-md border border-blue-200 mt-4">
-                <p className="text-sm text-blue-900">
+              <div className="p-4 bg-green-50 rounded-md border border-green-200 mt-4">
+                <p className="text-sm text-green-900">
                   <strong>Note:</strong> Each point is worth ${rewardSystem.pointValue.toFixed(2)}. 
                   Points can be used to reduce your order total at checkout.
                 </p>

@@ -75,6 +75,8 @@ export interface ProductDTO {
   shippingInfo?: string;
   returnPolicy?: string;
   shopCapability?: "VISUALIZATION_ONLY" | "PICKUP_ORDERS" | "FULL_ECOMMERCE" | "HYBRID";
+  organic?: boolean;
+  unit?: { id: number; symbol: string; name: string };
   // Shop information
   shopId?: string;
   shopName?: string;
@@ -232,6 +234,8 @@ export interface ManyProductsDto {
   reviewCount?: number;
   hasActiveDiscount: boolean;
   shopCapability?: "VISUALIZATION_ONLY" | "PICKUP_ORDERS" | "FULL_ECOMMERCE" | "HYBRID";
+  organic?: boolean;
+  unit?: { id: number; symbol: string; name: string };
 }
 
 export interface ProductSearchDTO {
@@ -263,6 +267,9 @@ export interface ProductSearchDTO {
   isFeatured?: boolean;
   isBestseller?: boolean;
   isNewArrival?: boolean;
+
+  // Organic filter
+  organic?: boolean; // true = organic only, false = non-organic only, undefined = both
 
   // Rating filters
   averageRatingMin?: number;
@@ -652,6 +659,8 @@ export const ProductService = {
       isFeatured: product.isFeatured === true,
       hasVariantDiscounts: false, // This will be updated when we have product details
       maxVariantDiscount: 0, // This will be updated when we have product details
+      isOrganic: product.organic === true,
+      unit: product.unit,
     };
   },
 

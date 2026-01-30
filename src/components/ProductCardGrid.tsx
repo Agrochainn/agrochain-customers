@@ -29,6 +29,8 @@ interface Product {
   maxVariantDiscount?: number;
   discountedVariantsCount?: number;
   shopCapability?: "VISUALIZATION_ONLY" | "PICKUP_ORDERS" | "FULL_ECOMMERCE" | "HYBRID";
+  organic?: boolean;
+  unit?: { id: number; symbol: string; name: string };
 }
 
 interface ProductCardGridProps {
@@ -122,7 +124,7 @@ const ProductCardGrid = ({
           <Button
             variant="link"
             onClick={onSeeMore}
-            className="text-blue-600 hover:text-blue-800 p-0 h-auto"
+            className="text-green-600 hover:text-green-800 p-0 h-auto"
           >
             See more
           </Button>
@@ -176,8 +178,13 @@ const ProductCardGrid = ({
                     </Badge>
                   )}
                   {product.isBestseller && (
-                    <Badge className="bg-blue-500 text-white text-xs w-fit px-2 py-1 whitespace-nowrap">
+                    <Badge className="bg-green-500 text-white text-xs w-fit px-2 py-1 whitespace-nowrap">
                       Bestseller
+                    </Badge>
+                  )}
+                  {product.organic && (
+                    <Badge className="bg-green-600 text-white text-xs w-fit px-2 py-1 whitespace-nowrap">
+                      Organic
                     </Badge>
                   )}
                 </div>
@@ -223,7 +230,7 @@ const ProductCardGrid = ({
             <div className="space-y-1">
               <Link href={`/product/${product.id}`}>
                 <h3
-                  className="text-sm font-medium text-gray-900 hover:text-blue-600 transition-colors overflow-hidden"
+                  className="text-sm font-medium text-gray-900 hover:text-green-600 transition-colors overflow-hidden"
                   style={{
                     display: "-webkit-box",
                     WebkitLineClamp: 2,
@@ -260,15 +267,15 @@ const ProductCardGrid = ({
                     product.originalPrice || product.price,
                     product.price
                   );
-                  
+                  const unitOpts = product.unit?.symbol ? { unit: product.unit.symbol } : {};
                   return (
                     <>
                       <span className="text-lg font-semibold text-gray-900">
-                        {formatPrice(product.price)}
+                        {formatPrice(product.price, unitOpts)}
                       </span>
                       {priceInfo.hasDiscount && product.originalPrice && (
                         <span className="text-sm text-gray-500 line-through">
-                          {formatPrice(product.originalPrice)}
+                          {formatPrice(product.originalPrice, unitOpts)}
                         </span>
                       )}
                     </>

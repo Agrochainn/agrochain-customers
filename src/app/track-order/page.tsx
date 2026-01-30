@@ -107,7 +107,7 @@ const TrackOrderPage: React.FC = () => {
       case 'COMPLETED':
         return 'bg-green-100 text-green-800';
       case 'PROCESSING':
-        return 'bg-blue-100 text-blue-800';
+        return 'bg-green-100 text-green-800';
       case 'SHIPPED':
         return 'bg-purple-100 text-purple-800';
       case 'DELIVERED':
@@ -146,7 +146,7 @@ const TrackOrderPage: React.FC = () => {
         <div className="max-w-md w-full mx-4">
           <div className="bg-white rounded-md shadow-lg p-8">
             <div className="text-center mb-6">
-              <Package className="h-12 w-12 text-blue-600 mx-auto mb-4" />
+              <Package className="h-12 w-12 text-green-600 mx-auto mb-4" />
               <h1 className="text-2xl font-bold text-gray-900 mb-2">Track Your Orders</h1>
               <p className="text-gray-600">
                 Enter your email address to receive a secure tracking link
@@ -166,7 +166,7 @@ const TrackOrderPage: React.FC = () => {
                     value={emailInput}
                     onChange={(e) => setEmailInput(e.target.value)}
                     placeholder="Enter your email address"
-                    className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-transparent"
                     onKeyPress={(e) => e.key === 'Enter' && requestTrackingAccess()}
                   />
                 </div>
@@ -175,7 +175,7 @@ const TrackOrderPage: React.FC = () => {
               <button
                 onClick={requestTrackingAccess}
                 disabled={isRequestingAccess}
-                className="w-full bg-blue-600 text-white py-3 px-4 rounded-md hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                className="w-full bg-green-600 text-white py-3 px-4 rounded-md hover:bg-green-700 focus:ring-2 focus:ring-green-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
                 {isRequestingAccess ? (
                   <div className="flex items-center justify-center gap-2">
@@ -191,9 +191,9 @@ const TrackOrderPage: React.FC = () => {
               </button>
             </div>
 
-            <div className="mt-6 p-4 bg-blue-50 rounded-md">
-              <h3 className="text-sm font-medium text-blue-900 mb-2">How it works:</h3>
-              <ol className="text-sm text-blue-800 space-y-1">
+            <div className="mt-6 p-4 bg-green-50 rounded-md">
+              <h3 className="text-sm font-medium text-green-900 mb-2">How it works:</h3>
+              <ol className="text-sm text-green-800 space-y-1">
                 <li>1. Enter your email address</li>
                 <li>2. Check your inbox for a secure tracking link</li>
                 <li>3. Click the link to view all your orders</li>
@@ -219,7 +219,7 @@ const TrackOrderPage: React.FC = () => {
         {/* Loading State */}
         {loading && (
           <div className="text-center py-12">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto"></div>
             <p className="mt-4 text-gray-600">Loading your orders...</p>
           </div>
         )}
@@ -280,7 +280,7 @@ const TrackOrderPage: React.FC = () => {
                     <div className="mt-4 md:mt-0">
                       <button
                         onClick={() => viewOrderDetail(order.id)}
-                        className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+                        className="inline-flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors"
                       >
                         <Eye className="h-4 w-4" />
                         View Details
@@ -309,7 +309,7 @@ const TrackOrderPage: React.FC = () => {
                       onClick={() => handlePageChange(i)}
                       className={`px-3 py-2 text-sm rounded-md ${
                         currentPage === i
-                          ? 'bg-blue-600 text-white'
+                          ? 'bg-green-600 text-white'
                           : 'border border-gray-300 hover:bg-gray-50'
                       }`}
                     >
@@ -340,7 +340,7 @@ const TrackOrderPage: React.FC = () => {
             </p>
             <button
               onClick={fetchOrders}
-              className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+              className="inline-flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors"
             >
               <Search className="h-4 w-4" />
               Refresh

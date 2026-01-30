@@ -92,7 +92,7 @@ export function OrderSuccessClient() {
             // Create download link
             const downloadLink = document.createElement("a");
             downloadLink.href = imgURL;
-            downloadLink.download = `ShopSphere-Order-${orderNumber}.png`;
+            downloadLink.download = `Agrochain-Order-${orderNumber}.png`;
             
             // Trigger download
             document.body.appendChild(downloadLink);
@@ -177,7 +177,7 @@ export function OrderSuccessClient() {
             <div className="flex flex-col items-center">
               <div className="bg-white p-4 rounded-md mb-4" ref={qrRef}>
                 <QRCodeSVG 
-                  value={`ShopSphere:Order:${orderNumber}`}
+                  value={`Agrochain:Order:${orderNumber}`}
                   size={200}
                   level="H"
                   includeMargin={true}

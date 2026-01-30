@@ -317,11 +317,11 @@ export default function WishlistPage() {
 
       {/* Guest User Banner */}
       {!isAuthenticated && (
-        <div className="bg-blue-50 border-l-4 border-blue-400 p-4 mx-4 mb-6">
+        <div className="bg-green-50 border-l-4 border-green-400 p-4 mx-4 mb-6">
           <div className="flex items-center">
-            <AlertCircle className="h-5 w-5 text-blue-400 mr-3" />
+            <AlertCircle className="h-5 w-5 text-green-400 mr-3" />
             <div className="flex-1">
-              <p className="text-sm text-blue-700">
+              <p className="text-sm text-green-700">
                 <strong>Guest Mode:</strong> You're viewing your local wishlist.
                 <Link href="/auth/login" className="underline ml-1">
                   Sign in

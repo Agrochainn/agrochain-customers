@@ -3,6 +3,8 @@ export interface PriceFormatOptions {
   showCurrency?: boolean;
   minimumFractionDigits?: number;
   maximumFractionDigits?: number;
+  /** Unit symbol (e.g. "kg", "pc") to show as price per unit */
+  unit?: string | null;
 }
 
 /**
@@ -20,6 +22,7 @@ export const formatPrice = (
     showCurrency = true,
     minimumFractionDigits = 0,
     maximumFractionDigits = 2,
+    unit,
   } = options;
 
   // Handle null, undefined, or invalid values
@@ -46,7 +49,11 @@ export const formatPrice = (
     maximumFractionDigits,
   });
 
-  return showCurrency ? `${currency} ${formattedNumber}` : formattedNumber;
+  const withCurrency = showCurrency ? `${currency} ${formattedNumber}` : formattedNumber;
+  if (unit && unit.trim()) {
+    return `${withCurrency}/${unit}`;
+  }
+  return withCurrency;
 };
 
 /**

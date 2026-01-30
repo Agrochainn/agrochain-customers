@@ -20,6 +20,8 @@ export interface LandingPageProduct {
   hasVariantDiscounts?: boolean;
   maxVariantDiscount?: number;
   discountedVariantsCount?: number;
+  organic?: boolean;
+  unit?: { id: number; symbol: string; name: string };
 }
 
 export interface CategoryWithProducts {
@@ -119,6 +121,8 @@ class LandingPageService {
       hasVariantDiscounts: product.hasVariantDiscounts,
       maxVariantDiscount: product.maxVariantDiscount,
       discountedVariantsCount: product.discountedVariantsCount,
+      organic: product.organic,
+      unit: product.unit,
     };
   }
 

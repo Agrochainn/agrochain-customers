@@ -321,7 +321,7 @@ export function PointsPaymentModal({
                           <div className="text-muted-foreground">
                             Potential Earning:
                           </div>
-                          <div className="font-medium text-right text-blue-600">
+                          <div className="font-medium text-right text-green-600">
                             +{shop.potentialEarnedPoints} pts
                           </div>
                         </div>
@@ -410,7 +410,7 @@ export function PointsPaymentModal({
               className={
                 calculations.isFullPointsPayment
                   ? "bg-yellow-600 hover:bg-yellow-700"
-                  : "bg-blue-600 hover:bg-blue-700"
+                  : "bg-green-600 hover:bg-green-700"
               }
             >
               {processing ? (

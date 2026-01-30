@@ -109,7 +109,7 @@ export default function OrderReturnRequestsPage() {
       case "DENIED":
         return "bg-red-100 text-red-800 border-red-300";
       case "COMPLETED":
-        return "bg-blue-100 text-blue-800 border-blue-300";
+        return "bg-green-100 text-green-800 border-green-300";
       case "CANCELLED":
         return "bg-gray-100 text-gray-800 border-gray-300";
       default:
@@ -149,7 +149,7 @@ export default function OrderReturnRequestsPage() {
       <div className="container mx-auto px-4 py-16">
         <div className="max-w-4xl mx-auto">
           <div className="flex items-center justify-center py-12">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-600"></div>
             <span className="ml-3 text-muted-foreground">
               Loading return requests...
             </span>

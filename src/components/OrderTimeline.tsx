@@ -31,7 +31,7 @@ const getActivityColor = (activityType: string): string => {
     PAYMENT_COMPLETED: "#10B981",
     ORDER_CONFIRMED: "#10B981",
     
-    // Processing (Blue)
+    // Processing (green)
     ORDER_PROCESSING: "#3B82F6",
     READY_FOR_DELIVERY: "#3B82F6",
     

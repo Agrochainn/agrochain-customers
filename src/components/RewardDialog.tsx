@@ -43,17 +43,17 @@ export default function RewardDialog({
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-md bg-gradient-to-b from-blue-50 to-white border border-blue-100 shadow-xl rounded-2xl">
+      <DialogContent className="sm:max-w-md bg-gradient-to-b from-green-50 to-white border border-green-100 shadow-xl rounded-2xl">
         <DialogHeader className="text-center">
-          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-r from-blue-500 to-indigo-500 shadow-md">
+          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-r from-green-500 to-indigo-500 shadow-md">
             <Gift className="h-8 w-8 text-white" />
           </div>
-          <DialogTitle className="text-2xl font-bold text-blue-700">
+          <DialogTitle className="text-2xl font-bold text-green-700">
             🎉 Welcome Bonus!
           </DialogTitle>
           <DialogDescription className="text-base text-gray-600 mt-1">
             You’ve just earned{" "}
-            <strong className="text-blue-700 font-semibold">
+            <strong className="text-green-700 font-semibold">
               {awardedPoints} points
             </strong>{" "}
             for joining us!
@@ -61,10 +61,10 @@ export default function RewardDialog({
         </DialogHeader>
 
         <div className="space-y-5 mt-4">
-          <div className="rounded-xl bg-gradient-to-r from-blue-50 to-indigo-50 p-5 text-center border border-blue-100 shadow-sm">
+          <div className="rounded-xl bg-gradient-to-r from-green-50 to-indigo-50 p-5 text-center border border-green-100 shadow-sm">
             <div className="flex items-center justify-center gap-2 mb-2">
-              <Star className="h-6 w-6 text-blue-500 fill-current" />
-              <span className="text-3xl font-extrabold text-blue-600">
+              <Star className="h-6 w-6 text-green-500 fill-current" />
+              <span className="text-3xl font-extrabold text-green-600">
                 {awardedPoints} Points
               </span>
             </div>
@@ -88,7 +88,7 @@ export default function RewardDialog({
             <div className="flex items-center gap-3 text-sm text-gray-600">
               <Badge
                 variant="secondary"
-                className="bg-blue-100 text-blue-700 border border-blue-200"
+                className="bg-green-100 text-green-700 border border-green-200"
               >
                 Redeemable
               </Badge>
@@ -99,7 +99,7 @@ export default function RewardDialog({
           <div className="flex gap-3 pt-5">
             <Button
               onClick={handleLearnMore}
-              className="flex-1 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold rounded-xl shadow-md transition-all duration-200"
+              className="flex-1 bg-gradient-to-r from-green-600 to-indigo-600 hover:from-green-700 hover:to-indigo-700 text-white font-semibold rounded-xl shadow-md transition-all duration-200"
             >
               Learn More
               <ArrowRight className="ml-2 h-4 w-4" />
@@ -107,7 +107,7 @@ export default function RewardDialog({
             <Button
               variant="outline"
               onClick={handleClose}
-              className="flex-1 rounded-xl border-blue-200 text-blue-700 hover:bg-blue-50 transition-all duration-200"
+              className="flex-1 rounded-xl border-green-200 text-green-700 hover:bg-green-50 transition-all duration-200"
             >
               Continue Shopping
             </Button>

@@ -20,7 +20,7 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "ShopSphere - Your One-Stop Shopping Destination",
+  title: "Agrochain - Your Agriculture Marketplace",
   description:
     "Discover amazing products at unbeatable prices. Shop electronics, fashion, home goods and more.",
 };

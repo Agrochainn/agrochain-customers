@@ -50,6 +50,7 @@ interface FilterState {
   isBestseller: boolean;
   isFeatured: boolean;
   searchTerm: string | null;
+  organic?: boolean | null; // true = organic only, false = non-organic only, null = both
 }
 
 interface ProductGridProps {
@@ -467,6 +468,11 @@ const ProductGrid = ({
       }
     }
 
+    // Add organic filter
+    if (filters.organic !== null && filters.organic !== undefined) {
+      searchDTO.organic = filters.organic;
+    }
+
     // Clean up undefined values before sending
     const cleanSearchDTO: ProductSearchDTO = {};
     Object.entries(searchDTO).forEach(([key, value]) => {
@@ -493,6 +499,7 @@ const ProductGrid = ({
       cleanSearchDTO.inStock !== undefined ||
       cleanSearchDTO.isBestseller !== undefined ||
       cleanSearchDTO.isFeatured !== undefined ||
+      cleanSearchDTO.organic !== undefined ||
       (cleanSearchDTO.variantAttributes &&
         cleanSearchDTO.variantAttributes.length > 0) ||
       (cleanSearchDTO.discountIds && cleanSearchDTO.discountIds.length > 0);
@@ -521,7 +528,8 @@ const ProductGrid = ({
       filters.rating !== null ||
       filters.inStock === false ||
       filters.isBestseller === true ||
-      filters.isFeatured === true
+      filters.isFeatured === true ||
+      filters.organic !== null && filters.organic !== undefined
     );
   };
 
@@ -777,6 +785,8 @@ const ProductGrid = ({
                     shortDescription={convertedProduct.shortDescription}
                     isFeatured={convertedProduct.isFeatured}
                     shopCapability={convertedProduct.shopCapability}
+                    isOrganic={convertedProduct.isOrganic}
+                    unit={convertedProduct.unit}
                   />
                 ) : (
                   <div className="relative border rounded-md overflow-hidden hover:border-primary/20 hover:shadow-lg transition-all duration-300 group">
@@ -794,7 +804,7 @@ const ProductGrid = ({
                         </Badge>
                       )}
                       {convertedProduct.isBestseller && (
-                        <Badge className="bg-blue-500 text-white text-xs">
+                        <Badge className="bg-green-500 text-white text-xs">
                           Bestseller
                         </Badge>
                       )}
@@ -865,7 +875,7 @@ const ProductGrid = ({
                               </span>
                             )}
                             {convertedProduct.brand && (
-                              <span className="bg-blue-100 px-2 py-1 rounded-full text-blue-700 text-xs">
+                              <span className="bg-green-100 px-2 py-1 rounded-full text-green-700 text-xs">
                                 {convertedProduct.brand}
                               </span>
                             )}

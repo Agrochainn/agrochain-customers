@@ -426,8 +426,8 @@ function PaymentSuccessContent() {
 
           {/* Email notification message */}
           {orderDetails?.customerInfo?.email && (
-            <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-md">
-              <div className="flex items-center gap-2 text-blue-800">
+            <div className="mt-4 p-4 bg-green-50 border border-green-200 rounded-md">
+              <div className="flex items-center gap-2 text-green-800">
                 <svg
                   className="w-5 h-5"
                   fill="currentColor"
@@ -438,7 +438,7 @@ function PaymentSuccessContent() {
                 </svg>
                 <span className="font-medium">Order confirmation sent!</span>
               </div>
-              <p className="text-blue-700 text-sm mt-1">
+              <p className="text-green-700 text-sm mt-1">
                 A detailed order confirmation and receipt have been sent to{" "}
                 <strong>{orderDetails.customerInfo.email}</strong>
               </p>
@@ -449,19 +449,19 @@ function PaymentSuccessContent() {
         {/* Professional Invoice Layout */}
         {orderDetails && (
           <div className="bg-white border-2 border-gray-200 rounded-md shadow-lg mb-8 print:shadow-none print:border-gray-400">
-            <div className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white p-6 rounded-t-lg">
+            <div className="bg-gradient-to-r from-green-600 to-indigo-600 text-white p-6 rounded-t-lg">
               <div className="flex justify-between items-start">
                 <div>
                   <h2 className="text-2xl font-bold mb-2">INVOICE</h2>
-                  <p className="text-blue-100">ShopSphere E-Commerce</p>
-                  <p className="text-blue-100 text-sm">
+                  <p className="text-green-100">Agrochain E-Commerce</p>
+                  <p className="text-green-100 text-sm">
                     Order Confirmation & Receipt
                   </p>
                 </div>
                 <div className="text-right">
                   <div className="flex items-center gap-3">
                     <div className="bg-white/20 rounded-md p-3">
-                      <p className="text-sm text-blue-100">Invoice #</p>
+                      <p className="text-sm text-green-100">Invoice #</p>
                       <p className="font-mono font-bold text-lg">
                         {orderDetails.orderNumber}
                       </p>
@@ -734,7 +734,7 @@ function PaymentSuccessContent() {
                       <h3 className="font-bold text-gray-800">
                         Purchased Items
                       </h3>
-                      <div className="text-xs px-2 py-1 bg-blue-50 text-blue-700 rounded font-medium border border-blue-100">
+                      <div className="text-xs px-2 py-1 bg-green-50 text-green-700 rounded font-medium border border-green-100">
                         Order # {orderDetails.orderNumber}
                       </div>
                     </div>
@@ -818,8 +818,8 @@ function PaymentSuccessContent() {
                       Payment & Success Tips
                     </h4>
                     <div className="space-y-4 text-sm text-gray-600">
-                      <div className="flex gap-3 bg-blue-50/50 p-3 rounded-lg border border-blue-100">
-                        <div className="shrink-0 h-5 w-5 rounded-full bg-blue-500 text-white flex items-center justify-center text-[10px] font-bold">
+                      <div className="flex gap-3 bg-green-50/50 p-3 rounded-lg border border-green-100">
+                        <div className="shrink-0 h-5 w-5 rounded-full bg-green-500 text-white flex items-center justify-center text-[10px] font-bold">
                           1
                         </div>
                         <p>
@@ -881,8 +881,8 @@ function PaymentSuccessContent() {
                     {((pointsUsed && pointsUsed > 0) ||
                       (orderDetails?.transaction?.pointsUsed &&
                         orderDetails.transaction.pointsUsed > 0)) && (
-                      <div className="pt-2 border-t border-blue-200 mt-2 space-y-2 bg-blue-50 -mx-5 px-5 pb-3 rounded-b-lg">
-                        <div className="flex justify-between text-blue-800 text-sm font-medium pt-2">
+                      <div className="pt-2 border-t border-green-200 mt-2 space-y-2 bg-green-50 -mx-5 px-5 pb-3 rounded-b-lg">
+                        <div className="flex justify-between text-green-800 text-sm font-medium pt-2">
                           <span className="flex items-center gap-1">
                             <svg
                               className="w-4 h-4"
@@ -902,7 +902,7 @@ function PaymentSuccessContent() {
                             pts
                           </span>
                         </div>
-                        <div className="flex justify-between text-blue-700 text-sm">
+                        <div className="flex justify-between text-green-700 text-sm">
                           <span>Points Value:</span>
                           <span className="font-semibold text-green-600">
                             -$
@@ -1030,7 +1030,7 @@ function PaymentSuccessContent() {
                             d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
                           />
                         </svg>
-                        support@shopsphere.io
+                        support@agrochain.com
                       </p>
                     </div>
                   </div>

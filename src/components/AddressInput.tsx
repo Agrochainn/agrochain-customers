@@ -184,7 +184,7 @@ export function AddressInput({
             <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
           )}
           {isValidating && (
-            <Loader2 className="h-4 w-4 animate-spin text-blue-500" />
+            <Loader2 className="h-4 w-4 animate-spin text-green-500" />
           )}
           {validationResult && !validationResult.isValid && (
             <AlertTriangle className="h-4 w-4 text-red-500" />
@@ -215,7 +215,7 @@ export function AddressInput({
             <div
               key={suggestion.place_id}
               className={`px-4 py-3 cursor-pointer border-b border-gray-100 last:border-b-0 hover:bg-gray-50 ${
-                index === selectedIndex ? "bg-blue-50" : ""
+                index === selectedIndex ? "bg-green-50" : ""
               }`}
               onClick={() => handleSuggestionClick(suggestion)}
             >

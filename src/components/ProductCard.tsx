@@ -35,6 +35,8 @@ interface ProductCardProps {
   hasVariantDiscounts?: boolean;
   maxVariantDiscount?: number;
   shopCapability?: "VISUALIZATION_ONLY" | "PICKUP_ORDERS" | "FULL_ECOMMERCE" | "HYBRID";
+  isOrganic?: boolean;
+  unit?: { id: number; symbol: string; name: string } | null;
 }
 
 const ProductCard = ({
@@ -59,6 +61,8 @@ const ProductCard = ({
   hasVariantDiscounts,
   maxVariantDiscount,
   shopCapability,
+  isOrganic,
+  unit,
 }: ProductCardProps) => {
   const isVisualizationOnly = shopCapability === "VISUALIZATION_ONLY";
   const [cartItems, setCartItems] = useState<string[]>([]);
@@ -346,13 +350,18 @@ const ProductCard = ({
                 <Badge className="bg-green-500 text-white text-xs w-fit px-2 py-1 whitespace-nowrap">New</Badge>
               )}
               {isBestseller && (
-                <Badge className="bg-blue-500 text-white text-xs w-fit px-2 py-1 whitespace-nowrap">
+                <Badge className="bg-green-500 text-white text-xs w-fit px-2 py-1 whitespace-nowrap">
                   Bestseller
                 </Badge>
               )}
               {isFeatured && (
                 <Badge className="bg-purple-500 text-white text-xs w-fit px-2 py-1 whitespace-nowrap">
                   Featured
+                </Badge>
+              )}
+              {isOrganic && (
+                <Badge className="bg-primary text-primary-foreground text-xs w-fit px-2 py-1 whitespace-nowrap">
+                  Organic
                 </Badge>
               )}
             </div>
@@ -445,7 +454,7 @@ const ProductCard = ({
               </span>
             )}
             {brand && (
-              <span className="bg-blue-100 px-2 py-1 rounded-full text-blue-700">
+              <span className="bg-green-100 px-2 py-1 rounded-full text-green-700">
                 {brand}
               </span>
             )}
@@ -460,21 +469,22 @@ const ProductCard = ({
           </div>
 
           {/* Price */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap">
             {(() => {
               const priceInfo = formatDiscountedPrice(
                 originalPrice || price,
                 discountedPrice || price
               );
-              
+              const unitSymbol = unit?.symbol;
+              const priceOpts = unitSymbol ? { unit: unitSymbol } : {};
               return (
                 <>
                   <span className="font-bold text-lg">
-                    {formatPrice(discountedPrice || price)}
+                    {formatPrice(discountedPrice || price, priceOpts)}
                   </span>
                   {priceInfo.hasDiscount && (
                     <span className="text-sm text-muted-foreground line-through">
-                      {formatPrice(originalPrice || price)}
+                      {formatPrice(originalPrice || price, priceOpts)}
                     </span>
                   )}
                   {hasActiveDiscount && discount && priceInfo.hasDiscount && (

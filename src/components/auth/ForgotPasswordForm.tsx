@@ -70,7 +70,7 @@ export default function ForgotPasswordForm() {
             <div className="text-center space-y-2">
               <Link
                 href="/auth/login"
-                className="text-sm text-blue-600 hover:text-blue-500"
+                className="text-sm text-green-600 hover:text-green-500"
               >
                 Back to login
               </Link>
@@ -129,7 +129,7 @@ export default function ForgotPasswordForm() {
             <div className="text-center">
               <Link
                 href="/auth/login"
-                className="text-sm text-blue-600 hover:text-blue-500 flex items-center justify-center gap-1"
+                className="text-sm text-green-600 hover:text-green-500 flex items-center justify-center gap-1"
               >
                 <ArrowLeft className="h-4 w-4" />
                 Back to login

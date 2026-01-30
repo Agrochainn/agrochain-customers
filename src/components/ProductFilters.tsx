@@ -35,6 +35,20 @@ interface ProductFiltersProps {
   shopId?: string;
 }
 
+interface FilterState {
+  priceRange: number[];
+  categories: string[];
+  brands: string[];
+  attributes: Record<string, string[]>;
+  selectedDiscounts: string[];
+  rating: number | null;
+  inStock: boolean;
+  isBestseller: boolean;
+  isFeatured: boolean;
+  searchTerm: string | null;
+  organic?: boolean | null; // true = organic only, false = non-organic only, null = both
+}
+
 const ProductFilters = ({
   filters,
   onFiltersChange,
@@ -304,6 +318,7 @@ const ProductFilters = ({
           isBestseller: false,
           isFeatured: false,
           searchTerm: "",
+          organic: null,
         };
         return { ...safePrevFilters, [key]: value };
       });
@@ -364,6 +379,7 @@ const ProductFilters = ({
       isBestseller: false,
       isFeatured: false,
       searchTerm: "",
+      organic: null,
     });
   }, [onFiltersChange]);
 
@@ -527,6 +543,7 @@ const ProductFilters = ({
     filters.inStock === false ||
     filters.isBestseller === true ||
     filters.isFeatured === true ||
+    filters.organic !== null ||
     (filters.searchTerm && filters.searchTerm.trim() !== "");
 
   const renderCategory = (category: any, level: number = 0) => {
@@ -823,6 +840,24 @@ const ProductFilters = ({
                   />
                 </Badge>
               )}
+              {filters.organic === true && (
+                <Badge key="organic" variant="secondary" className="text-xs">
+                  Organic
+                  <X
+                    className="ml-1 h-3 w-3 cursor-pointer"
+                    onClick={() => updateFilters("organic", null)}
+                  />
+                </Badge>
+              )}
+              {filters.organic === false && (
+                <Badge key="nonOrganic" variant="secondary" className="text-xs">
+                  Non-Organic
+                  <X
+                    className="ml-1 h-3 w-3 cursor-pointer"
+                    onClick={() => updateFilters("organic", null)}
+                  />
+                </Badge>
+              )}
             </div>
           </CardContent>
         </Card>
@@ -861,7 +896,7 @@ const ProductFilters = ({
               placeholder="Search categories..."
               value={categorySearch}
               onChange={(e) => handleCategorySearch(e.target.value)}
-              className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
             />
             {categorySearchLoading && (
               <Loader2 className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 animate-spin text-gray-400" />
@@ -913,7 +948,7 @@ const ProductFilters = ({
               placeholder="Search brands..."
               value={brandSearch}
               onChange={(e) => handleBrandSearch(e.target.value)}
-              className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
             />
             {brandSearchLoading && (
               <Loader2 className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 animate-spin text-gray-400" />
@@ -1018,7 +1053,7 @@ const ProductFilters = ({
               placeholder="Search attributes..."
               value={attributeTypeSearch}
               onChange={(e) => handleAttributeTypeSearch(e.target.value)}
-              className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
             />
             {attributeTypeSearchLoading && (
               <Loader2 className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 animate-spin text-gray-400" />
@@ -1090,7 +1125,7 @@ const ProductFilters = ({
                                 e.target.value
                               )
                             }
-                            className="w-full pl-8 pr-3 py-1.5 border border-gray-200 rounded text-xs focus:outline-none focus:ring-1 focus:ring-blue-500"
+                            className="w-full pl-8 pr-3 py-1.5 border border-gray-200 rounded text-xs focus:outline-none focus:ring-1 focus:ring-green-500"
                           />
                           {attributeValueSearchLoading[
                             attrType.attributeTypeId
@@ -1230,7 +1265,7 @@ const ProductFilters = ({
                               e.target.value
                             )
                           }
-                          className="w-full pl-8 pr-3 py-1.5 border border-gray-200 rounded text-xs focus:outline-none focus:ring-1 focus:ring-blue-500"
+                          className="w-full pl-8 pr-3 py-1.5 border border-gray-200 rounded text-xs focus:outline-none focus:ring-1 focus:ring-green-500"
                         />
                         {attributeValueSearchLoading[
                           attrType.attributeTypeId
@@ -1523,6 +1558,53 @@ const ProductFilters = ({
               className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
             >
               Featured
+            </label>
+          </div>
+        </div>
+      )}
+
+      {/* Organic Filter */}
+      {renderFilterSection(
+        "Organic Status",
+        <div className="space-y-3">
+          <div className="flex items-center space-x-2">
+            <Checkbox
+              id="organic"
+              checked={filters.organic === true}
+              onCheckedChange={(checked) => {
+                // If checking organic, uncheck non-organic
+                if (checked) {
+                  updateFilters("organic", true);
+                } else {
+                  updateFilters("organic", null);
+                }
+              }}
+            />
+            <label
+              htmlFor="organic"
+              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+            >
+              Organic Only
+            </label>
+          </div>
+          <div className="flex items-center space-x-2">
+            <Checkbox
+              id="nonOrganic"
+              checked={filters.organic === false}
+              onCheckedChange={(checked) => {
+                // If checking non-organic, uncheck organic
+                if (checked) {
+                  updateFilters("organic", false);
+                } else {
+                  updateFilters("organic", null);
+                }
+              }}
+            />
+            <label
+              htmlFor="nonOrganic"
+              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+            >
+              Non-Organic Only
             </label>
           </div>
         </div>

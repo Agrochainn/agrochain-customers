@@ -73,6 +73,8 @@ interface Product {
   isFeatured?: boolean;
   hasActiveDiscount?: boolean;
   discountPercentage?: number;
+  organic?: boolean;
+  unit?: { id: number; symbol: string; name: string };
 }
 
 interface ShopDetails {
@@ -305,7 +307,7 @@ export function StoreProfileClient({ storeId }: { storeId: string }) {
                       variant="outline"
                       className={`text-xs ${
                         store.primaryCapability === "PICKUP_ORDERS"
-                          ? "bg-blue-100 text-blue-700 border-blue-200"
+                          ? "bg-green-100 text-green-700 border-green-200"
                           : store.primaryCapability === "FULL_ECOMMERCE"
                           ? "bg-green-100 text-green-700 border-green-200"
                           : store.primaryCapability === "HYBRID"
@@ -466,6 +468,8 @@ export function StoreProfileClient({ storeId }: { storeId: string }) {
                       isBestseller={product.isBestseller}
                       isFeatured={product.isFeatured}
                       hasActiveDiscount={product.hasActiveDiscount}
+                      isOrganic={product.organic}
+                      unit={product.unit}
                     />
                   ))}
                 </div>

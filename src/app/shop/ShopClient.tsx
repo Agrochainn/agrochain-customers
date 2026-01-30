@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
@@ -29,6 +29,7 @@ interface FilterState {
   isBestseller: boolean;
   isFeatured: boolean;
   searchTerm: string | null;
+  organic?: boolean | null; // true = organic only, false = non-organic only, null = both
 }
 
 export function ShopClient() {
@@ -47,15 +48,32 @@ export function ShopClient() {
     isBestseller: false,
     isFeatured: false,
     searchTerm: "",
+    organic: null,
   });
   const [isInitialized, setIsInitialized] = useState(false);
   // Add pagination and filter visibility state
   const [currentPage, setCurrentPage] = useState(1);
   const [productsPerPage] = useState(12);
   const [showFilters, setShowFilters] = useState(false);
+  
+  // Track if we're updating URL internally to prevent reset loops
+  const isUpdatingUrlRef = useRef(false);
+  const previousUrlRef = useRef<string>("");
 
-  // Extract filters from URL on mount
+  // Extract filters from URL on mount or when URL changes externally
   useEffect(() => {
+    // Skip if we're updating URL internally
+    if (isUpdatingUrlRef.current) {
+      return;
+    }
+    
+    const currentUrl = window.location.href;
+    // Skip if URL hasn't actually changed (prevents unnecessary re-parsing)
+    if (previousUrlRef.current === currentUrl && isInitialized) {
+      return;
+    }
+    
+    previousUrlRef.current = currentUrl;
     const parseUrlParams = () => {
       const urlFilters: FilterState = {
         priceRange: [0, 1000],
@@ -68,27 +86,39 @@ export function ShopClient() {
         isBestseller: false,
         isFeatured: false,
         searchTerm: "",
+        organic: null,
       };
 
       // Parse price range - with better validation
       const minPrice = searchParams.get("minPrice");
       const maxPrice = searchParams.get("maxPrice");
+      // Parse minPrice (default to 0 if not provided)
+      let min = 0;
       if (
         minPrice &&
-        maxPrice &&
         minPrice !== "undefined" &&
-        maxPrice !== "undefined" &&
         minPrice !== "null" &&
-        maxPrice !== "null" &&
-        minPrice.trim() !== "" &&
-        maxPrice.trim() !== ""
+        minPrice.trim() !== ""
       ) {
-        const min = parseInt(minPrice);
-        const max = parseInt(maxPrice);
-        if (!isNaN(min) && !isNaN(max) && min >= 0 && max >= 0) {
-          urlFilters.priceRange = [min, max];
+        const parsedMin = parseInt(minPrice);
+        if (!isNaN(parsedMin) && parsedMin >= 0) {
+          min = parsedMin;
         }
       }
+      // Parse maxPrice (default to 1000 if not provided)
+      let max = 1000;
+      if (
+        maxPrice &&
+        maxPrice !== "undefined" &&
+        maxPrice !== "null" &&
+        maxPrice.trim() !== ""
+      ) {
+        const parsedMax = parseInt(maxPrice);
+        if (!isNaN(parsedMax) && parsedMax >= 0) {
+          max = parsedMax;
+        }
+      }
+      urlFilters.priceRange = [min, max];
 
       // Parse categories
       const categoriesParam = searchParams.get("categories");
@@ -210,6 +240,16 @@ export function ShopClient() {
           ? searchParam.trim()
           : "";
 
+      // Parse organic filter
+      const organicParam = searchParams.get("organic");
+      if (organicParam === "true") {
+        urlFilters.organic = true;
+      } else if (organicParam === "false") {
+        urlFilters.organic = false;
+      } else {
+        urlFilters.organic = null;
+      }
+
       return urlFilters;
     };
 
@@ -218,35 +258,32 @@ export function ShopClient() {
     console.log("🔗 Current URL:", window.location.href);
     setFilters(parsedFilters);
     setIsInitialized(true);
-  }, [searchParams]);
+  }, [searchParams, isInitialized]);
 
   // Update URL when filters change
   const updateUrlWithFilters = useCallback(
     (newFilters: FilterState) => {
       console.log("🔧 updateUrlWithFilters called with:", newFilters);
+      isUpdatingUrlRef.current = true;
       const urlParams = new URLSearchParams();
 
-      // Add price range - only if values are valid numbers
+      // Add price range - always include if different from default
       if (
         newFilters.priceRange &&
         Array.isArray(newFilters.priceRange) &&
-        newFilters.priceRange.length >= 2 &&
-        newFilters.priceRange[0] > 0 &&
-        newFilters.priceRange[0] !== undefined &&
-        newFilters.priceRange[0] !== null
+        newFilters.priceRange.length >= 2
       ) {
-        urlParams.set("minPrice", newFilters.priceRange[0].toString());
-      }
-
-      if (
-        newFilters.priceRange &&
-        Array.isArray(newFilters.priceRange) &&
-        newFilters.priceRange.length >= 2 &&
-        newFilters.priceRange[1] < 1000 &&
-        newFilters.priceRange[1] !== undefined &&
-        newFilters.priceRange[1] !== null
-      ) {
-        urlParams.set("maxPrice", newFilters.priceRange[1].toString());
+        const min = newFilters.priceRange[0];
+        const max = newFilters.priceRange[1];
+        // Include both minPrice and maxPrice if either is different from default
+        // This ensures consistency and prevents reset issues
+        if (min !== undefined && min !== null && max !== undefined && max !== null) {
+          // If either value is different from default, include both
+          if (min > 0 || max < 1000) {
+            urlParams.set("minPrice", min.toString());
+            urlParams.set("maxPrice", max.toString());
+          }
+        }
       }
 
       // Add categories - only if array exists and has valid items
@@ -352,13 +389,26 @@ export function ShopClient() {
         urlParams.set("searchTerm", newFilters.searchTerm.trim());
       }
 
+      // Add organic filter - only if it's explicitly set
+      if (newFilters.organic === true) {
+        urlParams.set("organic", "true");
+      } else if (newFilters.organic === false) {
+        urlParams.set("organic", "false");
+      }
+
       // Update URL without reloading page
       const queryString = urlParams.toString()
         ? `?${urlParams.toString()}`
         : "";
       const newUrl = `/shop${queryString}`;
    
+      previousUrlRef.current = window.location.origin + newUrl;
       router.replace(newUrl, { scroll: false });
+      
+      // Reset the flag after a short delay to allow URL to update
+      setTimeout(() => {
+        isUpdatingUrlRef.current = false;
+      }, 100);
     },
     [router]
   );
@@ -393,6 +443,7 @@ export function ShopClient() {
       isBestseller: false,
       isFeatured: false,
       searchTerm: "",
+      organic: null,
     };
     handleFiltersChange(clearedFilters);
   };

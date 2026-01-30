@@ -154,7 +154,7 @@ export default function OrderDetailPage() {
       case "pending":
         return "bg-yellow-100 text-yellow-800";
       case "processing":
-        return "bg-blue-100 text-blue-800";
+        return "bg-green-100 text-green-800";
       case "shipped":
         return "bg-purple-100 text-purple-800";
       case "delivered":
@@ -239,7 +239,7 @@ export default function OrderDetailPage() {
       <div className="container mx-auto px-4 py-16">
         <div className="max-w-4xl mx-auto">
           <div className="flex items-center justify-center py-12">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-600"></div>
             <span className="ml-3 text-muted-foreground">
               Loading order details...
             </span>
@@ -338,7 +338,7 @@ export default function OrderDetailPage() {
               Order Timeline
             </h2>
             <div className="flex items-center justify-center py-8">
-              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
+              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-green-600"></div>
               <span className="ml-3 text-muted-foreground">
                 Loading timeline...
               </span>
@@ -352,7 +352,7 @@ export default function OrderDetailPage() {
           {/* Shop Grouped Orders */}
           <div className="space-y-4">
             <h2 className="text-xl font-bold flex items-center gap-2 mb-4">
-              <Package className="h-6 w-6 text-blue-600" />
+              <Package className="h-6 w-6 text-green-600" />
               Order Items by Shop
             </h2>
             {orderDetails.shopOrders && orderDetails.shopOrders.length > 0 ? (
@@ -454,12 +454,12 @@ export default function OrderDetailPage() {
                     </Badge>
                   </div>
                   {orderDetails.paymentInfo.pointsUsed > 0 && (
-                    <div className="flex justify-between text-sm py-1.5 px-2 bg-blue-50/50 rounded-md border border-blue-100/50">
-                      <span className="text-blue-600 flex items-center gap-1 italic">
+                    <div className="flex justify-between text-sm py-1.5 px-2 bg-green-50/50 rounded-md border border-green-100/50">
+                      <span className="text-green-600 flex items-center gap-1 italic">
                         <Info className="h-3 w-3" />
                         Points Applied:
                       </span>
-                      <span className="font-bold text-blue-700">
+                      <span className="font-bold text-green-700">
                         -{formatCurrency(orderDetails.paymentInfo.pointsValue)}
                         <span className="text-[10px] ml-1 opacity-70 italic">
                           ({orderDetails.paymentInfo.pointsUsed} pts)

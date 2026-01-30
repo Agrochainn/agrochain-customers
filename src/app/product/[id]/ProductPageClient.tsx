@@ -138,7 +138,7 @@ export function ProductPageClient({ productId }: { productId: string }) {
 
         return (
           <div className="flex flex-col">
-            <span className="font-semibold text-blue-600">
+            <span className="font-semibold text-green-600">
               {discountedPrice}
             </span>
             <span className="text-xs text-muted-foreground line-through">
@@ -594,7 +594,7 @@ export function ProductPageClient({ productId }: { productId: string }) {
           <div className="space-y-4">
             {/* Zoom Controls - Always visible on desktop */}
             {isDesktop && displayImages && displayImages.length > 0 && (
-              <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-md p-3 shadow-sm">
+              <div className="bg-gradient-to-r from-green-50 to-indigo-50 border border-green-200 rounded-md p-3 shadow-sm">
                 <div className="flex items-center gap-3">
                   <span className="text-sm font-medium text-gray-700 whitespace-nowrap">Image Zoom:</span>
                   <input
@@ -609,7 +609,7 @@ export function ProductPageClient({ productId }: { productId: string }) {
                       background: `linear-gradient(to right, #3b82f6 0%, #3b82f6 ${((zoomLevel - 1.5) / (5 - 1.5)) * 100}%, #d1d5db ${((zoomLevel - 1.5) / (5 - 1.5)) * 100}%, #d1d5db 100%)`
                     }}
                   />
-                  <span className="text-sm font-mono font-semibold text-blue-600 w-10">{zoomLevel.toFixed(1)}×</span>
+                  <span className="text-sm font-mono font-semibold text-green-600 w-10">{zoomLevel.toFixed(1)}×</span>
                 </div>
                 <p className="text-xs text-gray-500 mt-1">Hover over the image to zoom in and explore details</p>
               </div>
@@ -749,12 +749,12 @@ export function ProductPageClient({ productId }: { productId: string }) {
 
           {isZooming && displayImages && displayImages.length > 0 && isDesktop ? (
             <div className="space-y-4">
-              <div className="flex flex-col bg-white border-2 border-blue-500 rounded-md shadow-2xl overflow-hidden" style={{ height: '600px' }}>
+              <div className="flex flex-col bg-white border-2 border-green-500 rounded-md shadow-2xl overflow-hidden" style={{ height: '600px' }}>
                 {/* Zoom Controls Header */}
                 <div className="bg-black bg-opacity-90 text-white p-3 flex-shrink-0">
                   <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center gap-2">
-                      <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse"></div>
+                      <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
                       <span className="text-sm font-medium">
                         Zoom View Active
                       </span>
@@ -806,7 +806,7 @@ export function ProductPageClient({ productId }: { productId: string }) {
                         boxShadow: "0 0 0 2px rgba(0,0,0,0.3), inset 0 0 0 2px rgba(255,255,255,0.8)"
                       }}
                     />
-                    <div className="absolute top-1/2 left-1/2 w-1 h-1 bg-blue-500 rounded-full transform -translate-x-1/2 -translate-y-1/2" />
+                    <div className="absolute top-1/2 left-1/2 w-1 h-1 bg-green-500 rounded-full transform -translate-x-1/2 -translate-y-1/2" />
                     <div className="absolute top-1/2 left-0 right-0 h-px bg-white opacity-50 transform -translate-y-1/2" />
                     <div className="absolute left-1/2 top-0 bottom-0 w-px bg-white opacity-50 transform -translate-x-1/2" />
                   </div>
@@ -833,6 +833,11 @@ export function ProductPageClient({ productId }: { productId: string }) {
                   {product.brandName && (
                     <Badge variant="outline" className="text-xs">
                       {product.brandName}
+                    </Badge>
+                  )}
+                  {product.organic && (
+                    <Badge className="text-xs bg-primary text-primary-foreground">
+                      Organic
                     </Badge>
                   )}
                 </div>
@@ -866,18 +871,19 @@ export function ProductPageClient({ productId }: { productId: string }) {
                 {/* Price */}
                 <div className="mt-4 flex items-center gap-3">
                   <span className="text-3xl font-bold text-price">
-                    {formatPriceUtil(displayPrice)}
+                    {formatPriceUtil(displayPrice, product.unit?.symbol ? { unit: product.unit.symbol } : {})}
                   </span>
                   {selectedVariant ? (
                     <>
                       {(() => {
                         const effectiveDiscount =
                           getEffectiveDiscount(selectedVariant);
+                        const unitOpts = product.unit?.symbol ? { unit: product.unit.symbol } : {};
                         if (effectiveDiscount) {
                           return (
                             <>
                               <span className="text-xl text-muted-foreground line-through">
-                                {formatPriceUtil(selectedVariant.price)}
+                                {formatPriceUtil(selectedVariant.price, unitOpts)}
                               </span>
                               <Badge
                                 variant={
@@ -913,7 +919,7 @@ export function ProductPageClient({ productId }: { productId: string }) {
                         product.salePrice < product.basePrice &&
                         product.basePrice && (
                           <span className="text-xl text-muted-foreground line-through">
-                            {formatPriceUtil(product.basePrice)}
+                            {formatPriceUtil(product.basePrice, product.unit?.symbol ? { unit: product.unit.symbol } : {})}
                           </span>
                         )}
                       {product.salePrice &&
@@ -960,7 +966,7 @@ export function ProductPageClient({ productId }: { productId: string }) {
                     {variantsInCart.size > 0 && (
                       <Badge
                         variant="secondary"
-                        className="bg-blue-100 text-blue-800"
+                        className="bg-green-100 text-green-800"
                       >
                         {variantsInCart.size} in cart
                       </Badge>
@@ -976,7 +982,7 @@ export function ProductPageClient({ productId }: { productId: string }) {
                             selectedVariant?.variantId === variant.variantId
                               ? "border-primary bg-primary/5 ring-2 ring-primary/20"
                               : variantsInCart.has(variant.variantId.toString())
-                              ? "border-blue-500 bg-blue-50"
+                              ? "border-green-500 bg-green-50"
                               : "hover:border-primary/50"
                           } ${
                             ProductService.getVariantTotalStock(variant) === 0
@@ -992,7 +998,7 @@ export function ProductPageClient({ productId }: { productId: string }) {
                             {variantsInCart.has(variant.variantId.toString()) && (
                               <Badge
                                 variant="secondary"
-                                className="text-xs bg-blue-500 text-white"
+                                className="text-xs bg-green-500 text-white"
                               >
                                 In Cart
                               </Badge>
@@ -1001,17 +1007,18 @@ export function ProductPageClient({ productId }: { productId: string }) {
                           <div className="text-xs text-muted-foreground">
                             {effectiveDiscount ? (
                               <div className="flex flex-col">
-                                <span className="font-semibold text-blue-600">
+                                <span className="font-semibold text-green-600">
                                   {formatPriceUtil(
-                                    effectiveDiscount.discountedPrice
+                                    effectiveDiscount.discountedPrice,
+                                    product.unit?.symbol ? { unit: product.unit.symbol } : {}
                                   )}
                                 </span>
                                 <span className="line-through">
-                                  {formatPriceUtil(variant.price || 0)}
+                                  {formatPriceUtil(variant.price || 0, product.unit?.symbol ? { unit: product.unit.symbol } : {})}
                                 </span>
                               </div>
                             ) : (
-                              formatPriceUtil(variant.price || 0)
+                              formatPriceUtil(variant.price || 0, product.unit?.symbol ? { unit: product.unit.symbol } : {})
                             )}
                           </div>
                           {effectiveDiscount && (
@@ -1036,7 +1043,7 @@ export function ProductPageClient({ productId }: { productId: string }) {
                           <div
                             className={`text-xs ${
                               ProductService.getVariantTotalStock(variant) > 0
-                                ? "text-blue-600"
+                                ? "text-green-600"
                                 : "text-red-600"
                             }`}
                           >
@@ -1065,11 +1072,11 @@ export function ProductPageClient({ productId }: { productId: string }) {
                     })}
                   </div>
                   {selectedVariant && (
-                    <div className="p-3 bg-blue-50 border border-blue-200 rounded-md mt-2">
-                      <div className="text-sm font-medium text-blue-800">
+                    <div className="p-3 bg-green-50 border border-green-200 rounded-md mt-2">
+                      <div className="text-sm font-medium text-green-800">
                         Selected: {selectedVariant.variantSku}
                       </div>
-                      <div className="text-xs text-blue-600">
+                      <div className="text-xs text-green-600">
                         {(() => {
                           const effectiveDiscount =
                             getEffectiveDiscount(selectedVariant);
@@ -1079,12 +1086,13 @@ export function ProductPageClient({ productId }: { productId: string }) {
                                 <span className="font-semibold">
                                   Price:{" "}
                                   {formatPriceUtil(
-                                    effectiveDiscount.discountedPrice
+                                    effectiveDiscount.discountedPrice,
+                                    product.unit?.symbol ? { unit: product.unit.symbol } : {}
                                   )}
                                 </span>
                                 <span className="line-through">
                                   Original:{" "}
-                                  {formatPriceUtil(selectedVariant.price)}
+                                  {formatPriceUtil(selectedVariant.price, product.unit?.symbol ? { unit: product.unit.symbol } : {})}
                                 </span>
                                 <span className="text-orange-600 font-medium">
                                   -{Math.round(effectiveDiscount.percentage)}% OFF
@@ -1096,7 +1104,8 @@ export function ProductPageClient({ productId }: { productId: string }) {
                             );
                           }
                           return `Price: ${formatPriceUtil(
-                            selectedVariant.price || 0
+                            selectedVariant.price || 0,
+                            product.unit?.symbol ? { unit: product.unit.symbol } : {}
                           )}`;
                         })()}
                         <span className="ml-2">|</span>

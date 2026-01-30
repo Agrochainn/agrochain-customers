@@ -153,7 +153,7 @@ export default function LoginForm() {
             <div className="text-center space-y-2">
               <Link
                 href="/auth/forgot-password"
-                className="text-sm text-blue-600 hover:text-blue-500"
+                className="text-sm text-green-600 hover:text-green-500"
               >
                 Forgot your password?
               </Link>
@@ -161,7 +161,7 @@ export default function LoginForm() {
                 Don't have an account?{" "}
                 <Link
                   href="/auth/register"
-                  className="text-blue-600 hover:text-blue-500"
+                  className="text-green-600 hover:text-green-500"
                 >
                   Sign up
                 </Link>

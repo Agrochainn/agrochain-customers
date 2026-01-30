@@ -535,7 +535,7 @@ export function StoresClient() {
                         variant="outline"
                         className={`text-xs ${
                           shop.primaryCapability === "PICKUP_ORDERS"
-                            ? "bg-blue-100 text-blue-700 border-blue-200"
+                            ? "bg-green-100 text-green-700 border-green-200"
                             : shop.primaryCapability === "FULL_ECOMMERCE"
                             ? "bg-green-100 text-green-700 border-green-200"
                             : shop.primaryCapability === "HYBRID"

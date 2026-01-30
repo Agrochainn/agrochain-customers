@@ -120,7 +120,7 @@ export default function ReturnInfoPage() {
       case AppealStatus.DENIED:
         return <XCircle className="h-5 w-5 text-red-500" />;
       case ReturnStatus.PROCESSING:
-        return <RefreshCw className="h-5 w-5 text-blue-500" />;
+        return <RefreshCw className="h-5 w-5 text-green-500" />;
       case ReturnStatus.COMPLETED:
         return <CheckCircle className="h-5 w-5 text-green-500" />;
       case ReturnStatus.CANCELLED:
@@ -593,7 +593,7 @@ export default function ReturnInfoPage() {
                             ? "bg-green-500"
                             : returnRequest.status === ReturnStatus.PROCESSING
                               ? "bg-yellow-500"
-                              : "bg-blue-500"
+                              : "bg-green-500"
                         }`}
                       ></div>
                       <div>
@@ -633,10 +633,10 @@ export default function ReturnInfoPage() {
 
           {/* Appeal Information */}
           {returnRequest.returnAppeal && (
-            <Card className="border-blue-200 bg-blue-50">
+            <Card className="border-green-200 bg-green-50">
               <CardHeader>
                 <div className="flex items-center justify-between">
-                  <CardTitle className="flex items-center gap-2 text-blue-800">
+                  <CardTitle className="flex items-center gap-2 text-green-800">
                     <MessageSquare className="h-5 w-5" />
                     Appeal Information
                   </CardTitle>
@@ -659,19 +659,19 @@ export default function ReturnInfoPage() {
               <CardContent>
                 <div className="space-y-4">
                   <div>
-                    <span className="text-sm font-medium text-blue-700">
+                    <span className="text-sm font-medium text-green-700">
                       Appeal Reason:
                     </span>
-                    <p className="mt-1 text-sm text-blue-800">
+                    <p className="mt-1 text-sm text-green-800">
                       {returnRequest.returnAppeal.reason}
                     </p>
                   </div>
                   {returnRequest.returnAppeal.description && (
                     <div>
-                      <span className="text-sm font-medium text-blue-700">
+                      <span className="text-sm font-medium text-green-700">
                         Description:
                       </span>
-                      <p className="mt-1 text-sm text-blue-800">
+                      <p className="mt-1 text-sm text-green-800">
                         {returnRequest.returnAppeal.description}
                       </p>
                     </div>
@@ -698,7 +698,7 @@ export default function ReturnInfoPage() {
                     ) &&
                     returnRequest.returnAppeal.mediaAttachments.length > 0 && (
                       <div>
-                        <span className="text-sm font-medium text-blue-700">
+                        <span className="text-sm font-medium text-green-700">
                           Attachments:
                         </span>
                         <div className="mt-2 space-y-2">
@@ -708,7 +708,7 @@ export default function ReturnInfoPage() {
                                 key={index}
                                 className="flex items-center gap-2 p-2 bg-white rounded border"
                               >
-                                <Paperclip className="h-4 w-4 text-blue-600" />
+                                <Paperclip className="h-4 w-4 text-green-600" />
                                 <span className="text-sm flex-1">
                                   {attachment.fileName}
                                 </span>
@@ -770,7 +770,7 @@ export default function ReturnInfoPage() {
 
                 {returnRequest.status === ReturnStatus.DENIED &&
                   !returnRequest.returnAppeal && (
-                    <Button asChild className="bg-blue-600 hover:bg-blue-700">
+                    <Button asChild className="bg-green-600 hover:bg-green-700">
                       <Link
                         href={`/returns/appeal?returnRequestId=${returnRequest.id}${token ? `&token=${token}` : ""}`}
                         className="flex items-center gap-2"

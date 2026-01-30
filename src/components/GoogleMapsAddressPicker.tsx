@@ -153,7 +153,7 @@ export function GoogleMapsAddressPicker({
             featureType: "road",
             elementType: "geometry",
             stylers: [
-              { color: "#3b82f6" }, // Blue color for roads
+              { color: "#3b82f6" }, // green color for roads
               { weight: 3 },
               { visibility: "on" }
             ]
@@ -162,7 +162,7 @@ export function GoogleMapsAddressPicker({
             featureType: "road.highway",
             elementType: "geometry",
             stylers: [
-              { color: "#2563eb" }, // Darker blue for highways
+              { color: "#2563eb" }, // Darker green for highways
               { weight: 5 },
               { visibility: "on" }
             ]
@@ -171,7 +171,7 @@ export function GoogleMapsAddressPicker({
             featureType: "road.arterial",
             elementType: "geometry",
             stylers: [
-              { color: "#3b82f6" }, // Blue for arterial roads
+              { color: "#3b82f6" }, // green for arterial roads
               { weight: 4 },
               { visibility: "on" }
             ]
@@ -180,7 +180,7 @@ export function GoogleMapsAddressPicker({
             featureType: "road.local",
             elementType: "geometry",
             stylers: [
-              { color: "#60a5fa" }, // Lighter blue for local roads
+              { color: "#60a5fa" }, // Lighter green for local roads
               { weight: 2.5 },
               { visibility: "on" }
             ]
@@ -663,13 +663,13 @@ export function GoogleMapsAddressPicker({
           <MapPin className="h-5 w-5" />
           Select Delivery Address
         </CardTitle>
-        <div className="mt-2 p-3 bg-blue-50 border border-blue-200 rounded-md">
-          <p className="text-sm text-blue-800 font-medium flex items-center gap-2">
-            <span className="inline-block w-4 h-1 bg-blue-600 rounded"></span>
-            Blue highlighted paths show roads where delivery is available
+        <div className="mt-2 p-3 bg-green-50 border border-green-200 rounded-md">
+          <p className="text-sm text-green-800 font-medium flex items-center gap-2">
+            <span className="inline-block w-4 h-1 bg-green-600 rounded"></span>
+            green highlighted paths show roads where delivery is available
           </p>
-          <p className="text-xs text-blue-700 mt-1">
-            Click on or near the blue roads to select your pickup location
+          <p className="text-xs text-green-700 mt-1">
+            Click on or near the green roads to select your pickup location
           </p>
         </div>
       </CardHeader>
@@ -739,7 +739,7 @@ export function GoogleMapsAddressPicker({
                         }}
                       >
                         <div className="flex items-start gap-3 w-full">
-                          <MapPin className="h-4 w-4 text-blue-500 mt-0.5 flex-shrink-0" />
+                          <MapPin className="h-4 w-4 text-green-500 mt-0.5 flex-shrink-0" />
                           <div className="flex-1 min-w-0">
                             <p className="text-sm font-medium truncate">
                               {suggestion.structured_formatting?.main_text || suggestion.description}
@@ -799,7 +799,7 @@ export function GoogleMapsAddressPicker({
           />
           <div className="absolute top-2 left-2 bg-white/95 backdrop-blur-sm rounded-md p-3 text-sm text-muted-foreground shadow-md border">
             <div className="flex items-center gap-2">
-              <MapPin className="h-4 w-4 text-blue-500" />
+              <MapPin className="h-4 w-4 text-green-500" />
               <span className="font-medium">🛰️ Satellite View Active</span>
             </div>
             <div className="mt-1 text-xs">
@@ -813,11 +813,11 @@ export function GoogleMapsAddressPicker({
               )}
             </div>
           </div>
-          <div className="absolute bottom-2 left-2 bg-white/95 backdrop-blur-sm rounded-md p-2.5 text-xs shadow-md border border-blue-200">
+          <div className="absolute bottom-2 left-2 bg-white/95 backdrop-blur-sm rounded-md p-2.5 text-xs shadow-md border border-green-200">
             <div className="space-y-1">
-              <div className="flex items-center gap-2 text-blue-700 font-medium">
-                <span className="inline-block w-3 h-0.5 bg-blue-600 rounded"></span>
-                <span>Blue paths = Delivery available roads</span>
+              <div className="flex items-center gap-2 text-green-700 font-medium">
+                <span className="inline-block w-3 h-0.5 bg-green-600 rounded"></span>
+                <span>green paths = Delivery available roads</span>
               </div>
               <div className="text-muted-foreground">
                 🗺️ Use map controls to switch between Satellite, Roadmap, Hybrid, and Terrain views

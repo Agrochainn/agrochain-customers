@@ -51,7 +51,7 @@ export default function ShippingInfoPage() {
         <Card className="mb-8">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Calculator className="h-5 w-5 text-blue-500" />
+              <Calculator className="h-5 w-5 text-green-500" />
               Shipping Cost Calculation
             </CardTitle>
             <CardDescription>
@@ -178,7 +178,7 @@ export default function ShippingInfoPage() {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Package className="h-5 w-5 text-blue-500" />
+                <Package className="h-5 w-5 text-green-500" />
                 Standard Delivery
               </CardTitle>
             </CardHeader>
@@ -348,9 +348,9 @@ export default function ShippingInfoPage() {
               </div>
             </div>
 
-            <div className="mt-4 p-4 bg-blue-50 rounded-md">
-              <h4 className="font-semibold text-blue-900 mb-2">💡 Pro Tip</h4>
-              <p className="text-sm text-blue-800">
+            <div className="mt-4 p-4 bg-green-50 rounded-md">
+              <h4 className="font-semibold text-green-900 mb-2">💡 Pro Tip</h4>
+              <p className="text-sm text-green-800">
                 Add items worth $5 more to your cart to qualify for free
                 shipping and save $2.99!
               </p>

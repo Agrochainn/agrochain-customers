@@ -62,7 +62,7 @@ const Footer = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
             {/* Company Info */}
             <div className="lg:col-span-2">
-              <h2 className="text-2xl font-bold text-primary mb-4">ShopSphere</h2>
+              <h2 className="text-2xl font-bold text-primary mb-4">Agrochain</h2>
               <p className="text-muted-foreground mb-6 max-w-md">
                 Your one-stop destination for all your shopping needs. 
                 Quality products, unbeatable prices, and exceptional service.
@@ -76,7 +76,7 @@ const Footer = () => {
                 </div>
                 <div className="flex items-center gap-2">
                   <Mail className="h-4 w-4 text-primary" />
-                  <span>support@shopsphere.com</span>
+                  <span>support@agrochain.com</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <MapPin className="h-4 w-4 text-primary" />
@@ -174,7 +174,7 @@ const Footer = () => {
         <div className="py-6">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <p className="text-sm text-muted-foreground">
-              © 2024 ShopSphere. All rights reserved.
+              © 2024 Agrochain. All rights reserved.
             </p>
             
             {/* Social Links */}

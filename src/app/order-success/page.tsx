@@ -166,8 +166,8 @@ function OrderSuccessContent() {
           </CardHeader>
           <CardContent className="space-y-3">
             <div className="flex items-start gap-3">
-              <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                <span className="text-xs font-bold text-blue-600">1</span>
+              <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                <span className="text-xs font-bold text-green-600">1</span>
               </div>
               <div>
                 <p className="font-medium">Order Confirmation</p>
@@ -179,8 +179,8 @@ function OrderSuccessContent() {
             </div>
 
             <div className="flex items-start gap-3">
-              <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                <span className="text-xs font-bold text-blue-600">2</span>
+              <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                <span className="text-xs font-bold text-green-600">2</span>
               </div>
               <div>
                 <p className="font-medium">Processing</p>
@@ -192,8 +192,8 @@ function OrderSuccessContent() {
             </div>
 
             <div className="flex items-start gap-3">
-              <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                <span className="text-xs font-bold text-blue-600">3</span>
+              <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                <span className="text-xs font-bold text-green-600">3</span>
               </div>
               <div>
                 <p className="font-medium">Shipping</p>

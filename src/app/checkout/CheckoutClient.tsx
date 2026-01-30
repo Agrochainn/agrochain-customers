@@ -1303,7 +1303,7 @@ export function CheckoutClient() {
                               {shop.shopName}: Warehouse available in {formData.country}
                             </span>
                           ) : shop.fulfillmentType === "PICKUP" ? (
-                            <span className="text-blue-600 flex items-center gap-1">
+                            <span className="text-green-600 flex items-center gap-1">
                               <Package className="h-3 w-3" />
                               {shop.shopName}: Pickup available
                             </span>
@@ -1320,15 +1320,15 @@ export function CheckoutClient() {
                 </div>
                 
                 {addressSelected && (formData.latitude && formData.longitude) && (
-                  <div className="p-4 bg-blue-50 border border-blue-200 rounded-md">
+                  <div className="p-4 bg-green-50 border border-green-200 rounded-md">
                     <div className="flex items-center gap-2 mb-2">
-                      <MapPin className="h-5 w-5 text-blue-600" />
-                      <h4 className="font-medium text-blue-800">Delivery Address Ready</h4>
+                      <MapPin className="h-5 w-5 text-green-600" />
+                      <h4 className="font-medium text-green-800">Delivery Address Ready</h4>
                     </div>
-                    <p className="text-sm text-blue-700 mb-2">
+                    <p className="text-sm text-green-700 mb-2">
                       {formData.streetAddress}
                     </p>
-                    <p className="text-xs text-blue-600">
+                    <p className="text-xs text-green-600">
                       {formData.city}, {formData.stateProvince}, {formData.country}
                     </p>
                     <p className="text-xs text-gray-500 mt-1">
@@ -1354,13 +1354,13 @@ export function CheckoutClient() {
 
           {/* Fulfillment Selection for HYBRID Shops - PROMINENT DISPLAY */}
           {shopsRequiringChoice.length > 0 && (
-            <Card className="overflow-hidden animate-slide-in-right card-animation-delay-2.5 border-2 border-blue-400 bg-gradient-to-br from-blue-50 to-blue-100/50 shadow-lg">
-              <CardHeader className="bg-gradient-to-r from-blue-200 to-blue-300 border-b-2 border-blue-400">
-                <CardTitle className="flex items-center gap-2 text-blue-900">
-                  <Package className="h-6 w-6 text-blue-700" />
+            <Card className="overflow-hidden animate-slide-in-right card-animation-delay-2.5 border-2 border-green-400 bg-gradient-to-br from-green-50 to-green-100/50 shadow-lg">
+              <CardHeader className="bg-gradient-to-r from-green-200 to-green-300 border-b-2 border-green-400">
+                <CardTitle className="flex items-center gap-2 text-green-900">
+                  <Package className="h-6 w-6 text-green-700" />
                   <span className="text-lg">Choose Delivery Method for HYBRID Shops</span>
                 </CardTitle>
-                <CardDescription className="text-blue-800 font-medium">
+                <CardDescription className="text-green-800 font-medium">
                   {shopsRequiringChoice.length === 1 
                     ? `"${shopsRequiringChoice[0].shopName}" offers both pickup and delivery. Select your preference:`
                     : `${shopsRequiringChoice.length} shops offer both pickup and delivery. Select your preference for each:`
@@ -1369,10 +1369,10 @@ export function CheckoutClient() {
               </CardHeader>
               <CardContent className="p-6 space-y-6">
                 {shopsRequiringChoice.map((shop) => (
-                  <div key={shop.shopId} className="p-5 border-2 border-blue-300 rounded-xl bg-white shadow-md">
-                    <div className="flex items-center gap-2 mb-4 pb-3 border-b border-blue-200">
+                  <div key={shop.shopId} className="p-5 border-2 border-green-300 rounded-xl bg-white shadow-md">
+                    <div className="flex items-center gap-2 mb-4 pb-3 border-b border-green-200">
                       <h4 className="font-bold text-base text-gray-900">{shop.shopName}</h4>
-                      <span className="px-2 py-1 bg-blue-200 text-blue-800 text-xs font-semibold rounded">
+                      <span className="px-2 py-1 bg-green-200 text-green-800 text-xs font-semibold rounded">
                         HYBRID SHOP
                       </span>
                     </div>
@@ -1392,8 +1392,8 @@ export function CheckoutClient() {
                         }}
                         className={`flex items-start space-x-4 p-4 border-2 rounded-lg cursor-pointer transition-all ${
                           shopFulfillmentPreferences.get(shop.shopId) === "PICKUP"
-                            ? "border-blue-500 bg-blue-50 shadow-md"
-                            : "border-gray-300 bg-gray-50 hover:border-blue-300 hover:bg-blue-50/50"
+                            ? "border-green-500 bg-green-50 shadow-md"
+                            : "border-gray-300 bg-gray-50 hover:border-green-300 hover:bg-green-50/50"
                         }`}
                       >
                         <input
@@ -1413,14 +1413,14 @@ export function CheckoutClient() {
                               }
                             }, 300);
                           }}
-                          className="mt-1 h-5 w-5 text-blue-600 focus:ring-blue-500"
+                          className="mt-1 h-5 w-5 text-green-600 focus:ring-green-500"
                         />
                         <label htmlFor={`pickup-${shop.shopId}`} className="flex-1 cursor-pointer">
                           <div className="flex items-center gap-3 mb-2">
-                            <Package className="h-5 w-5 text-blue-600" />
+                            <Package className="h-5 w-5 text-green-600" />
                             <span className="font-bold text-base text-gray-900">Pickup at Shop</span>
                             {shopFulfillmentPreferences.get(shop.shopId) === "PICKUP" && (
-                              <span className="px-2 py-1 bg-blue-100 text-blue-700 text-xs font-semibold rounded">
+                              <span className="px-2 py-1 bg-green-100 text-green-700 text-xs font-semibold rounded">
                                 SELECTED
                               </span>
                             )}
@@ -1493,16 +1493,16 @@ export function CheckoutClient() {
                     </div>
                   </div>
                 ))}
-                <div className="mt-6 p-4 bg-blue-50 border-2 border-blue-300 rounded-lg">
+                <div className="mt-6 p-4 bg-green-50 border-2 border-green-300 rounded-lg">
                   <div className="flex items-start gap-2">
-                    <div className="h-5 w-5 rounded-full bg-blue-500 flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <div className="h-5 w-5 rounded-full bg-green-500 flex items-center justify-center flex-shrink-0 mt-0.5">
                       <span className="text-white text-xs font-bold">i</span>
                     </div>
                     <div>
-                      <p className="text-sm font-semibold text-blue-900 mb-1">
+                      <p className="text-sm font-semibold text-green-900 mb-1">
                         Important Information
                       </p>
-                      <p className="text-xs text-blue-800">
+                      <p className="text-xs text-green-800">
                         After selecting your preferred delivery method, the payment summary will automatically recalculate to show the correct costs (packaging fee for pickup or shipping costs for delivery).
                       </p>
                     </div>
@@ -1521,14 +1521,14 @@ export function CheckoutClient() {
             </CardHeader>
             <CardContent className="p-6">
               <div className="space-y-4">
-                <div className="p-4 border rounded-md bg-blue-50 border-blue-200">
+                <div className="p-4 border rounded-md bg-green-50 border-green-200">
                   <div className="flex items-center gap-3">
-                    <CreditCard className="h-6 w-6 text-blue-600" />
+                    <CreditCard className="h-6 w-6 text-green-600" />
                     <div>
-                      <h3 className="font-medium text-blue-900">
+                      <h3 className="font-medium text-green-900">
                         Secure Payment
                       </h3>
-                      <p className="text-sm text-blue-700">
+                      <p className="text-sm text-green-700">
                         Your payment will be processed securely by Stripe. We
                         accept all major credit cards.
                       </p>
@@ -1561,7 +1561,7 @@ export function CheckoutClient() {
 
                 <div className="mt-4 flex items-center justify-center py-4 bg-muted/30 rounded-lg">
                   <div className="flex items-center gap-2">
-                    <LockIcon className="h-4 w-4 text-blue-600" />
+                    <LockIcon className="h-4 w-4 text-green-600" />
                     <span className="text-sm text-muted-foreground">
                       Secured by Stripe • SSL encrypted
                     </span>
@@ -1581,7 +1581,7 @@ export function CheckoutClient() {
                   Order Summary
                   <div className="flex items-center gap-2">
                     {loadingSummary && (
-                      <div className="flex items-center gap-1 text-xs text-blue-600">
+                      <div className="flex items-center gap-1 text-xs text-green-600">
                         <Loader2 className="h-3 w-3 animate-spin" />
                         Calculating...
                       </div>
@@ -1605,7 +1605,7 @@ export function CheckoutClient() {
                   {cart.items.length}{" "}
                   {cart.items.length === 1 ? "item" : "items"} in your cart
                   {paymentSummary && (
-                    <span className="block text-blue-600 text-xs mt-1">
+                    <span className="block text-green-600 text-xs mt-1">
                       ✓ Shipping & taxes calculated
                     </span>
                   )}
@@ -1614,7 +1614,7 @@ export function CheckoutClient() {
                     formData.city &&
                     formData.country &&
                     !loadingSummary && (
-                      <span className="block text-blue-600 text-xs mt-1">
+                      <span className="block text-green-600 text-xs mt-1">
                         ⚠️ Calculating shipping costs...
                       </span>
                     )}
@@ -1685,7 +1685,7 @@ export function CheckoutClient() {
                               {shop.shopCapability && (
                                 <span className={`text-xs px-2 py-0.5 rounded font-medium ${
                                   shop.shopCapability === "PICKUP_ORDERS" 
-                                    ? "bg-blue-100 text-blue-700"
+                                    ? "bg-green-100 text-green-700"
                                     : shop.shopCapability === "FULL_ECOMMERCE"
                                     ? "bg-green-100 text-green-700"
                                     : shop.shopCapability === "HYBRID"
@@ -1709,7 +1709,7 @@ export function CheckoutClient() {
                             <div className="mb-2">
                               <span className={`inline-flex items-center gap-1 px-2 py-1 rounded text-xs font-medium ${
                                 shop.fulfillmentType === "PICKUP" 
-                                  ? "bg-blue-100 text-blue-700 border border-blue-200"
+                                  ? "bg-green-100 text-green-700 border border-green-200"
                                   : "bg-green-100 text-green-700 border border-green-200"
                               }`}>
                                 {shop.fulfillmentType === "PICKUP" ? (
@@ -1736,7 +1736,7 @@ export function CheckoutClient() {
                             {shop.discountAmount > 0 && (
                               <div className="flex justify-between">
                                 <span className="text-muted-foreground">Discount</span>
-                                <span className="font-medium text-blue-600">
+                                <span className="font-medium text-green-600">
                                   -{formatPrice(shop.discountAmount)}
                                 </span>
                               </div>
@@ -1755,7 +1755,7 @@ export function CheckoutClient() {
                                 <span className="text-muted-foreground">Shipping</span>
                                 <span className="font-medium">
                                   {shop.shippingCost === 0 ? (
-                                    <span className="text-blue-600">Free</span>
+                                    <span className="text-green-600">Free</span>
                                   ) : (
                                     formatPrice(shop.shippingCost)
                                   )}
@@ -1797,7 +1797,7 @@ export function CheckoutClient() {
                             {shop.rewardPoints > 0 && (
                               <div className="flex justify-between">
                                 <span className="text-muted-foreground">Reward Points</span>
-                                <span className="font-medium text-blue-600">
+                                <span className="font-medium text-green-600">
                                   +{shop.rewardPoints} pts
                                 </span>
                               </div>
@@ -1833,7 +1833,7 @@ export function CheckoutClient() {
                       {paymentSummary && paymentSummary.discountAmount > 0 && (
                         <div className="flex justify-between">
                           <span className="text-muted-foreground">Discount</span>
-                          <span className="font-medium text-blue-600">
+                          <span className="font-medium text-green-600">
                             -{formatPrice(paymentSummary.discountAmount)}
                           </span>
                         </div>
@@ -1849,7 +1849,7 @@ export function CheckoutClient() {
                             </div>
                           ) : paymentSummary ? (
                             paymentSummary.shippingCost === 0 ? (
-                              <span className="text-blue-600">Free</span>
+                              <span className="text-green-600">Free</span>
                             ) : (
                               formatPrice(paymentSummary.shippingCost)
                             )
@@ -1860,7 +1860,7 @@ export function CheckoutClient() {
                               Enter address
                             </span>
                           ) : (
-                            <span className="text-blue-600">Free</span>
+                            <span className="text-green-600">Free</span>
                           )}
                         </span>
                       </div>
@@ -1931,7 +1931,7 @@ export function CheckoutClient() {
                       {paymentSummary && paymentSummary.rewardPoints > 0 && (
                         <div className="flex justify-between">
                           <span className="text-muted-foreground">Reward Points</span>
-                          <span className="font-medium text-blue-600">
+                          <span className="font-medium text-green-600">
                             +{paymentSummary.rewardPoints} pts
                           </span>
                         </div>
@@ -1965,8 +1965,8 @@ export function CheckoutClient() {
                   </div>
 
                   {paymentSummary && (
-                    <div className="mt-2 p-2 bg-blue-50 rounded-lg">
-                      <p className="text-xs text-blue-700">
+                    <div className="mt-2 p-2 bg-green-50 rounded-lg">
+                      <p className="text-xs text-green-700">
                         💡 Shipping calculated based on your address and item weight
                       </p>
                     </div>

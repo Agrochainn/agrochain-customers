@@ -263,6 +263,8 @@ export default function SimilarProducts({
               category={convertedProduct.category}
               brand={convertedProduct.brand}
               shortDescription={convertedProduct.shortDescription}
+              isOrganic={convertedProduct.isOrganic}
+              unit={convertedProduct.unit}
             />
           );
         })}

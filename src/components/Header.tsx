@@ -141,7 +141,7 @@ const Header = () => {
           <div className="flex items-center gap-4">
             <Link 
               href={process.env.NODE_ENV === 'production' 
-                ? 'https://shopsphere-adm.vercel.app/' 
+                ? 'https://agrochain-adm.vercel.app/' 
                 : 'http://localhost:3001'}
               className="text-muted-foreground hover:text-primary transition-colors font-medium"
               target="_blank"
@@ -181,7 +181,7 @@ const Header = () => {
               </SheetTrigger>
               <SheetContent side="left" className="w-[250px] sm:w-[300px]">
                 <SheetHeader className="mb-6">
-                  <SheetTitle>ShopSphere</SheetTitle>
+                  <SheetTitle>Agrochain</SheetTitle>
                 </SheetHeader>
                 <nav className="flex flex-col space-y-4">
                   <NavigationLink
@@ -252,7 +252,7 @@ const Header = () => {
             </Sheet>
             <Link href="/" className="flex items-center">
               <h1 className="text-xl sm:text-2xl font-bold text-primary hover:text-primary/80 transition-colors">
-                ShopSphere
+                Agrochain
               </h1>
             </Link>
 

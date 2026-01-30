@@ -43,7 +43,7 @@ const capabilityInfo = {
       "Returns are handled at the shop",
       "No delivery service available",
     ],
-    color: "bg-blue-100 text-blue-700",
+    color: "bg-green-100 text-green-700",
   },
   FULL_ECOMMERCE: {
     title: "Full E-commerce",

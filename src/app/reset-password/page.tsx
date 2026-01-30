@@ -122,7 +122,7 @@ function ResetPasswordContent() {
       <div className="flex min-h-screen items-center justify-center bg-gray-50 py-12 px-4">
         <Card className="w-full max-w-md">
           <CardContent className="flex flex-col items-center justify-center py-12">
-            <Loader2 className="h-8 w-8 animate-spin text-blue-600 mb-4" />
+            <Loader2 className="h-8 w-8 animate-spin text-green-600 mb-4" />
             <p className="text-gray-600">Verifying reset link...</p>
           </CardContent>
         </Card>
@@ -295,7 +295,7 @@ function ResetPasswordContent() {
             <div className="text-center">
               <Link
                 href="/auth/login"
-                className="text-sm text-blue-600 hover:text-blue-500"
+                className="text-sm text-green-600 hover:text-green-500"
               >
                 Back to login
               </Link>
@@ -312,7 +312,7 @@ export default function ResetPasswordPage() {
     <Suspense
       fallback={
         <div className="flex min-h-screen items-center justify-center bg-gray-50">
-          <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
+          <Loader2 className="h-8 w-8 animate-spin text-green-600" />
         </div>
       }
     >

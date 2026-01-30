@@ -67,7 +67,7 @@ function PaymentCancelContent() {
         <CardContent className="space-y-4">
           {isCleaningUp && (
             <div className="text-center py-4">
-              <div className="inline-block animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
+              <div className="inline-block animate-spin rounded-full h-6 w-6 border-b-2 border-green-600"></div>
               <p className="mt-2 text-sm text-gray-600">
                 Cleaning up your order...
               </p>
@@ -136,7 +136,7 @@ export default function PaymentCancelPage() {
         <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
           <Card className="w-full max-w-md">
             <CardContent className="text-center py-8">
-              <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+              <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-green-600"></div>
               <p className="mt-4 text-sm text-gray-600">Loading...</p>
             </CardContent>
           </Card>
