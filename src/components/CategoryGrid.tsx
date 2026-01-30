@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { formatPrice } from "@/lib/utils/priceFormatter";
 
 interface CategoryGridProps {
   categories: CategoryWithProducts[];
@@ -108,15 +109,15 @@ const CategoryCard: React.FC<CategoryCardProps> = ({ category, categoryCount }) 
                     {product.originalPrice && product.originalPrice > product.price ? (
                       <>
                         <span className="text-sm font-bold text-gray-900">
-                          ${product.price.toFixed(2)}
+                          {formatPrice(product.price)}
                         </span>
                         <span className="text-xs text-gray-500 line-through">
-                          ${product.originalPrice.toFixed(2)}
+                          {formatPrice(product.originalPrice)}
                         </span>
                       </>
                     ) : (
                       <span className="text-sm font-bold text-gray-900">
-                        ${product.price.toFixed(2)}
+                        {formatPrice(product.price)}
                       </span>
                     )}
                   </div>

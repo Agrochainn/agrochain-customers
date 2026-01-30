@@ -1,5 +1,6 @@
 import React from 'react';
 import { MapPin, ExternalLink, Navigation } from 'lucide-react';
+import { formatPrice } from "@/lib/utils/priceFormatter";
 
 interface OrderTrackingDisplayProps {
   order: {
@@ -138,7 +139,7 @@ const OrderTrackingDisplay: React.FC<OrderTrackingDisplayProps> = ({ order }) =>
         <div className="mt-6 p-4 bg-gray-50 rounded-md">
           <div className="flex justify-between items-center text-xl font-bold">
             <span>Order Total:</span>
-            <span>${order.total.toFixed(2)}</span>
+            <span>{formatPrice(order.total)}</span>
           </div>
         </div>
       </div>

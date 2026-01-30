@@ -32,6 +32,7 @@ import { OrderService, OrderResponse } from "@/lib/orderService";
 import { toast } from "sonner";
 import { format } from "date-fns";
 import Link from "next/link";
+import { formatPrice } from "@/lib/utils/priceFormatter";
 
 export default function AccountOrdersPage() {
   const router = useRouter();
@@ -85,12 +86,7 @@ export default function AccountOrdersPage() {
     }
   };
 
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: "USD",
-    }).format(amount);
-  };
+  const formatCurrency = (amount: number) => formatPrice(amount);
 
   // Show unauthorized state
   if (error === "unauthorized") {

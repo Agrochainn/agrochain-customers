@@ -42,6 +42,7 @@ import { DeliveryNotesDialog } from "@/components/orders/DeliveryNotesDialog";
 import { ShopOrderGroup } from "@/components/orders/ShopOrderGroup";
 import OrderTimeline from "@/components/OrderTimeline";
 import { orderActivitiesService } from "@/lib/services/orderActivitiesService";
+import { formatPrice } from "@/lib/utils/priceFormatter";
 
 export default function OrderDetailPage() {
   const params = useParams();
@@ -166,12 +167,7 @@ export default function OrderDetailPage() {
     }
   };
 
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: "USD",
-    }).format(amount);
-  };
+  const formatCurrency = (amount: number) => formatPrice(amount);
 
   const getDaysRemainingBadge = (item: any) => {
     if (!item.returnEligible) {

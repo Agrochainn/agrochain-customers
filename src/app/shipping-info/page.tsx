@@ -22,6 +22,7 @@ import {
   Zap,
 } from "lucide-react";
 import Link from "next/link";
+import { formatPrice } from "@/lib/utils/priceFormatter";
 
 export default function ShippingInfoPage() {
   return (
@@ -64,15 +65,15 @@ export default function ShippingInfoPage() {
                 <h3 className="font-semibold mb-4">Standard Shipping Rates</h3>
                 <div className="space-y-3">
                   <div className="flex justify-between items-center p-3 border rounded-md">
-                    <span className="text-sm">Orders under $25</span>
-                    <Badge variant="secondary">$4.99</Badge>
+                    <span className="text-sm">Orders under {formatPrice(25)}</span>
+                    <Badge variant="secondary">{formatPrice(4.99)}</Badge>
                   </div>
                   <div className="flex justify-between items-center p-3 border rounded-md">
-                    <span className="text-sm">Orders $25 - $50</span>
-                    <Badge variant="secondary">$2.99</Badge>
+                    <span className="text-sm">Orders {formatPrice(25)} - {formatPrice(50)}</span>
+                    <Badge variant="secondary">{formatPrice(2.99)}</Badge>
                   </div>
                   <div className="flex justify-between items-center p-3 border rounded-md bg-green-50">
-                    <span className="text-sm">Orders over $50</span>
+                    <span className="text-sm">Orders over {formatPrice(50)}</span>
                     <Badge variant="default" className="bg-green-500">
                       FREE
                     </Badge>
@@ -85,15 +86,15 @@ export default function ShippingInfoPage() {
                 <div className="space-y-3">
                   <div className="flex justify-between items-center p-3 border rounded-md">
                     <span className="text-sm">Next Day Delivery</span>
-                    <Badge variant="secondary">$9.99</Badge>
+                    <Badge variant="secondary">{formatPrice(9.99)}</Badge>
                   </div>
                   <div className="flex justify-between items-center p-3 border rounded-md">
                     <span className="text-sm">2-Day Delivery</span>
-                    <Badge variant="secondary">$6.99</Badge>
+                    <Badge variant="secondary">{formatPrice(6.99)}</Badge>
                   </div>
                   <div className="flex justify-between items-center p-3 border rounded-md">
                     <span className="text-sm">Same Day Delivery</span>
-                    <Badge variant="destructive">$19.99</Badge>
+                    <Badge variant="destructive">{formatPrice(19.99)}</Badge>
                   </div>
                 </div>
               </div>
@@ -271,15 +272,15 @@ export default function ShippingInfoPage() {
                 <div className="space-y-2">
                   <div className="flex justify-between items-center">
                     <span className="text-sm">Oversized items</span>
-                    <span className="text-sm font-medium">+$5.00</span>
+                    <span className="text-sm font-medium">+{formatPrice(5)}</span>
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-sm">Fragile items</span>
-                    <span className="text-sm font-medium">+$3.00</span>
+                    <span className="text-sm font-medium">+{formatPrice(3)}</span>
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-sm">Signature required</span>
-                    <span className="text-sm font-medium">+$2.00</span>
+                    <span className="text-sm font-medium">+{formatPrice(2)}</span>
                   </div>
                 </div>
               </div>
@@ -289,11 +290,11 @@ export default function ShippingInfoPage() {
                 <div className="space-y-2">
                   <div className="flex justify-between items-center">
                     <span className="text-sm">Remote areas</span>
-                    <span className="text-sm font-medium">+$7.99</span>
+                    <span className="text-sm font-medium">+{formatPrice(7.99)}</span>
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-sm">PO Box delivery</span>
-                    <span className="text-sm font-medium">+$2.50</span>
+                    <span className="text-sm font-medium">+{formatPrice(2.5)}</span>
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-sm">International</span>
@@ -323,26 +324,26 @@ export default function ShippingInfoPage() {
               <div className="space-y-3">
                 <div className="flex justify-between items-center">
                   <span className="text-sm">Subtotal (Items)</span>
-                  <span className="text-sm font-medium">$45.00</span>
+                  <span className="text-sm font-medium">{formatPrice(45)}</span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-sm">Discount Applied</span>
                   <span className="text-sm font-medium text-green-600">
-                    -$5.00
+                    -{formatPrice(5)}
                   </span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-sm">Shipping (Standard)</span>
-                  <span className="text-sm font-medium">$2.99</span>
+                  <span className="text-sm font-medium">{formatPrice(2.99)}</span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-sm">Tax (8.5%)</span>
-                  <span className="text-sm font-medium">$3.40</span>
+                  <span className="text-sm font-medium">{formatPrice(3.4)}</span>
                 </div>
                 <div className="border-t pt-3">
                   <div className="flex justify-between items-center">
                     <span className="font-semibold">Total</span>
-                    <span className="font-bold text-lg">$46.39</span>
+                    <span className="font-bold text-lg">{formatPrice(46.39)}</span>
                   </div>
                 </div>
               </div>
@@ -351,8 +352,8 @@ export default function ShippingInfoPage() {
             <div className="mt-4 p-4 bg-green-50 rounded-md">
               <h4 className="font-semibold text-green-900 mb-2">💡 Pro Tip</h4>
               <p className="text-sm text-green-800">
-                Add items worth $5 more to your cart to qualify for free
-                shipping and save $2.99!
+                Add items worth {formatPrice(5)} more to your cart to qualify for free
+                shipping and save {formatPrice(2.99)}!
               </p>
             </div>
           </CardContent>

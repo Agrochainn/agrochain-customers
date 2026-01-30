@@ -29,6 +29,7 @@ import { Separator } from "@/components/ui/separator";
 import { format } from "date-fns";
 import QRCode from "qrcode";
 import { toast } from "sonner";
+import { formatPrice } from "@/lib/utils/priceFormatter";
 
 interface ShopOrderGroupProps {
   shopOrder: ShopOrderGroupType;
@@ -98,12 +99,7 @@ export const ShopOrderGroup: React.FC<ShopOrderGroupProps> = ({
     }
   };
 
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: "USD",
-    }).format(amount);
-  };
+  const formatCurrency = (amount: number) => formatPrice(amount);
 
   const getCapabilityBadge = (capability?: string) => {
     console.log("Shop Capability", capability);

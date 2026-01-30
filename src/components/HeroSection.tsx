@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Zap, Shield, Truck } from "lucide-react";
 import { heroBanner } from "@/assets";
+import { formatPrice } from "@/lib/utils/priceFormatter";
 
 const HeroSection = () => {
   return (
@@ -42,7 +43,7 @@ const HeroSection = () => {
               <div className="text-center">
                 <Truck className="h-8 w-8 mx-auto mb-2 text-accent" />
                 <p className="text-sm font-medium">Free Shipping</p>
-                <p className="text-xs text-white/80">On orders $50+</p>
+                <p className="text-xs text-white/80">On orders {formatPrice(50)}+</p>
               </div>
               <div className="text-center">
                 <Shield className="h-8 w-8 mx-auto mb-2 text-accent" />

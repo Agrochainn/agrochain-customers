@@ -1,4 +1,5 @@
 import { API_BASE_URL, getAuthHeaders } from "../api";
+import { CURRENCY_CODE, CURRENCY_LOCALE } from "@/lib/constants/currency";
 
 export interface ExpectedRefund {
   paymentMethod: string;
@@ -420,12 +421,12 @@ export class ReturnService {
   }
 
   /**
-   * Format currency
+   * Format currency using app currency (see lib/constants/currency.ts).
    */
   static formatCurrency(amount: number): string {
-    return new Intl.NumberFormat("en-US", {
+    return new Intl.NumberFormat(CURRENCY_LOCALE, {
       style: "currency",
-      currency: "USD",
+      currency: CURRENCY_CODE,
     }).format(amount);
   }
 
