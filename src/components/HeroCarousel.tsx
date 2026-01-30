@@ -8,7 +8,7 @@ import Link from "next/link";
 
 interface CarouselItem {
   id: string;
-  type: "category" | "brand" | "discount";
+  type: "hero" | "category" | "brand" | "discount";
   title: string;
   subtitle?: string;
   image: string;
@@ -38,6 +38,16 @@ const HeroCarousel = ({ landingData }: HeroCarouselProps) => {
 
   useEffect(() => {
     const items: CarouselItem[] = [];
+
+    // Add main hero slide with agricultural theme as the first slide
+    items.push({
+      id: "hero-main",
+      type: "hero",
+      title: "Fresh from Farm to Your Doorstep",
+      subtitle: "Discover premium organic produce, fresh vegetables, and farm-fresh products delivered directly to you",
+      image: "/hero.png",
+      link: "/shop",
+    });
 
     // Add featured categories (limit to 4)
     const featuredCategories = landingData.featuredCategories || [];
@@ -103,21 +113,52 @@ const HeroCarousel = ({ landingData }: HeroCarouselProps) => {
 
   if (carouselItems.length === 0) {
     return (
-      <section className="relative bg-gradient-to-r from-green-600 to-green-800 text-white h-96">
-        <div className="container mx-auto px-4 py-16 flex items-center justify-center">
-          <div className="text-center">
-            <h1 className="text-4xl font-bold mb-4">Welcome to Agrochain</h1>
-            <p className="text-xl text-white/90 mb-8">
-              Discover amazing products and deals
+      <section className="relative bg-gradient-to-r from-green-600 to-green-800 text-white h-[500px] md:h-[600px] overflow-hidden">
+        {/* Background Image */}
+        <div
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+          style={{
+            backgroundImage: `url(/hero.png)`,
+            filter: "brightness(0.5)",
+          }}
+        />
+        
+        {/* Overlay */}
+        <div className="absolute inset-0 bg-gradient-to-r from-green-900/70 to-green-800/50" />
+        
+        <div className="relative container mx-auto px-4 py-16 h-full flex items-center justify-center">
+          <div className="text-center max-w-4xl">
+            <div className="flex items-center justify-center gap-2 mb-4">
+              <div className="flex items-center gap-1 bg-yellow-500 text-yellow-900 px-4 py-2 rounded-full text-sm font-semibold">
+                <Star className="h-4 w-4" />
+                Farm Fresh & Organic
+              </div>
+            </div>
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-4 leading-tight">
+              Fresh from Farm to Your Doorstep
+            </h1>
+            <p className="text-xl md:text-2xl text-white/90 mb-8 max-w-2xl mx-auto">
+              Discover premium organic produce, fresh vegetables, and farm-fresh products delivered directly to you
             </p>
-            <Link href="/shop">
-              <Button
-                size="lg"
-                className="bg-yellow-500 hover:bg-yellow-600 text-yellow-900 font-semibold px-8 py-3 text-lg"
-              >
-                Start Shopping
-              </Button>
-            </Link>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Link href="/shop">
+                <Button
+                  size="lg"
+                  className="bg-yellow-500 hover:bg-yellow-600 text-yellow-900 font-semibold px-8 py-3 text-lg shadow-lg hover:shadow-xl transition-all"
+                >
+                  Shop Fresh Produce
+                </Button>
+              </Link>
+              <Link href="/shop">
+                <Button
+                  size="lg"
+                  variant="outline"
+                  className="border-2 border-white text-white hover:bg-white/10 font-semibold px-8 py-3 text-lg backdrop-blur-sm"
+                >
+                  Browse All Products
+                </Button>
+              </Link>
+            </div>
           </div>
         </div>
       </section>
@@ -127,18 +168,18 @@ const HeroCarousel = ({ landingData }: HeroCarouselProps) => {
   const currentItem = carouselItems[currentIndex];
 
   return (
-    <section className="relative bg-gradient-to-r from-green-600 to-green-800 text-white h-96 overflow-hidden">
-      {/* Background Image */}
+    <section className="relative bg-gradient-to-r from-green-600 to-green-800 text-white h-[500px] md:h-[600px] overflow-hidden">
+      {/* Background Image - Always use hero.png for all slides */}
       <div
         className="absolute inset-0 bg-cover bg-center bg-no-repeat transition-all duration-1000 ease-in-out"
         style={{
-          backgroundImage: `url(${currentItem?.image})`,
-          filter: "brightness(0.4)",
+          backgroundImage: `url(/hero.png)`,
+          filter: "brightness(0.5)",
         }}
       />
 
       {/* Overlay */}
-      <div className="absolute inset-0 bg-gradient-to-r from-green-900/80 to-green-800/60" />
+      <div className="absolute inset-0 bg-gradient-to-r from-green-900/70 to-green-800/50" />
 
       {/* Content */}
       <div className="relative container mx-auto px-4 py-16 h-full flex items-center">
@@ -146,6 +187,12 @@ const HeroCarousel = ({ landingData }: HeroCarouselProps) => {
           <div className="space-y-6">
             <div className="space-y-4">
               <div className="flex items-center justify-center gap-2">
+                {currentItem?.type === "hero" && (
+                  <div className="flex items-center gap-1 bg-yellow-500 text-yellow-900 px-4 py-2 rounded-full text-sm font-semibold">
+                    <Star className="h-4 w-4" />
+                    Farm Fresh & Organic
+                  </div>
+                )}
                 {currentItem?.type === "brand" && currentItem.isTopSelling && (
                   <div className="flex items-center gap-1 bg-yellow-500 text-yellow-900 px-3 py-1 rounded-full text-sm font-semibold">
                     <TrendingUp className="h-4 w-4" />
@@ -179,18 +226,18 @@ const HeroCarousel = ({ landingData }: HeroCarouselProps) => {
               <Link href={currentItem?.link || "/shop"}>
                 <Button
                   size="lg"
-                  className="bg-yellow-500 hover:bg-yellow-600 text-yellow-900 font-semibold px-8 py-3 text-lg"
+                  className="bg-yellow-500 hover:bg-yellow-600 text-yellow-900 font-semibold px-8 py-3 text-lg shadow-lg hover:shadow-xl transition-all"
                 >
-                  Explore Now
+                  {currentItem?.type === "hero" ? "Shop Fresh Produce" : "Explore Now"}
                 </Button>
               </Link>
               <Link href="/shop">
                 <Button
                   size="lg"
                   variant="outline"
-                  className="border-white text-green-500 font-semibold px-8 py-3 text-lg"
+                  className="border-2 border-white text-white bg-white/10 font-semibold px-8 py-3 text-lg backdrop-blur-sm"
                 >
-                  Shop All
+                  {currentItem?.type === "hero" ? "Browse All Products" : "Shop All"}
                 </Button>
               </Link>
             </div>
