@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useParams, useSearchParams, useRouter } from "next/navigation";
 import {
   ArrowLeft,
@@ -43,8 +43,9 @@ import { ShopOrderGroup } from "@/components/orders/ShopOrderGroup";
 import OrderTimeline from "@/components/OrderTimeline";
 import { orderActivitiesService } from "@/lib/services/orderActivitiesService";
 import { formatPrice } from "@/lib/utils/priceFormatter";
+import { Loader2 } from "lucide-react";
 
-export default function OrderDetailPage() {
+function OrderDetailPageContent() {
   const params = useParams();
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -616,5 +617,19 @@ export default function OrderDetailPage() {
         </>
       )}
     </div>
+  );
+}
+
+export default function OrderDetailPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="container mx-auto flex min-h-[50vh] items-center justify-center px-4 py-16">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        </div>
+      }
+    >
+      <OrderDetailPageContent />
+    </Suspense>
   );
 }

@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
+import { Loader2 } from "lucide-react";
 import Link from "next/link";
 import {
   ArrowLeft,
@@ -33,7 +34,7 @@ interface AppealFormData {
   mediaFiles: File[];
 }
 
-export default function AppealPage() {
+function AppealPageContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const [returnRequest, setReturnRequest] = useState<ReturnRequest | null>(
@@ -573,5 +574,19 @@ export default function AppealPage() {
         </Card>
       </div>
     </div>
+  );
+}
+
+export default function AppealPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="container mx-auto flex min-h-[50vh] items-center justify-center px-4 py-16">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        </div>
+      }
+    >
+      <AppealPageContent />
+    </Suspense>
   );
 }

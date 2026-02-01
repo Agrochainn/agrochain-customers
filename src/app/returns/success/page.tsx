@@ -1,7 +1,8 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { Loader2 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -18,7 +19,7 @@ import {
 import { ReturnService, ReturnRequest } from "@/lib/services/returnService";
 import { toast } from "sonner";
 
-export default function ReturnSuccessPage() {
+function ReturnSuccessPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const requestId = searchParams.get("requestId");
@@ -337,5 +338,19 @@ export default function ReturnSuccessPage() {
         </Button>
       </div>
     </div>
+  );
+}
+
+export default function ReturnSuccessPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="container mx-auto flex min-h-[50vh] items-center justify-center px-4 py-16">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        </div>
+      }
+    >
+      <ReturnSuccessPageContent />
+    </Suspense>
   );
 }
