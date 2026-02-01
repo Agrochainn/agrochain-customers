@@ -1,27 +1,28 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
-import { 
-  Package, 
-  Calendar, 
-  Eye, 
-  AlertCircle, 
-  CheckCircle, 
-  Clock, 
+import {
+  Package,
+  Calendar,
+  Eye,
+  AlertCircle,
+  CheckCircle,
+  Clock,
   Truck,
   Search,
-  Mail
+  Mail,
+  Loader2,
 } from 'lucide-react';
 import { toast } from 'sonner';
-import { 
-  OrderService, 
-  OrderSummary, 
-  OrderTrackingRequest, 
-  OrderListResponse 
+import {
+  OrderService,
+  OrderSummary,
+  OrderTrackingRequest,
+  OrderListResponse
 } from '@/lib/orderService';
 
-const TrackOrderPage: React.FC = () => {
+function TrackOrderPageContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   
@@ -350,6 +351,18 @@ const TrackOrderPage: React.FC = () => {
       </div>
     </div>
   );
-};
+}
 
-export default TrackOrderPage;
+export default function TrackOrderPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="container mx-auto flex min-h-[50vh] items-center justify-center px-4 py-16">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        </div>
+      }
+    >
+      <TrackOrderPageContent />
+    </Suspense>
+  );
+}

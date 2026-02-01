@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -23,6 +23,7 @@ import {
   AlertCircle,
   CheckCircle,
   XCircle,
+  Loader2,
 } from "lucide-react";
 import { OrderDetails, OrderItem, ReturnItem } from "@/types/return";
 import { ReturnService } from "@/services/returnService";
@@ -33,7 +34,7 @@ interface SelectedItem {
   itemReason: string;
 }
 
-export default function ReturnRequestPage() {
+function ReturnRequestPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -823,5 +824,19 @@ export default function ReturnRequestPage() {
         </Button>
       </div>
     </div>
+  );
+}
+
+export default function ReturnRequestPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="container mx-auto flex min-h-[50vh] items-center justify-center px-4 py-16">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        </div>
+      }
+    >
+      <ReturnRequestPageContent />
+    </Suspense>
   );
 }

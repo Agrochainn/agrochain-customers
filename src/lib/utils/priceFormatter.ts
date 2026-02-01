@@ -1,3 +1,15 @@
+import { CURRENCY_CODE, CURRENCY_SYMBOL, CURRENCY_LOCALE } from "@/lib/constants/currency";
+
+/**
+ * Format a number as currency using the app's global currency (Intl).
+ */
+export function formatCurrency(amount: number): string {
+  return new Intl.NumberFormat(CURRENCY_LOCALE, {
+    style: "currency",
+    currency: CURRENCY_CODE,
+  }).format(amount);
+}
+
 export interface PriceFormatOptions {
   currency?: string;
   showCurrency?: boolean;
@@ -18,7 +30,7 @@ export const formatPrice = (
   options: PriceFormatOptions = {}
 ): string => {
   const {
-    currency = "$",
+    currency = CURRENCY_SYMBOL,
     showCurrency = true,
     minimumFractionDigits = 0,
     maximumFractionDigits = 2,
@@ -44,7 +56,7 @@ export const formatPrice = (
   }
 
   // Format the number with commas
-  const formattedNumber = numericPrice.toLocaleString("en-US", {
+  const formattedNumber = numericPrice.toLocaleString(CURRENCY_LOCALE, {
     minimumFractionDigits,
     maximumFractionDigits,
   });

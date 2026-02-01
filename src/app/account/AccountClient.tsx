@@ -22,6 +22,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
+import { formatPrice } from "@/lib/utils/priceFormatter";
 import {
   Card,
   CardContent,
@@ -30,6 +31,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { formatPrice } from "@/lib/utils/priceFormatter";
 import {
   Table,
   TableBody,
@@ -154,13 +156,6 @@ export function AccountClient() {
       month: "long",
       day: "numeric"
     });
-  };
-  
-  const formatPrice = (price: number) => {
-    return new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: "USD"
-    }).format(price);
   };
   
   const handleLogout = () => {

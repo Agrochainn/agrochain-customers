@@ -49,6 +49,7 @@ import { DeliveryNotesDialog } from "@/components/orders/DeliveryNotesDialog";
 import { ShopOrderGroup } from "@/components/orders/ShopOrderGroup";
 import OrderTimeline from "@/components/OrderTimeline";
 import { orderActivitiesService } from "@/lib/services/orderActivitiesService";
+import { formatPrice } from "@/lib/utils/priceFormatter";
 
 export default function AccountOrderDetailsPage() {
   const params = useParams();
@@ -214,12 +215,7 @@ export default function AccountOrderDetailsPage() {
     });
   };
 
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: "USD",
-    }).format(amount);
-  };
+  const formatCurrency = (amount: number) => formatPrice(amount);
 
   const allItems: OrderItemResponse[] =
     order?.shopOrders?.flatMap((so) => so.items) || [];

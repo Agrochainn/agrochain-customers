@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useParams, useSearchParams, useRouter } from "next/navigation";
+import { Loader2 } from "lucide-react";
 import {
   ArrowLeft,
   Package,
@@ -31,7 +32,7 @@ import { Separator } from "@/components/ui/separator";
 import { toast } from "sonner";
 import { ReturnService, ReturnRequest } from "@/lib/services/returnService";
 
-export default function OrderReturnRequestsPage() {
+function OrderReturnRequestsPageContent() {
   const params = useParams();
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -574,5 +575,19 @@ export default function OrderReturnRequestsPage() {
         )}
       </div>
     </div>
+  );
+}
+
+export default function OrderReturnRequestsPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="container mx-auto flex min-h-[50vh] items-center justify-center px-4 py-16">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        </div>
+      }
+    >
+      <OrderReturnRequestsPageContent />
+    </Suspense>
   );
 }

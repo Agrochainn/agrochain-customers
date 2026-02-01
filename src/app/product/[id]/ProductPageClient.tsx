@@ -21,6 +21,9 @@ import {
   Heart,
   AlertCircle,
   Info,
+  MapPin,
+  Phone,
+  Mail,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import ProductCard from "@/components/ProductCard";
@@ -351,7 +354,6 @@ export function ProductPageClient({ productId }: { productId: string }) {
         title: "Cannot Add to Cart",
         description: "This product is from a shop that only displays products and does not accept orders. Please contact the shop directly for inquiries.",
         variant: "destructive",
-        duration: 6000,
       });
       return;
     }
@@ -447,7 +449,6 @@ export function ProductPageClient({ productId }: { productId: string }) {
         title: "Cannot Add to Cart",
         description: "This product is from a shop that only displays products and does not accept orders. Please contact the shop directly for inquiries.",
         variant: "destructive",
-        duration: 6000,
       });
       return;
     }
@@ -913,26 +914,28 @@ export function ProductPageClient({ productId }: { productId: string }) {
                       })()}
                     </>
                   ) : (
-                    // Show product price with discount info
+                    // Show product price with discount only when backend sends a real sale (salePrice > 0 and < basePrice)
                     <>
-                      {product.salePrice &&
-                        product.salePrice < product.basePrice &&
-                        product.basePrice && (
+                      {(() => {
+                        const base = product.basePrice ?? 0;
+                        const sale = product.salePrice ?? 0;
+                        const hasDiscount = base > 0 && sale > 0 && sale < base;
+                        return hasDiscount ? (
                           <span className="text-xl text-muted-foreground line-through">
-                            {formatPriceUtil(product.basePrice, product.unit?.symbol ? { unit: product.unit.symbol } : {})}
+                            {formatPriceUtil(base, product.unit?.symbol ? { unit: product.unit.symbol } : {})}
                           </span>
-                        )}
-                      {product.salePrice &&
-                        product.salePrice < product.basePrice && (
+                        ) : null;
+                      })()}
+                      {(() => {
+                        const base = product.basePrice ?? 0;
+                        const sale = product.salePrice ?? 0;
+                        const hasDiscount = base > 0 && sale > 0 && sale < base;
+                        return hasDiscount ? (
                           <Badge variant="destructive" className="ml-2">
-                            {Math.round(
-                              ((product.basePrice - product.salePrice) /
-                                product.basePrice) *
-                                100
-                            )}
-                            % OFF
+                            {Math.round(((base - sale) / base) * 100)}% OFF
                           </Badge>
-                        )}
+                        ) : null;
+                      })()}
                     </>
                   )}
                 </div>
@@ -1257,19 +1260,19 @@ export function ProductPageClient({ productId }: { productId: string }) {
                         </h3>
                         {product.shopEmail && (
                           <p className="text-sm text-muted-foreground flex items-center gap-1">
-                            <span>📧</span>
+                            <span><Mail className="h-4 w-4" /></span>
                             <span>{product.shopEmail}</span>
                           </p>
                         )}
                         {product.shopPhone && (
                           <p className="text-sm text-muted-foreground flex items-center gap-1">
-                            <span>📞</span>
+                            <span><Phone className="h-4 w-4" /></span>
                             <span>{product.shopPhone}</span>
                           </p>
                         )}
                         {product.shopAddress && (
                           <p className="text-sm text-muted-foreground flex items-center gap-1">
-                            <span>📍</span>
+                            <span><MapPin className="h-4 w-4" /></span>
                             <span>{product.shopAddress}</span>
                           </p>
                         )}

@@ -20,6 +20,7 @@ import {
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { rewardSystemService } from "@/lib/rewardSystemService";
+import { formatPrice } from "@/lib/utils/priceFormatter";
 import { GiveFeedbackDialog } from "@/components/GiveFeedbackDialog";
 
 const Footer = () => {
@@ -150,7 +151,7 @@ const Footer = () => {
               <Truck className="h-8 w-8 text-primary" />
               <div className="text-left">
                 <p className="font-semibold">Free Shipping</p>
-                <p className="text-sm text-muted-foreground">On orders over $50</p>
+                <p className="text-sm text-muted-foreground">On orders over {formatPrice(50)}</p>
               </div>
             </div>
             <div className="flex items-center justify-center gap-3">

@@ -26,6 +26,7 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { FilterService, FilterOptions, FilterError } from "@/lib/filterService";
 import { discountService, DiscountInfo } from "@/lib/discountService";
 import CountdownTimer from "@/components/CountdownTimer";
+import { formatPrice } from "@/lib/utils/priceFormatter";
 
 interface ProductFiltersProps {
   filters: any;
@@ -833,7 +834,7 @@ const ProductFilters = ({
               )}
               {(filters.priceRange[0] > 0 || filters.priceRange[1] < 1000) && (
                 <Badge key="price" variant="secondary" className="text-xs">
-                  ${filters.priceRange[0]} - ${filters.priceRange[1]}
+                  {formatPrice(filters.priceRange[0])} - {formatPrice(filters.priceRange[1])}
                   <X
                     className="ml-1 h-3 w-3 cursor-pointer"
                     onClick={() => updateFilters("priceRange", [0, 1000])}
@@ -875,9 +876,9 @@ const ProductFilters = ({
             className="w-full"
           />
           <div className="flex items-center justify-between text-sm text-muted-foreground">
-            <span>${(localPriceRange || [0, 1000])[0]}</span>
+            <span>{formatPrice((localPriceRange || [0, 1000])[0])}</span>
             <span>
-              ${(localPriceRange || [0, 1000])[1]}
+              {formatPrice((localPriceRange || [0, 1000])[1])}
               {(localPriceRange || [0, 1000])[1] === 1000 && "+"}
             </span>
           </div>
