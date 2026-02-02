@@ -37,7 +37,7 @@ export default function RegisterForm() {
   const dispatch = useAppDispatch();
   const router = useRouter();
   const { isLoading, error, signupResponse } = useAppSelector(
-    (state) => state.auth
+    (state) => state.auth,
   );
 
   useEffect(() => {
@@ -274,7 +274,7 @@ export default function RegisterForm() {
                   )}
                 </Button>
               </div>
-              {validationErrors.confirmPassword && ( 
+              {validationErrors.confirmPassword && (
                 <p className="text-sm text-red-600">
                   {validationErrors.confirmPassword}
                 </p>
@@ -282,7 +282,9 @@ export default function RegisterForm() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="phoneNumber">Phone Number *</Label>
+              <Label htmlFor="phoneNumber">
+                Phone Number (e.g., +1234567890) *
+              </Label>
               <Input
                 id="phoneNumber"
                 name="phoneNumber"
