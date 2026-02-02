@@ -10,7 +10,10 @@ import {
   Settings,
   Heart,
   MessageSquare,
+  Globe,
 } from "lucide-react";
+import { useTranslation } from "react-i18next";
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { Button } from "@/components/ui/button";
 import { SearchBarWithSuggestions } from "@/components/SearchBarWithSuggestions";
 import { Input } from "@/components/ui/input";
@@ -44,11 +47,13 @@ import { DeliveryStatus } from "@/components/DeliveryStatus";
 import { GiveFeedbackDialog } from "@/components/GiveFeedbackDialog";
 
 const Header = () => {
+  const { t } = useTranslation();
   const router = useRouter();
-  const { navigateWithReload, navigateToAuthRoute, createClickHandler } = useEnhancedNavigation();
+  const { navigateWithReload, navigateToAuthRoute, createClickHandler } =
+    useEnhancedNavigation();
   const dispatch = useAppDispatch();
   const { user, isAuthenticated, isLoading } = useAppSelector(
-    (state) => state.auth
+    (state) => state.auth,
   );
 
   const [searchTerm, setSearchTerm] = useState("");
@@ -139,33 +144,36 @@ const Header = () => {
       <div className="container mx-auto px-4">
         <div className="hidden sm:flex items-center justify-between py-2 text-sm border-b">
           <div className="flex items-center gap-4">
-            <Link 
-              href={process.env.NODE_ENV === 'production' 
-                ? 'https://agrochain-adm.vercel.app/' 
-                : 'http://localhost:3001'}
+            <Link
+              href={
+                process.env.NODE_ENV === "production"
+                  ? "https://agrochain-adm.vercel.app/"
+                  : "http://localhost:3001"
+              }
               className="text-muted-foreground hover:text-primary transition-colors font-medium"
               target="_blank"
               rel="noopener noreferrer"
             >
-              Create Your Own Shop
+              {t("header.createShop")}
             </Link>
           </div>
           <div className="flex items-center gap-4">
             <DeliveryStatus />
-            <span className="text-muted-foreground">Help</span>
+            <LanguageSwitcher />
+            <span className="text-muted-foreground">{t("header.help")}</span>
             <button
               type="button"
               onClick={() => setFeedbackOpen(true)}
               className="text-muted-foreground hover:text-primary transition-colors flex items-center gap-1"
             >
               <MessageSquare className="h-4 w-4" />
-              Give Feedback
+              {t("header.giveFeedback")}
             </button>
             <NavigationLink
               href="/track-order"
               className="text-muted-foreground hover:text-primary transition-colors"
             >
-              Track Order
+              {t("header.trackOrder")}
             </NavigationLink>
           </div>
         </div>
@@ -188,25 +196,25 @@ const Header = () => {
                     href="/"
                     className="text-lg font-medium px-2 py-1 hover:text-primary transition-colors"
                   >
-                    Home
+                    {t("header.home")}
                   </NavigationLink>
                   <NavigationLink
                     href="/shop"
                     className="text-lg font-medium px-2 py-1 hover:text-primary transition-colors"
                   >
-                    Shop
+                    {t("header.shop")}
                   </NavigationLink>
                   <NavigationLink
                     href="/stores"
                     className="text-lg font-medium px-2 py-1 hover:text-primary transition-colors"
                   >
-                    Stores
+                    {t("header.stores")}
                   </NavigationLink>
                   <NavigationLink
                     href="/track-order"
                     className="text-lg font-medium px-2 py-1 hover:text-primary transition-colors"
                   >
-                    Track Order
+                    {t("header.trackOrder")}
                   </NavigationLink>
                   {isAuthenticated ? (
                     <>
@@ -214,19 +222,19 @@ const Header = () => {
                         href="/account"
                         className="text-lg font-medium px-2 py-1 hover:text-primary transition-colors"
                       >
-                        My Account
+                        {t("header.myAccount")}
                       </AuthLink>
                       <AuthLink
                         href="/wishlist"
                         className="text-lg font-medium px-2 py-1 hover:text-primary transition-colors"
                       >
-                        Wishlist
+                        {t("header.wishlist")}
                       </AuthLink>
                       <button
                         onClick={handleLogout}
                         className="text-lg font-medium px-2 py-1 hover:text-primary transition-colors text-left"
                       >
-                        Logout
+                        {t("header.logout")}
                       </button>
                     </>
                   ) : (
@@ -236,14 +244,14 @@ const Header = () => {
                         forceReload={true}
                         className="text-lg font-medium px-2 py-1 hover:text-primary transition-colors"
                       >
-                        Sign In
+                        {t("header.signIn")}
                       </NavigationLink>
                       <NavigationLink
                         href="/auth/register"
                         forceReload={true}
                         className="text-lg font-medium px-2 py-1 hover:text-primary transition-colors"
                       >
-                        Sign Up
+                        {t("header.signUp")}
                       </NavigationLink>
                     </>
                   )}
@@ -262,19 +270,19 @@ const Header = () => {
                 href="/"
                 className="text-sm font-medium hover:text-primary transition-colors"
               >
-                Home
+                {t("header.home")}
               </NavigationLink>
               <NavigationLink
                 href="/shop"
                 className="text-sm font-medium hover:text-primary transition-colors"
               >
-                Shop
+                {t("header.shop")}
               </NavigationLink>
               <NavigationLink
                 href="/stores"
                 className="text-sm font-medium hover:text-primary transition-colors"
               >
-                Stores
+                {t("header.stores")}
               </NavigationLink>
             </nav>
           </div>
@@ -285,7 +293,7 @@ const Header = () => {
               value={searchTerm}
               onChange={setSearchTerm}
               onSubmit={(e, term) => handleSearch(e, term)}
-              placeholder="Search products..."
+              placeholder={t("header.searchPlaceholder")}
               className="w-full"
             />
           </div>
@@ -341,24 +349,34 @@ const Header = () => {
                     </div>
                   </DropdownMenuLabel>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={createClickHandler("/account", { forceReload: true })}>
+                  <DropdownMenuItem
+                    onClick={createClickHandler("/account", {
+                      forceReload: true,
+                    })}
+                  >
                     <User className="mr-2 h-4 w-4" />
-                    <span>My Account</span>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={createClickHandler("/wishlist", { forceReload: true })}>
-                    <Heart className="mr-2 h-4 w-4" />
-                    <span>Wishlist</span>
+                    <span>{t("header.myAccount")}</span>
                   </DropdownMenuItem>
                   <DropdownMenuItem
-                    onClick={createClickHandler("/account/settings", { forceReload: true })}
+                    onClick={createClickHandler("/wishlist", {
+                      forceReload: true,
+                    })}
+                  >
+                    <Heart className="mr-2 h-4 w-4" />
+                    <span>{t("header.wishlist")}</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    onClick={createClickHandler("/account/settings", {
+                      forceReload: true,
+                    })}
                   >
                     <Settings className="mr-2 h-4 w-4" />
-                    <span>Settings</span>
+                    <span>{t("header.settings")}</span>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={handleLogout}>
                     <LogOut className="mr-2 h-4 w-4" />
-                    <span>Log out</span>
+                    <span>{t("header.logout")}</span>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -368,16 +386,20 @@ const Header = () => {
                   variant="ghost"
                   size="sm"
                   className="hidden sm:flex"
-                  onClick={createClickHandler("/auth/login", { forceReload: true })}
+                  onClick={createClickHandler("/auth/login", {
+                    forceReload: true,
+                  })}
                 >
-                  Sign In
+                  {t("header.signIn")}
                 </Button>
                 <Button
                   size="sm"
                   className="text-xs hidden sm:flex sm:text-sm px-2 sm:px-4"
-                  onClick={createClickHandler("/auth/register", { forceReload: true })}
+                  onClick={createClickHandler("/auth/register", {
+                    forceReload: true,
+                  })}
                 >
-                  Sign Up
+                  {t("header.signUp")}
                 </Button>
               </div>
             )}
@@ -391,19 +413,19 @@ const Header = () => {
               href="/"
               className="text-xs font-medium text-center hover:text-primary transition-colors"
             >
-              Home
+              {t("header.home")}
             </NavigationLink>
             <NavigationLink
               href="/shop"
               className="text-xs font-medium text-center hover:text-primary transition-colors"
             >
-              Shop
+              {t("header.shop")}
             </NavigationLink>
             <NavigationLink
               href="/stores"
               className="text-xs font-medium text-center hover:text-primary transition-colors"
             >
-              Stores
+              {t("header.stores")}
             </NavigationLink>
           </div>
 
@@ -413,13 +435,20 @@ const Header = () => {
               value={searchTerm}
               onChange={setSearchTerm}
               onSubmit={(e, term) => handleSearch(e, term)}
-              placeholder="Search products..."
+              placeholder={t("header.searchPlaceholder")}
               className="w-full"
             />
           </div>
         </div>
       </div>
-      <GiveFeedbackDialog open={feedbackOpen} onOpenChange={setFeedbackOpen} defaultName={user ? `${user.firstName || ""} ${user.lastName || ""}`.trim() : ""} defaultEmail={user?.email || ""} />
+      <GiveFeedbackDialog
+        open={feedbackOpen}
+        onOpenChange={setFeedbackOpen}
+        defaultName={
+          user ? `${user.firstName || ""} ${user.lastName || ""}`.trim() : ""
+        }
+        defaultEmail={user?.email || ""}
+      />
     </header>
   );
 };

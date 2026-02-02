@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -34,7 +35,11 @@ interface ProductCardProps {
   isFeatured?: boolean;
   hasVariantDiscounts?: boolean;
   maxVariantDiscount?: number;
-  shopCapability?: "VISUALIZATION_ONLY" | "PICKUP_ORDERS" | "FULL_ECOMMERCE" | "HYBRID";
+  shopCapability?:
+    | "VISUALIZATION_ONLY"
+    | "PICKUP_ORDERS"
+    | "FULL_ECOMMERCE"
+    | "HYBRID";
   isOrganic?: boolean;
   unit?: { id: number; symbol: string; name: string } | null;
 }
@@ -64,6 +69,7 @@ const ProductCard = ({
   isOrganic,
   unit,
 }: ProductCardProps) => {
+  const { t } = useTranslation();
   const isVisualizationOnly = shopCapability === "VISUALIZATION_ONLY";
   const [cartItems, setCartItems] = useState<string[]>([]);
   const [isInWishlist, setIsInWishlist] = useState(false);
@@ -75,7 +81,9 @@ const ProductCard = ({
     hasVariantDiscounts: boolean;
     maxVariantDiscount: number;
   }>({ hasVariantDiscounts: false, maxVariantDiscount: 0 });
-  const [productsWithVariants, setProductsWithVariants] = useState<Set<string>>(new Set());
+  const [productsWithVariants, setProductsWithVariants] = useState<Set<string>>(
+    new Set(),
+  );
   const { toast } = useToast();
   const { isAuthenticated } = useAppSelector((state) => state.auth);
 
@@ -89,12 +97,13 @@ const ProductCard = ({
       try {
         const product = await ProductService.getProductById(id);
         const hasVariantDiscounts = ProductService.hasVariantDiscounts(product);
-        const maxVariantDiscount = ProductService.getMaxVariantDiscount(product);
+        const maxVariantDiscount =
+          ProductService.getMaxVariantDiscount(product);
         setVariantDiscountInfo({ hasVariantDiscounts, maxVariantDiscount });
 
         // Check if product has variants and update the set
         if (ProductService.hasVariants(product)) {
-          setProductsWithVariants(prev => new Set(prev).add(id));
+          setProductsWithVariants((prev) => new Set(prev).add(id));
         }
       } catch (error) {
         console.error("Error fetching product info:", error);
@@ -164,20 +173,24 @@ const ProductCard = ({
           await CartService.removeItemFromCart(cartItem.id);
           // Refresh cart status after removal
           await checkCartStatus();
-          
+
           // Trigger cart update event for header
           triggerCartUpdate();
-          
+
           toast({
-            title: "Removed from cart",
-            description: `${name} has been removed from your cart.`,
+            title: t("cart.removedTitle") || "Removed from cart",
+            description:
+              t("cart.removedDesc", { name }) ||
+              `${name} has been removed from your cart.`,
           });
         }
       } catch (error) {
         console.error("Error removing from cart:", error);
         toast({
-          title: "Error",
-          description: "Failed to remove item from cart. Please try again.",
+          title: t("common.error") || "Error",
+          description:
+            t("cart.removeError") ||
+            "Failed to remove item from cart. Please try again.",
           variant: "destructive",
         });
       } finally {
@@ -203,8 +216,10 @@ const ProductCard = ({
     } catch (error) {
       console.error("Error fetching product details:", error);
       toast({
-        title: "Error",
-        description: "Failed to fetch product details. Please try again.",
+        title: t("common.error") || "Error",
+        description:
+          t("cart.fetchingError") ||
+          "Failed to fetch product details. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -224,21 +239,24 @@ const ProductCard = ({
         await checkCartStatus();
       } else {
         // If product was added directly (no variants), add to cartItems immediately
-        setCartItems(prev => [...prev, request.productId || id]);
+        setCartItems((prev) => [...prev, request.productId || id]);
       }
 
       // Trigger cart update event for header
       triggerCartUpdate();
 
       toast({
-        title: "Added to cart",
-        description: `${name} has been added to your cart.`,
+        title: t("cart.addedTitle") || "Added to cart",
+        description:
+          t("cart.addedDesc", { name }) ||
+          `${name} has been added to your cart.`,
       });
     } catch (error) {
       console.error("Error adding to cart:", error);
       toast({
-        title: "Error",
-        description: "Failed to add item to cart. Please try again.",
+        title: t("common.error") || "Error",
+        description:
+          t("cart.addError") || "Failed to add item to cart. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -260,7 +278,7 @@ const ProductCard = ({
           // For authenticated users, we need to get the wishlist item ID
           const wishlist = await WishlistService.getWishlist();
           const wishlistItem = wishlist.products.find(
-            (item) => item.productId === id
+            (item) => item.productId === id,
           );
 
           if (wishlistItem) {
@@ -273,14 +291,18 @@ const ProductCard = ({
 
         setIsInWishlist(false);
         toast({
-          title: "Removed from wishlist",
-          description: `${name} has been removed from your wishlist.`,
+          title: t("wishlist.removedTitle") || "Removed from wishlist",
+          description:
+            t("wishlist.removedDesc", { name }) ||
+            `${name} has been removed from your wishlist.`,
         });
       } catch (error) {
         console.error("Error removing from wishlist:", error);
         toast({
-          title: "Error",
-          description: "Failed to remove item from wishlist. Please try again.",
+          title: t("common.error") || "Error",
+          description:
+            t("wishlist.removeError") ||
+            "Failed to remove item from wishlist. Please try again.",
           variant: "destructive",
         });
       } finally {
@@ -308,8 +330,10 @@ const ProductCard = ({
     } catch (error) {
       console.error("Error adding to wishlist:", error);
       toast({
-        title: "Error",
-        description: "Failed to add item to wishlist. Please try again.",
+        title: t("common.error") || "Error",
+        description:
+          t("wishlist.addError") ||
+          "Failed to add item to wishlist. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -332,7 +356,10 @@ const ProductCard = ({
             {/* Badges */}
             <div className="absolute top-2 left-2 flex flex-col gap-1 max-w-[calc(100%-4rem)]">
               {hasActiveDiscount && discount && (
-                <Badge variant="destructive" className="text-xs w-fit px-2 py-1 whitespace-nowrap">
+                <Badge
+                  variant="destructive"
+                  className="text-xs w-fit px-2 py-1 whitespace-nowrap"
+                >
                   -{discount}% OFF
                 </Badge>
               )}
@@ -343,25 +370,32 @@ const ProductCard = ({
                     variant="secondary"
                     className="text-xs bg-orange-500 text-white w-fit px-2 py-1 whitespace-nowrap"
                   >
-                    Up to -{Math.round(variantDiscountInfo.maxVariantDiscount)}%
+                    {t("filters.upTo", {
+                      percent: Math.round(
+                        variantDiscountInfo.maxVariantDiscount,
+                      ),
+                    }) ||
+                      `Up to -${Math.round(variantDiscountInfo.maxVariantDiscount)}%`}
                   </Badge>
                 )}
               {isNew && (
-                <Badge className="bg-green-500 text-white text-xs w-fit px-2 py-1 whitespace-nowrap">New</Badge>
+                <Badge className="bg-green-500 text-white text-xs w-fit px-2 py-1 whitespace-nowrap">
+                  {t("filters.new") || "New"}
+                </Badge>
               )}
               {isBestseller && (
                 <Badge className="bg-green-500 text-white text-xs w-fit px-2 py-1 whitespace-nowrap">
-                  Bestseller
+                  {t("filters.bestsellers") || "Bestseller"}
                 </Badge>
               )}
               {isFeatured && (
                 <Badge className="bg-purple-500 text-white text-xs w-fit px-2 py-1 whitespace-nowrap">
-                  Featured
+                  {t("filters.featured") || "Featured"}
                 </Badge>
               )}
               {isOrganic && (
                 <Badge className="bg-primary text-primary-foreground text-xs w-fit px-2 py-1 whitespace-nowrap">
-                  Organic
+                  {t("filters.organicLabel") || "Organic"}
                 </Badge>
               )}
             </div>
@@ -401,17 +435,17 @@ const ProductCard = ({
                     {isLoading ? (
                       <>
                         <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                        Loading...
+                        {t("home.loading") || "Loading..."}
                       </>
                     ) : isInCart(id) ? (
                       <>
                         <Check className="h-4 w-4 mr-2" />
-                        Added to Cart
+                        {t("cart.added") || "Added to Cart"}
                       </>
                     ) : (
                       <>
                         <ShoppingCart className="h-4 w-4 mr-2" />
-                        Add to Cart
+                        {t("cart.addToCart") || "Add to Cart"}
                       </>
                     )}
                   </Button>
@@ -423,7 +457,7 @@ const ProductCard = ({
                     className="w-full h-10 sm:h-9 text-sm border-background/80 bg-background/80 backdrop-blur-sm hover:bg-background hover:border-primary"
                   >
                     <Eye className="h-4 w-4 mr-2" />
-                    View Product
+                    {t("cart.viewProduct") || "View Product"}
                   </Button>
                 </Link>
               </div>
@@ -464,7 +498,10 @@ const ProductCard = ({
           <div className="flex items-center gap-1 mb-2">
             <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
             <span className="text-xs text-muted-foreground">
-              {rating.toFixed(1)} ({reviewCount})
+              {rating.toFixed(1)} (
+              {t("filters.reviewsCount", { count: reviewCount }) ||
+                `${reviewCount} reviews`}
+              )
             </span>
           </div>
 
@@ -473,7 +510,7 @@ const ProductCard = ({
             {(() => {
               const priceInfo = formatDiscountedPrice(
                 originalPrice || price,
-                discountedPrice || price
+                discountedPrice || price,
               );
               const unitSymbol = unit?.symbol;
               const priceOpts = unitSymbol ? { unit: unitSymbol } : {};
@@ -489,10 +526,16 @@ const ProductCard = ({
                   )}
                   {hasActiveDiscount && discount && priceInfo.hasDiscount && (
                     <span className="text-xs text-green-600 font-medium">
-                      Save {formatPrice(
-                        (originalPrice || price) - (discountedPrice || price),
-                        { showCurrency: false }
-                      )}
+                      {t("filters.save", {
+                        amount: formatPrice(
+                          (originalPrice || price) - (discountedPrice || price),
+                          { showCurrency: false },
+                        ),
+                      }) ||
+                        `Save ${formatPrice(
+                          (originalPrice || price) - (discountedPrice || price),
+                          { showCurrency: false },
+                        )}`}
                     </span>
                   )}
                 </>

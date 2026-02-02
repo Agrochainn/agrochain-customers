@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Dialog,
   DialogContent,
@@ -25,9 +26,16 @@ import {
   AlertCircle,
   ExternalLink,
 } from "lucide-react";
-import { ProductDTO, ProductVariantDTO, ProductService } from "@/lib/productService";
+import {
+  ProductDTO,
+  ProductVariantDTO,
+  ProductService,
+} from "@/lib/productService";
 import { CartItemRequest, CartService } from "@/lib/cartService";
-import { formatPrice as formatPriceUtil, formatDiscountedPrice } from "@/lib/utils/priceFormatter";
+import {
+  formatPrice as formatPriceUtil,
+  formatDiscountedPrice,
+} from "@/lib/utils/priceFormatter";
 import { triggerCartUpdate } from "@/lib/utils/cartUtils";
 import Link from "next/link";
 
@@ -44,6 +52,7 @@ const VariantSelectionModal = ({
   product,
   onAddToCart,
 }: VariantSelectionModalProps) => {
+  const { t } = useTranslation();
   const [selectedVariant, setSelectedVariant] =
     useState<ProductVariantDTO | null>(null);
   const [quantity, setQuantity] = useState(1);
@@ -65,11 +74,13 @@ const VariantSelectionModal = ({
   // Check which variants are in cart
   const checkVariantsInCart = async () => {
     try {
-      const cartItems = await CartService.getProductCartItems(product.productId);
+      const cartItems = await CartService.getProductCartItems(
+        product.productId,
+      );
       const variantIds = new Set(
         cartItems
-          .filter(item => item.variantId)
-          .map(item => item.variantId!)
+          .filter((item) => item.variantId)
+          .map((item) => item.variantId!),
       );
       setVariantsInCart(variantIds);
     } catch (error) {
@@ -94,25 +105,32 @@ const VariantSelectionModal = ({
   // Handle quantity change
   const handleQuantityChange = (newQuantity: number) => {
     if (newQuantity < 1) return;
-    
+
     if (selectedVariant) {
       const totalStock = ProductService.getVariantTotalStock(selectedVariant);
       const isInStock = ProductService.isVariantInStock(selectedVariant);
-      
+
       // If not in stock, don't allow any quantity
       if (!isInStock) return;
-      
+
       // If we have exact stock quantity, enforce the limit
-      if ((selectedVariant.warehouseStocks || selectedVariant.stockQuantity !== undefined) && totalStock > 0) {
+      if (
+        (selectedVariant.warehouseStocks ||
+          selectedVariant.stockQuantity !== undefined) &&
+        totalStock > 0
+      ) {
         if (newQuantity > totalStock) return;
       }
-      
+
       // For boolean isInStock without exact quantities, allow reasonable quantities (up to 10)
-      if (!selectedVariant.warehouseStocks && selectedVariant.stockQuantity === undefined) {
+      if (
+        !selectedVariant.warehouseStocks &&
+        selectedVariant.stockQuantity === undefined
+      ) {
         if (newQuantity > 10) return;
       }
     }
-    
+
     setQuantity(newQuantity);
   };
 
@@ -126,13 +144,13 @@ const VariantSelectionModal = ({
         variantId: selectedVariant.variantId.toString(),
         quantity,
       });
-      
+
       // Update variants in cart after successful addition
       await checkVariantsInCart();
-      
+
       // Trigger cart update event for header
       triggerCartUpdate();
-      
+
       onClose();
     } catch (error) {
       console.error("Error adding to cart:", error);
@@ -185,7 +203,7 @@ const VariantSelectionModal = ({
       if (effectiveDiscount) {
         const priceInfo = formatDiscountedPrice(
           price,
-          effectiveDiscount.discountedPrice
+          effectiveDiscount.discountedPrice,
         );
 
         return (
@@ -222,13 +240,13 @@ const VariantSelectionModal = ({
         <DialogHeader>
           <div className="flex items-center justify-between">
             <DialogTitle className="text-xl font-semibold">
-              Select Variant
+              {t("variant.selectTitle") || "Select Variant"}
             </DialogTitle>
             <div className="flex items-center gap-2">
               <Link href={`/product/${product.productId}`}>
                 <Button variant="outline" size="sm" className="h-8">
                   <ExternalLink className="h-4 w-4 mr-1" />
-                  View Product
+                  {t("cart.viewProduct") || "View Product"}
                 </Button>
               </Link>
               <Button
@@ -242,7 +260,8 @@ const VariantSelectionModal = ({
             </div>
           </div>
           <DialogDescription>
-            Choose your preferred variant and quantity for {product.name}
+            {t("variant.chooseDesc", { name: product.name }) ||
+              `Choose your preferred variant and quantity for ${product.name}`}
           </DialogDescription>
         </DialogHeader>
 
@@ -273,7 +292,10 @@ const VariantSelectionModal = ({
                 <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
                 <span className="text-sm">
                   {product.averageRating?.toFixed(1) || "0.0"} (
-                  {product.reviewCount || 0} reviews)
+                  {t("filters.reviewsCount", {
+                    count: product.reviewCount || 0,
+                  }) || `${product.reviewCount || 0} reviews`}
+                  )
                 </span>
               </div>
             </div>
@@ -283,7 +305,9 @@ const VariantSelectionModal = ({
           <div className="space-y-4">
             {/* Available Variants */}
             <div className="space-y-3">
-              <Label className="text-sm font-medium">Available Variants</Label>
+              <Label className="text-sm font-medium">
+                {t("variant.availableTitle") || "Available Variants"}
+              </Label>
               <ScrollArea className="h-64">
                 <div className="space-y-2">
                   {availableVariants.length > 0 ? (
@@ -294,8 +318,8 @@ const VariantSelectionModal = ({
                           selectedVariant?.variantId === variant.variantId
                             ? "ring-2 ring-primary border-primary"
                             : variantsInCart.has(variant.variantId.toString())
-                            ? "border-green-500 bg-green-50"
-                            : "hover:border-primary/50"
+                              ? "border-green-500 bg-green-50"
+                              : "hover:border-primary/50"
                         }`}
                         onClick={() => handleVariantSelect(variant)}
                       >
@@ -323,9 +347,14 @@ const VariantSelectionModal = ({
                                     variant.variantId && (
                                     <Check className="h-4 w-4 text-primary" />
                                   )}
-                                  {variantsInCart.has(variant.variantId.toString()) && (
-                                    <Badge variant="secondary" className="text-xs bg-green-500 text-white">
-                                      In Cart
+                                  {variantsInCart.has(
+                                    variant.variantId.toString(),
+                                  ) && (
+                                    <Badge
+                                      variant="secondary"
+                                      className="text-xs bg-green-500 text-white"
+                                    >
+                                      {t("variant.inCart") || "In Cart"}
                                     </Badge>
                                   )}
                                 </div>
@@ -344,20 +373,34 @@ const VariantSelectionModal = ({
                                 >
                                   <Package className="h-3 w-3" />
                                   {(() => {
-                                    const totalStock = ProductService.getVariantTotalStock(variant);
-                                    const isInStock = ProductService.isVariantInStock(variant);
-                                    
+                                    const totalStock =
+                                      ProductService.getVariantTotalStock(
+                                        variant,
+                                      );
+                                    const isInStock =
+                                      ProductService.isVariantInStock(variant);
+
                                     if (!isInStock) {
-                                      return "Out of stock";
+                                      return (
+                                        t("filters.outOfStock") ||
+                                        "Out of stock"
+                                      );
                                     }
-                                    
+
                                     // If we have exact stock quantity (from warehouseStocks or stockQuantity)
-                                    if (variant.warehouseStocks || variant.stockQuantity !== undefined) {
-                                      return `${totalStock} in stock`;
+                                    if (
+                                      variant.warehouseStocks ||
+                                      variant.stockQuantity !== undefined
+                                    ) {
+                                      return (
+                                        t("filters.countInStock", {
+                                          count: totalStock,
+                                        }) || `${totalStock} in stock`
+                                      );
                                     }
-                                    
+
                                     // If we only have isInStock boolean, show generic message
-                                    return "In stock";
+                                    return t("filters.inStock") || "In stock";
                                   })()}
                                 </span>
                                 {(() => {
@@ -379,7 +422,7 @@ const VariantSelectionModal = ({
                                       >
                                         -
                                         {Math.round(
-                                          effectiveDiscount.percentage
+                                          effectiveDiscount.percentage,
                                         )}
                                         % OFF
                                         {effectiveDiscount.isVariantSpecific
@@ -416,7 +459,9 @@ const VariantSelectionModal = ({
                   ) : (
                     <div className="flex items-center gap-2 text-muted-foreground">
                       <AlertCircle className="h-4 w-4" />
-                      <span>No variants available</span>
+                      <span>
+                        {t("filters.noResults") || "No variants available"}
+                      </span>
                     </div>
                   )}
                 </div>
@@ -428,14 +473,17 @@ const VariantSelectionModal = ({
             {/* Quantity Selection */}
             {selectedVariant && (
               <div className="space-y-3">
-                <Label className="text-sm font-medium">Quantity</Label>
+                <Label className="text-sm font-medium">
+                  {t("cart.quantity") || "Quantity"}
+                </Label>
                 <div className="flex items-center gap-3">
                   <Button
                     variant="outline"
                     size="icon"
                     onClick={() => handleQuantityChange(quantity - 1)}
                     disabled={
-                      quantity <= 1 || !ProductService.isVariantInStock(selectedVariant)
+                      quantity <= 1 ||
+                      !ProductService.isVariantInStock(selectedVariant)
                     }
                   >
                     <Minus className="h-4 w-4" />
@@ -444,16 +492,21 @@ const VariantSelectionModal = ({
                     type="number"
                     min="1"
                     max={(() => {
-                      const totalStock = ProductService.getVariantTotalStock(selectedVariant);
-                      const isInStock = ProductService.isVariantInStock(selectedVariant);
-                      
+                      const totalStock =
+                        ProductService.getVariantTotalStock(selectedVariant);
+                      const isInStock =
+                        ProductService.isVariantInStock(selectedVariant);
+
                       if (!isInStock) return 0;
-                      
+
                       // If we have exact stock quantity
-                      if (selectedVariant.warehouseStocks || selectedVariant.stockQuantity !== undefined) {
+                      if (
+                        selectedVariant.warehouseStocks ||
+                        selectedVariant.stockQuantity !== undefined
+                      ) {
                         return totalStock > 0 ? totalStock : undefined;
                       }
-                      
+
                       // For boolean isInStock, allow up to 10
                       return 10;
                     })()}
@@ -469,16 +522,21 @@ const VariantSelectionModal = ({
                     size="icon"
                     onClick={() => handleQuantityChange(quantity + 1)}
                     disabled={(() => {
-                      const totalStock = ProductService.getVariantTotalStock(selectedVariant);
-                      const isInStock = ProductService.isVariantInStock(selectedVariant);
-                      
+                      const totalStock =
+                        ProductService.getVariantTotalStock(selectedVariant);
+                      const isInStock =
+                        ProductService.isVariantInStock(selectedVariant);
+
                       if (!isInStock) return true;
-                      
+
                       // If we have exact stock quantity
-                      if (selectedVariant.warehouseStocks || selectedVariant.stockQuantity !== undefined) {
+                      if (
+                        selectedVariant.warehouseStocks ||
+                        selectedVariant.stockQuantity !== undefined
+                      ) {
                         return quantity >= totalStock;
                       }
-                      
+
                       // For boolean isInStock, limit to 10
                       return quantity >= 10;
                     })()}
@@ -494,20 +552,28 @@ const VariantSelectionModal = ({
                   }`}
                 >
                   {(() => {
-                    const totalStock = ProductService.getVariantTotalStock(selectedVariant);
-                    const isInStock = ProductService.isVariantInStock(selectedVariant);
-                    
+                    const totalStock =
+                      ProductService.getVariantTotalStock(selectedVariant);
+                    const isInStock =
+                      ProductService.isVariantInStock(selectedVariant);
+
                     if (!isInStock) {
-                      return "Out of stock";
+                      return t("filters.outOfStock") || "Out of stock";
                     }
-                    
+
                     // If we have exact stock quantity
-                    if (selectedVariant.warehouseStocks || selectedVariant.stockQuantity !== undefined) {
-                      return `${totalStock} available`;
+                    if (
+                      selectedVariant.warehouseStocks ||
+                      selectedVariant.stockQuantity !== undefined
+                    ) {
+                      return (
+                        t("filters.availableCount", { count: totalStock }) ||
+                        `${totalStock} available`
+                      );
                     }
-                    
+
                     // For boolean isInStock, show generic message
-                    return "Available";
+                    return t("filters.available") || "Available";
                   })()}
                 </p>
               </div>
@@ -518,29 +584,37 @@ const VariantSelectionModal = ({
             {/* Selected Variant Summary */}
             {selectedVariant && (
               <div className="space-y-3">
-                <Label className="text-sm font-medium">Summary</Label>
+                <Label className="text-sm font-medium">
+                  {t("variant.summaryTitle") || "Summary"}
+                </Label>
                 <Card>
                   <CardContent className="p-3">
                     <div className="space-y-2">
                       <div className="flex justify-between">
-                        <span className="text-sm">Variant:</span>
+                        <span className="text-sm">
+                          {t("variant.variantPrefix") || "Variant:"}
+                        </span>
                         <span className="text-sm font-medium">
                           {selectedVariant.variantSku}
                         </span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-sm">Quantity:</span>
+                        <span className="text-sm">
+                          {t("variant.quantityPrefix") || "Quantity:"}
+                        </span>
                         <span className="text-sm font-medium">{quantity}</span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-sm">Price:</span>
+                        <span className="text-sm">
+                          {t("variant.price") || "Price"}:
+                        </span>
                         <span className="text-sm font-medium">
                           {(() => {
                             const effectiveDiscount =
                               getEffectiveDiscount(selectedVariant);
                             if (effectiveDiscount) {
                               return formatPrice(
-                                effectiveDiscount.discountedPrice
+                                effectiveDiscount.discountedPrice,
                               );
                             }
                             return formatPrice(selectedVariant.price);
@@ -549,18 +623,20 @@ const VariantSelectionModal = ({
                       </div>
                       <Separator />
                       <div className="flex justify-between">
-                        <span className="font-medium">Total:</span>
+                        <span className="font-medium">
+                          {t("variant.total") || "Total"}:
+                        </span>
                         <span className="font-bold">
                           {(() => {
                             const effectiveDiscount =
                               getEffectiveDiscount(selectedVariant);
                             if (effectiveDiscount) {
                               return formatPrice(
-                                effectiveDiscount.discountedPrice * quantity
+                                effectiveDiscount.discountedPrice * quantity,
                               );
                             }
                             return formatPrice(
-                              selectedVariant.price * quantity
+                              selectedVariant.price * quantity,
                             );
                           })()}
                         </span>
@@ -584,17 +660,18 @@ const VariantSelectionModal = ({
               {isLoading ? (
                 <>
                   <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
-                  Adding to Cart...
+                  {t("variant.adding") || "Adding to Cart..."}
                 </>
-              ) : selectedVariant && !ProductService.isVariantInStock(selectedVariant) ? (
+              ) : selectedVariant &&
+                !ProductService.isVariantInStock(selectedVariant) ? (
                 <>
                   <AlertCircle className="h-4 w-4 mr-2" />
-                  Out of Stock
+                  {t("filters.outOfStock") || "Out of Stock"}
                 </>
               ) : (
                 <>
                   <ShoppingCart className="h-4 w-4 mr-2" />
-                  Add to Cart
+                  {t("cart.addToCart") || "Add to Cart"}
                 </>
               )}
             </Button>

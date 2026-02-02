@@ -3,27 +3,29 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
-import { 
-  Facebook, 
-  Twitter, 
-  Instagram, 
-  Youtube, 
-  Mail, 
-  Phone, 
+import {
+  Facebook,
+  Twitter,
+  Instagram,
+  Youtube,
+  Mail,
+  Phone,
   MapPin,
   CreditCard,
   Shield,
   Truck,
   Gift,
-  MessageSquare
+  MessageSquare,
 } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { rewardSystemService } from "@/lib/rewardSystemService";
 import { formatPrice } from "@/lib/utils/priceFormatter";
 import { GiveFeedbackDialog } from "@/components/GiveFeedbackDialog";
+import { useTranslation } from "react-i18next";
 
 const Footer = () => {
+  const { t } = useTranslation();
   const [isRewardSystemActive, setIsRewardSystemActive] = useState(false);
   const [feedbackOpen, setFeedbackOpen] = useState(false);
 
@@ -45,16 +47,16 @@ const Footer = () => {
       <div className="container mx-auto px-4">
         {/* Newsletter */}
         <div className="py-12 text-center border-b">
-          <h3 className="text-2xl font-bold mb-2">Stay in the loop</h3>
+          <h3 className="text-2xl font-bold mb-2">{t("footer.stayInLoop")}</h3>
           <p className="text-muted-foreground mb-6 max-w-md mx-auto">
-            Subscribe to our newsletter for exclusive deals and updates
+            {t("footer.newsletterDesc")}
           </p>
           <div className="flex max-w-md mx-auto gap-2">
-            <Input 
-              placeholder="Enter your email" 
+            <Input
+              placeholder={t("footer.emailPlaceholder")}
               className="flex-1"
             />
-            <Button>Subscribe</Button>
+            <Button>{t("footer.subscribe")}</Button>
           </div>
         </div>
 
@@ -63,12 +65,13 @@ const Footer = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
             {/* Company Info */}
             <div className="lg:col-span-2">
-              <h2 className="text-2xl font-bold text-primary mb-4">Agrochain</h2>
+              <h2 className="text-2xl font-bold text-primary mb-4">
+                Agrochain
+              </h2>
               <p className="text-muted-foreground mb-6 max-w-md">
-                Your one-stop destination for all your shopping needs. 
-                Quality products, unbeatable prices, and exceptional service.
+                {t("footer.tagline")}
               </p>
-              
+
               {/* Contact Info */}
               <div className="space-y-2 text-sm">
                 <div className="flex items-center gap-2">
@@ -88,10 +91,18 @@ const Footer = () => {
 
             {/* Quick Links */}
             <div>
-              <h4 className="font-semibold mb-4">Quick Links</h4>
+              <h4 className="font-semibold mb-4">{t("footer.quickLinks")}</h4>
               <ul className="space-y-2 text-sm text-muted-foreground">
-                <li><a href="#" className="hover:text-primary transition-colors">About Us</a></li>
-                <li><a href="#" className="hover:text-primary transition-colors">Contact</a></li>
+                <li>
+                  <a href="#" className="hover:text-primary transition-colors">
+                    {t("footer.aboutUs")}
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="hover:text-primary transition-colors">
+                    {t("footer.contact")}
+                  </a>
+                </li>
                 <li>
                   <button
                     type="button"
@@ -99,30 +110,71 @@ const Footer = () => {
                     className="hover:text-primary transition-colors flex items-center gap-1"
                   >
                     <MessageSquare className="h-3 w-3" />
-                    Give Feedback
+                    {t("footer.giveFeedback")}
                   </button>
                 </li>
-                <li><a href="#" className="hover:text-primary transition-colors">Careers</a></li>
-                <li><a href="#" className="hover:text-primary transition-colors">Press</a></li>
-                <li><a href="#" className="hover:text-primary transition-colors">Blog</a></li>
-                <li><a href="#" className="hover:text-primary transition-colors">Affiliate Program</a></li>
+                <li>
+                  <a href="#" className="hover:text-primary transition-colors">
+                    {t("footer.careers")}
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="hover:text-primary transition-colors">
+                    {t("footer.press")}
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="hover:text-primary transition-colors">
+                    {t("footer.blog")}
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="hover:text-primary transition-colors">
+                    {t("footer.affiliate")}
+                  </a>
+                </li>
               </ul>
             </div>
 
             {/* Customer Service */}
             <div>
-              <h4 className="font-semibold mb-4">Customer Service</h4>
+              <h4 className="font-semibold mb-4">
+                {t("footer.customerService")}
+              </h4>
               <ul className="space-y-2 text-sm text-muted-foreground">
-                <li><a href="#" className="hover:text-primary transition-colors">Help Center</a></li>
-                <li><a href="#" className="hover:text-primary transition-colors">Shipping Info</a></li>
-                <li><a href="#" className="hover:text-primary transition-colors">Returns & Exchanges</a></li>
-                <li><a href="#" className="hover:text-primary transition-colors">Size Guide</a></li>
-                <li><a href="#" className="hover:text-primary transition-colors">Track Your Order</a></li>
+                <li>
+                  <a href="#" className="hover:text-primary transition-colors">
+                    {t("footer.helpCenter")}
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="hover:text-primary transition-colors">
+                    {t("footer.shippingInfo")}
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="hover:text-primary transition-colors">
+                    {t("footer.returns")}
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="hover:text-primary transition-colors">
+                    {t("footer.sizeGuide")}
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="hover:text-primary transition-colors">
+                    {t("footer.trackOrder")}
+                  </a>
+                </li>
                 {isRewardSystemActive && (
                   <li>
-                    <Link href="/reward-system" className="hover:text-primary transition-colors flex items-center gap-1">
+                    <Link
+                      href="/reward-system"
+                      className="hover:text-primary transition-colors flex items-center gap-1"
+                    >
                       <Gift className="h-3 w-3" />
-                      Reward System
+                      {t("footer.rewardSystem")}
                     </Link>
                   </li>
                 )}
@@ -131,14 +183,38 @@ const Footer = () => {
 
             {/* Policies */}
             <div>
-              <h4 className="font-semibold mb-4">Policies</h4>
+              <h4 className="font-semibold mb-4">{t("footer.policies")}</h4>
               <ul className="space-y-2 text-sm text-muted-foreground">
-                <li><a href="#" className="hover:text-primary transition-colors">Privacy Policy</a></li>
-                <li><a href="#" className="hover:text-primary transition-colors">Terms of Service</a></li>
-                <li><a href="#" className="hover:text-primary transition-colors">Cookie Policy</a></li>
-                <li><a href="#" className="hover:text-primary transition-colors">Accessibility</a></li>
-                <li><a href="#" className="hover:text-primary transition-colors">Security</a></li>
-                <li><a href="#" className="hover:text-primary transition-colors">Intellectual Property</a></li>
+                <li>
+                  <a href="#" className="hover:text-primary transition-colors">
+                    {t("footer.privacy")}
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="hover:text-primary transition-colors">
+                    {t("footer.terms")}
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="hover:text-primary transition-colors">
+                    {t("footer.cookie")}
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="hover:text-primary transition-colors">
+                    {t("footer.accessibility")}
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="hover:text-primary transition-colors">
+                    {t("footer.security")}
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="hover:text-primary transition-colors">
+                    {t("footer.intellectualProperty")}
+                  </a>
+                </li>
               </ul>
             </div>
           </div>
@@ -150,22 +226,28 @@ const Footer = () => {
             <div className="flex items-center justify-center gap-3">
               <Truck className="h-8 w-8 text-primary" />
               <div className="text-left">
-                <p className="font-semibold">Free Shipping</p>
-                <p className="text-sm text-muted-foreground">On orders over {formatPrice(50)}</p>
+                <p className="font-semibold">{t("footer.freeShipping")}</p>
+                <p className="text-sm text-muted-foreground">
+                  {t("footer.freeShippingDesc", { price: formatPrice(50) })}
+                </p>
               </div>
             </div>
             <div className="flex items-center justify-center gap-3">
               <Shield className="h-8 w-8 text-primary" />
               <div className="text-left">
-                <p className="font-semibold">Secure Payment</p>
-                <p className="text-sm text-muted-foreground">100% protected transactions</p>
+                <p className="font-semibold">{t("footer.securePayment")}</p>
+                <p className="text-sm text-muted-foreground">
+                  {t("footer.securePaymentDesc")}
+                </p>
               </div>
             </div>
             <div className="flex items-center justify-center gap-3">
               <CreditCard className="h-8 w-8 text-primary" />
               <div className="text-left">
-                <p className="font-semibold">Easy Returns</p>
-                <p className="text-sm text-muted-foreground">30-day return policy</p>
+                <p className="font-semibold">{t("footer.easyReturns")}</p>
+                <p className="text-sm text-muted-foreground">
+                  {t("footer.easyReturnsDesc")}
+                </p>
               </div>
             </div>
           </div>
@@ -175,12 +257,14 @@ const Footer = () => {
         <div className="py-6">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <p className="text-sm text-muted-foreground">
-              © 2024 Agrochain. All rights reserved.
+              {t("footer.rights", { year: new Date().getFullYear() })}
             </p>
-            
+
             {/* Social Links */}
             <div className="flex items-center gap-4">
-              <span className="text-sm text-muted-foreground">Follow us:</span>
+              <span className="text-sm text-muted-foreground">
+                {t("footer.followUs")}
+              </span>
               <div className="flex gap-2">
                 <Button variant="ghost" size="icon" className="h-8 w-8">
                   <Facebook className="h-4 w-4" />
@@ -204,4 +288,4 @@ const Footer = () => {
   );
 };
 
-export default Footer; 
+export default Footer;

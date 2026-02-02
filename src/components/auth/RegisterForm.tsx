@@ -17,9 +17,11 @@ import {
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Loader2, Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
+import { useTranslation } from "react-i18next";
 import RewardDialog from "@/components/RewardDialog";
 
 export default function RegisterForm() {
+  const { t } = useTranslation();
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -37,7 +39,7 @@ export default function RegisterForm() {
   const dispatch = useAppDispatch();
   const router = useRouter();
   const { isLoading, error, signupResponse } = useAppSelector(
-    (state) => state.auth
+    (state) => state.auth,
   );
 
   useEffect(() => {
@@ -54,39 +56,39 @@ export default function RegisterForm() {
     const errors: { [key: string]: string } = {};
 
     if (!formData.firstName.trim()) {
-      errors.firstName = "First name is required";
+      errors.firstName = t("auth.firstNameRequired");
     } else if (formData.firstName.length < 2) {
-      errors.firstName = "First name must be at least 2 characters";
+      errors.firstName = t("auth.firstNameMin");
     }
 
     if (!formData.lastName.trim()) {
-      errors.lastName = "Last name is required";
+      errors.lastName = t("auth.lastNameRequired");
     } else if (formData.lastName.length < 2) {
-      errors.lastName = "Last name must be at least 2 characters";
+      errors.lastName = t("auth.lastNameMin");
     }
 
     if (!formData.email.trim()) {
-      errors.email = "Email is required";
+      errors.email = t("auth.emailRequired");
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      errors.email = "Please enter a valid email address";
+      errors.email = t("auth.emailInvalid");
     }
 
     if (!formData.password) {
-      errors.password = "Password is required";
+      errors.password = t("auth.passwordRequired");
     } else if (formData.password.length < 8) {
-      errors.password = "Password must be at least 8 characters long";
+      errors.password = t("auth.passwordMin");
     }
 
     if (!formData.confirmPassword) {
-      errors.confirmPassword = "Please confirm your password";
+      errors.confirmPassword = t("auth.confirmPasswordRequired");
     } else if (formData.password !== formData.confirmPassword) {
-      errors.confirmPassword = "Passwords do not match";
+      errors.confirmPassword = t("auth.passwordsNoMatch");
     }
 
     if (formData.phoneNumber && formData.phoneNumber.trim()) {
       const phoneRegex = /^[\+]?[0-9\s\-\(\)]{7,20}$/;
       if (!phoneRegex.test(formData.phoneNumber)) {
-        errors.phoneNumber = "Please enter a valid phone number";
+        errors.phoneNumber = t("auth.phoneInvalid");
       }
     }
 
@@ -134,10 +136,10 @@ export default function RegisterForm() {
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-1">
           <CardTitle className="text-2xl font-bold text-center">
-            Create account
+            {t("auth.signUpTitle")}
           </CardTitle>
           <CardDescription className="text-center">
-            Enter your information to create your account
+            {t("auth.signUpDesc")}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -150,12 +152,12 @@ export default function RegisterForm() {
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="firstName">First Name *</Label>
+                <Label htmlFor="firstName">{t("auth.firstName")} *</Label>
                 <Input
                   id="firstName"
                   name="firstName"
                   type="text"
-                  placeholder="First name"
+                  placeholder={t("auth.firstName")}
                   value={formData.firstName}
                   onChange={handleInputChange}
                   required
@@ -169,12 +171,12 @@ export default function RegisterForm() {
                 )}
               </div>
               <div className="space-y-2">
-                <Label htmlFor="lastName">Last Name *</Label>
+                <Label htmlFor="lastName">{t("auth.lastName")} *</Label>
                 <Input
                   id="lastName"
                   name="lastName"
                   type="text"
-                  placeholder="Last name"
+                  placeholder={t("auth.lastName")}
                   value={formData.lastName}
                   onChange={handleInputChange}
                   required
@@ -190,12 +192,12 @@ export default function RegisterForm() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="email">Email *</Label>
+              <Label htmlFor="email">{t("auth.email")} *</Label>
               <Input
                 id="email"
                 name="email"
                 type="email"
-                placeholder="Enter your email"
+                placeholder={t("auth.emailPlaceholder")}
                 value={formData.email}
                 onChange={handleInputChange}
                 required
@@ -208,13 +210,13 @@ export default function RegisterForm() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="password">Password *</Label>
+              <Label htmlFor="password">{t("auth.password")} *</Label>
               <div className="relative">
                 <Input
                   id="password"
                   name="password"
                   type={showPassword ? "text" : "password"}
-                  placeholder="Enter your password (min 8 characters)"
+                  placeholder={t("auth.passwordPlaceholder")}
                   value={formData.password}
                   onChange={handleInputChange}
                   required
@@ -244,13 +246,15 @@ export default function RegisterForm() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="confirmPassword">Confirm Password *</Label>
+              <Label htmlFor="confirmPassword">
+                {t("auth.confirmPassword")} *
+              </Label>
               <div className="relative">
                 <Input
                   id="confirmPassword"
                   name="confirmPassword"
                   type={showConfirmPassword ? "text" : "password"}
-                  placeholder="Confirm your password"
+                  placeholder={t("auth.confirmPassword")}
                   value={formData.confirmPassword}
                   onChange={handleInputChange}
                   required
@@ -274,7 +278,7 @@ export default function RegisterForm() {
                   )}
                 </Button>
               </div>
-              {validationErrors.confirmPassword && ( 
+              {validationErrors.confirmPassword && (
                 <p className="text-sm text-red-600">
                   {validationErrors.confirmPassword}
                 </p>
@@ -282,12 +286,12 @@ export default function RegisterForm() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="phoneNumber">Phone Number *</Label>
+              <Label htmlFor="phoneNumber">{t("auth.phoneNumber")} *</Label>
               <Input
                 id="phoneNumber"
                 name="phoneNumber"
                 type="tel"
-                placeholder="Enter your phone number"
+                placeholder={t("auth.phoneNumber")}
                 value={formData.phoneNumber}
                 onChange={handleInputChange}
                 disabled={isLoading}
@@ -304,21 +308,21 @@ export default function RegisterForm() {
               {isLoading ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Creating account...
+                  {t("auth.creatingAccount")}
                 </>
               ) : (
-                "Create account"
+                t("auth.signUp")
               )}
             </Button>
 
             <div className="text-center">
               <div className="text-sm text-gray-600">
-                Already have an account?{" "}
+                {t("auth.hasAccount")}{" "}
                 <Link
                   href="/auth/login"
                   className="text-green-600 hover:text-green-500"
                 >
-                  Sign in
+                  {t("auth.signIn")}
                 </Link>
               </div>
             </div>

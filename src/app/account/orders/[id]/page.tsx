@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useParams, useRouter } from "next/navigation";
 import {
   ArrowLeft,
@@ -52,6 +53,7 @@ import { orderActivitiesService } from "@/lib/services/orderActivitiesService";
 import { formatPrice } from "@/lib/utils/priceFormatter";
 
 export default function AccountOrderDetailsPage() {
+  const { t } = useTranslation();
   const params = useParams();
   const router = useRouter();
   const orderId = params.id as string;
@@ -234,7 +236,9 @@ export default function AccountOrderDetailsPage() {
           <div className="flex items-center justify-center h-64">
             <div className="text-center">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
-              <p className="text-muted-foreground">Loading order details...</p>
+              <p className="text-muted-foreground">
+                {t("home.loading") || "Loading order details..."}
+              </p>
             </div>
           </div>
         </div>
@@ -250,17 +254,22 @@ export default function AccountOrderDetailsPage() {
             <div className="text-center space-y-6">
               <X className="h-16 w-16 text-red-500 mx-auto" />
               <div>
-                <h2 className="text-2xl font-bold mb-2">Access Denied</h2>
+                <h2 className="text-2xl font-bold mb-2">
+                  {t("account.accessDenied") || "Access Denied"}
+                </h2>
                 <p className="text-muted-foreground mb-6">
-                  You need to be logged in to view order details.
+                  {t("account.loginRequired") ||
+                    "You need to be logged in to view order details."}
                 </p>
               </div>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Button asChild>
-                  <Link href="/auth/login">Login</Link>
+                  <Link href="/auth/login">{t("auth.login")}</Link>
                 </Button>
                 <Button variant="outline" asChild>
-                  <Link href="/account/orders">Back to Orders</Link>
+                  <Link href="/account/orders">
+                    {t("account.backToOrders") || "Back to Orders"}
+                  </Link>
                 </Button>
               </div>
             </div>
@@ -278,10 +287,12 @@ export default function AccountOrderDetailsPage() {
             <div className="text-center space-y-6">
               <X className="h-16 w-16 text-red-500 mx-auto" />
               <div>
-                <h2 className="text-2xl font-bold mb-2">Order Not Found</h2>
+                <h2 className="text-2xl font-bold mb-2">
+                  {t("account.orderNotFound") || "Order Not Found"}
+                </h2>
                 <p className="text-muted-foreground mb-6">
-                  The order you're looking for doesn't exist or you don't have
-                  permission to view it.
+                  {t("account.orderNotFoundDesc") ||
+                    "The order you're looking for doesn't exist or you don't have permission to view it."}
                 </p>
               </div>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -307,8 +318,12 @@ export default function AccountOrderDetailsPage() {
             <div className="text-center space-y-6">
               <X className="h-16 w-16 text-red-500 mx-auto" />
               <div>
-                <h2 className="text-2xl font-bold mb-2">Error Loading Order</h2>
-                <p className="text-muted-foreground mb-6">{error}</p>
+                <h2 className="text-2xl font-bold mb-2">
+                  {t("account.errorLoading") || "Error Loading Order"}
+                </h2>
+                <p className="text-muted-foreground mb-6">
+                  {error || t("cart.loadError")}
+                </p>
               </div>
               <Button onClick={() => window.location.reload()}>
                 Try Again
@@ -328,22 +343,23 @@ export default function AccountOrderDetailsPage() {
           <Button variant="outline" asChild className="mb-4">
             <Link href="/account/orders">
               <ArrowLeft className="mr-2 h-4 w-4" />
-              Back to Orders
+              {t("account.backToOrders") || "Back to Orders"}
             </Link>
           </Button>
 
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-3xl font-bold">
-                Order #{order.orderCode || order.orderNumber}
+                {t("order.orderNumber")}: #
+                {order.orderCode || order.orderNumber}
               </h1>
               <p className="text-muted-foreground">
-                Placed on{" "}
+                {t("order.placedOn") || "Placed on"}{" "}
                 {order.orderDate
                   ? new Date(order.orderDate).toLocaleDateString()
                   : order.createdAt
-                  ? new Date(order.createdAt).toLocaleDateString()
-                  : "N/A"}
+                    ? new Date(order.createdAt).toLocaleDateString()
+                    : "N/A"}
               </p>
             </div>
             <div className="flex items-center gap-3">
@@ -364,11 +380,11 @@ export default function AccountOrderDetailsPage() {
                         returnRequest.status === "APPROVED"
                           ? "text-green-600 border-green-300 bg-green-50"
                           : returnRequest.status === "DENIED"
-                          ? "text-red-600 border-red-300 bg-red-50"
-                          : "text-orange-600 border-orange-300 bg-orange-50"
+                            ? "text-red-600 border-red-300 bg-red-50"
+                            : "text-orange-600 border-orange-300 bg-orange-50"
                       }
                     >
-                      Return: {returnRequest.status}
+                      {t("account.status")}: {returnRequest.status}
                     </Badge>
                   );
                 }
@@ -382,12 +398,12 @@ export default function AccountOrderDetailsPage() {
         {loadingTimeline ? (
           <div className="bg-white rounded-lg shadow-md p-6 mb-6">
             <h2 className="text-xl font-semibold mb-4 text-gray-800">
-              Order Timeline
+              {t("order.timeline") || "Order Timeline"}
             </h2>
             <div className="flex items-center justify-center py-8">
               <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-green-600"></div>
               <span className="ml-3 text-muted-foreground">
-                Loading timeline...
+                {t("home.loading") || "Loading timeline..."}
               </span>
             </div>
           </div>
@@ -400,7 +416,7 @@ export default function AccountOrderDetailsPage() {
           <div className="space-y-4">
             <h2 className="text-xl font-bold flex items-center gap-2 mb-4">
               <Package className="h-6 w-6 text-green-600" />
-              Order Items by Shop
+              {t("order.itemsByShop") || "Order Items by Shop"}
             </h2>
             {order.shopOrders && order.shopOrders.length > 0 ? (
               order.shopOrders.map((shopOrder) => (
@@ -415,10 +431,12 @@ export default function AccountOrderDetailsPage() {
                 <CardContent className="py-20 text-center text-slate-400">
                   <Package className="h-12 w-12 mx-auto mb-4 opacity-20" />
                   <p className="text-lg font-medium">
-                    No shipment details found.
+                    {t("order.noShipmentDetails") ||
+                      "No shipment details found."}
                   </p>
                   <p className="text-sm">
-                    Please check back later as we prepare your items.
+                    {t("order.noShipmentDetailsDesc") ||
+                      "Please check back later as we prepare your items."}
                   </p>
                 </CardContent>
               </Card>
@@ -430,19 +448,19 @@ export default function AccountOrderDetailsPage() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <FileText className="h-5 w-5 text-slate-500" />
-                Order Summary
+                {t("order.summary") || "Order Summary"}
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
               <div className="flex justify-between">
-                <span className="text-slate-600">Items Subtotal:</span>
+                <span className="text-slate-600">{t("cart.subtotal")}:</span>
                 <span className="font-medium text-slate-900">
                   {formatCurrency(order.subtotal || 0)}
                 </span>
               </div>
 
               <div className="flex justify-between">
-                <span className="text-slate-600">Total Shipping:</span>
+                <span className="text-slate-600">{t("cart.shipping")}:</span>
                 <span className="font-medium text-slate-900">
                   {formatCurrency(order.totalShipping || order.shipping || 0)}
                 </span>
@@ -451,7 +469,7 @@ export default function AccountOrderDetailsPage() {
               {((order.totalDiscount ?? 0) > 0 ||
                 (order.discount ?? 0) > 0) && (
                 <div className="flex justify-between text-green-600 italic">
-                  <span>Total Discount:</span>
+                  <span>{t("cart.discount")}:</span>
                   <span className="font-medium">
                     -
                     {formatCurrency(order.totalDiscount || order.discount || 0)}
@@ -460,7 +478,9 @@ export default function AccountOrderDetailsPage() {
               )}
 
               <div className="flex justify-between">
-                <span className="text-slate-600">Tax:</span>
+                <span className="text-slate-600">
+                  {t("cart.tax") || "Tax"}:
+                </span>
                 <span className="font-medium text-slate-900">
                   {formatCurrency(order.tax || 0)}
                 </span>
@@ -468,7 +488,7 @@ export default function AccountOrderDetailsPage() {
 
               <Separator className="bg-slate-200" />
               <div className="flex justify-between font-bold text-xl text-slate-900">
-                <span>Grand Total:</span>
+                <span>{t("cart.total")}:</span>
                 <span>
                   {formatCurrency(order.grandTotal || order.total || 0)}
                 </span>
@@ -481,7 +501,7 @@ export default function AccountOrderDetailsPage() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <User className="h-5 w-5" />
-                Customer Information
+                {t("account.personalInfo") || "Customer Information"}
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
@@ -512,7 +532,7 @@ export default function AccountOrderDetailsPage() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <MapPin className="h-5 w-5" />
-                  Shipping Address
+                  {t("account.addresses") || "Shipping Address"}
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
@@ -540,7 +560,8 @@ export default function AccountOrderDetailsPage() {
                         />
                       </div>
                       <div className="text-xs text-muted-foreground">
-                        Coordinates: {order.shippingAddress.latitude},{" "}
+                        {t("order.coordinates") || "Coordinates"}:{" "}
+                        {order.shippingAddress.latitude},{" "}
                         {order.shippingAddress.longitude}
                       </div>
 
@@ -552,7 +573,7 @@ export default function AccountOrderDetailsPage() {
                           className="flex-1"
                         >
                           <ExternalLink className="h-3 w-3 mr-1" />
-                          Open in Maps
+                          {t("order.openInMaps") || "Open in Maps"}
                         </Button>
                         <Button
                           onClick={getDirections}
@@ -561,7 +582,7 @@ export default function AccountOrderDetailsPage() {
                           className="flex-1"
                         >
                           <Navigation className="h-3 w-3 mr-1" />
-                          Get Directions
+                          {t("order.getDirections") || "Get Directions"}
                         </Button>
                       </div>
                     </div>
@@ -576,18 +597,18 @@ export default function AccountOrderDetailsPage() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <CreditCard className="h-5 w-5" />
-                  Payment Information
+                  {t("account.paymentMethods") || "Payment Information"}
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
                 <div className="flex justify-between">
-                  <span>Payment Method:</span>
+                  <span>{t("account.paymentMethods")}:</span>
                   <span className="capitalize">
                     {order.paymentInfo?.paymentMethod || order.paymentMethod}
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span>Payment Status:</span>
+                  <span>{t("account.status")}:</span>
                   <Badge
                     variant={
                       (order.paymentInfo?.paymentStatus ||
@@ -605,7 +626,7 @@ export default function AccountOrderDetailsPage() {
                   <div className="flex justify-between text-sm py-1.5 px-2 bg-green-50/50 rounded-md border border-green-100/50">
                     <span className="text-green-600 flex items-center gap-1 italic">
                       <Info className="h-3 w-3" />
-                      Points Applied:
+                      {t("order.pointsApplied") || "Points Applied"}:
                     </span>
                     <span className="font-bold text-green-700">
                       -{formatCurrency(order.paymentInfo.pointsValue)}
@@ -627,7 +648,7 @@ export default function AccountOrderDetailsPage() {
           open={showOrderNotes}
           onOpenChange={setShowOrderNotes}
           orderId={order.orderId}
-          title="Order Delivery Notes"
+          title={t("order.deliveryNotes") || "Order Delivery Notes"}
         />
       )}
     </div>

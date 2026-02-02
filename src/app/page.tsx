@@ -13,8 +13,10 @@ import Footer from "@/components/Footer";
 import HeroCarousel from "@/components/HeroCarousel";
 import ProductCardGrid from "@/components/ProductCardGrid";
 import Header from "@/components/Header";
+import { useTranslation } from "react-i18next";
 
 export default function Home() {
+  const { t } = useTranslation();
   const [landingData, setLandingData] = useState<LandingPageData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -58,7 +60,7 @@ export default function Home() {
         } else {
           console.log(
             "Error fetching the landing page data",
-            landingDataResult
+            landingDataResult,
           );
           throw new Error("Failed to fetch landing page data");
         }
@@ -116,7 +118,7 @@ export default function Home() {
         <div className="flex items-center justify-center min-h-[400px]">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto mb-4"></div>
-            <p className="text-gray-600">Loading...</p>
+            <p className="text-gray-600">{t("home.loading")}</p>
           </div>
         </div>
         <Footer />
@@ -131,7 +133,9 @@ export default function Home() {
         <div className="flex items-center justify-center min-h-[400px]">
           <div className="text-center">
             <p className="text-red-600 mb-4">{error}</p>
-            <Button onClick={() => window.location.reload()}>Try Again</Button>
+            <Button onClick={() => window.location.reload()}>
+              {t("home.tryAgain")}
+            </Button>
           </div>
         </div>
         <Footer />
@@ -144,7 +148,7 @@ export default function Home() {
       <div className="min-h-screen bg-gray-50">
         <CategoryNav />
         <div className="flex items-center justify-center min-h-[400px]">
-          <p className="text-gray-600">No data available</p>
+          <p className="text-gray-600">{t("home.noData")}</p>
         </div>
         <Footer />
       </div>
@@ -161,14 +165,14 @@ export default function Home() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           <ProductCardGrid
             products={landingData.topSellingProducts}
-            title="Top-selling products"
+            title={t("home.topSelling")}
             onSeeMore={() => handleSeeMore("top-selling")}
             maxItems={4}
           />
 
           <ProductCardGrid
             products={landingData.newProducts}
-            title="New products"
+            title={t("home.newProducts")}
             onSeeMore={() => handleSeeMore("new-products")}
             maxItems={4}
           />
@@ -178,7 +182,7 @@ export default function Home() {
         <div className="w-full">
           <ProductCardGrid
             products={landingData.discountedProducts}
-            title="Discounted products"
+            title={t("home.discounted")}
             onSeeMore={() => handleSeeMore("discounted")}
             maxItems={8}
           />
@@ -190,11 +194,9 @@ export default function Home() {
             <div className="w-full">
               <div className="mb-6">
                 <h2 className="text-2xl font-bold text-gray-900 mb-2">
-                  Shop by Category
+                  {t("home.shopByCategory")}
                 </h2>
-                <p className="text-gray-600">
-                  Discover products from our top categories
-                </p>
+                <p className="text-gray-600">{t("home.shopByCategoryDesc")}</p>
               </div>
               <CategoryGrid categories={landingData.featuredCategories} />
             </div>
@@ -206,11 +208,9 @@ export default function Home() {
             <div className="w-full">
               <div className="mb-6">
                 <h2 className="text-2xl font-bold text-gray-900 mb-2">
-                  Shop by Brand
+                  {t("home.shopByBrand")}
                 </h2>
-                <p className="text-gray-600">
-                  Explore products from your favorite brands
-                </p>
+                <p className="text-gray-600">{t("home.shopByBrandDesc")}</p>
               </div>
               <BrandGrid brands={landingData.featuredBrands} />
             </div>

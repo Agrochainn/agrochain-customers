@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
+import { useTranslation } from "react-i18next";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
@@ -33,6 +34,7 @@ interface FilterState {
 }
 
 export function ShopClient() {
+  const { t } = useTranslation();
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -55,7 +57,7 @@ export function ShopClient() {
   const [currentPage, setCurrentPage] = useState(1);
   const [productsPerPage] = useState(12);
   const [showFilters, setShowFilters] = useState(false);
-  
+
   // Track if we're updating URL internally to prevent reset loops
   const isUpdatingUrlRef = useRef(false);
   const previousUrlRef = useRef<string>("");
@@ -66,13 +68,13 @@ export function ShopClient() {
     if (isUpdatingUrlRef.current) {
       return;
     }
-    
+
     const currentUrl = window.location.href;
     // Skip if URL hasn't actually changed (prevents unnecessary re-parsing)
     if (previousUrlRef.current === currentUrl && isInitialized) {
       return;
     }
-    
+
     previousUrlRef.current = currentUrl;
     const parseUrlParams = () => {
       const urlFilters: FilterState = {
@@ -136,7 +138,7 @@ export function ShopClient() {
               item !== null &&
               item !== "undefined" &&
               item !== "null" &&
-              item.trim() !== ""
+              item.trim() !== "",
           );
         if (values.length > 0) {
           urlFilters.categories = values;
@@ -159,7 +161,7 @@ export function ShopClient() {
               item !== null &&
               item !== "undefined" &&
               item !== "null" &&
-              item.trim() !== ""
+              item.trim() !== "",
           );
         if (values.length > 0) {
           urlFilters.brands = values;
@@ -182,7 +184,7 @@ export function ShopClient() {
               item !== null &&
               item !== "undefined" &&
               item !== "null" &&
-              item.trim() !== ""
+              item.trim() !== "",
           );
         if (values.length > 0) {
           urlFilters.selectedDiscounts = values;
@@ -277,7 +279,12 @@ export function ShopClient() {
         const max = newFilters.priceRange[1];
         // Include both minPrice and maxPrice if either is different from default
         // This ensures consistency and prevents reset issues
-        if (min !== undefined && min !== null && max !== undefined && max !== null) {
+        if (
+          min !== undefined &&
+          min !== null &&
+          max !== undefined &&
+          max !== null
+        ) {
           // If either value is different from default, include both
           if (min > 0 || max < 1000) {
             urlParams.set("minPrice", min.toString());
@@ -293,7 +300,7 @@ export function ShopClient() {
         newFilters.categories.length > 0
       ) {
         const validCategories = newFilters.categories.filter(
-          (item) => item !== undefined && item !== null && item !== ""
+          (item) => item !== undefined && item !== null && item !== "",
         );
         if (validCategories.length > 0) {
           urlParams.set("categories", validCategories.join(","));
@@ -302,7 +309,7 @@ export function ShopClient() {
       } else {
         console.log(
           "❌ Categories not added - invalid or empty:",
-          newFilters.categories
+          newFilters.categories,
         );
       }
 
@@ -313,7 +320,7 @@ export function ShopClient() {
         newFilters.brands.length > 0
       ) {
         const validBrands = newFilters.brands.filter(
-          (item) => item !== undefined && item !== null && item !== ""
+          (item) => item !== undefined && item !== null && item !== "",
         );
         if (validBrands.length > 0) {
           urlParams.set("brands", validBrands.join(","));
@@ -327,7 +334,7 @@ export function ShopClient() {
         newFilters.selectedDiscounts.length > 0
       ) {
         const validDiscounts = newFilters.selectedDiscounts.filter(
-          (item) => item !== undefined && item !== null && item !== ""
+          (item) => item !== undefined && item !== null && item !== "",
         );
         if (validDiscounts.length > 0) {
           urlParams.set("discounts", validDiscounts.join(","));
@@ -343,7 +350,7 @@ export function ShopClient() {
       ) {
         try {
           const encodedAttributes = encodeURIComponent(
-            JSON.stringify(newFilters.attributes)
+            JSON.stringify(newFilters.attributes),
           );
           urlParams.set("attributes", encodedAttributes);
           console.log("✅ Added attributes to URL:", newFilters.attributes);
@@ -353,7 +360,7 @@ export function ShopClient() {
       } else {
         console.log(
           "❌ Attributes not added - invalid or empty:",
-          newFilters.attributes
+          newFilters.attributes,
         );
       }
 
@@ -401,23 +408,22 @@ export function ShopClient() {
         ? `?${urlParams.toString()}`
         : "";
       const newUrl = `/shop${queryString}`;
-   
+
       previousUrlRef.current = window.location.origin + newUrl;
       router.replace(newUrl, { scroll: false });
-      
+
       // Reset the flag after a short delay to allow URL to update
       setTimeout(() => {
         isUpdatingUrlRef.current = false;
       }, 100);
     },
-    [router]
+    [router],
   );
 
   // Handle filters change
   const handleFiltersChange = (
-    newFilters: FilterState | ((prevFilters: FilterState) => FilterState)
+    newFilters: FilterState | ((prevFilters: FilterState) => FilterState),
   ) => {
-
     const resolvedFilters =
       typeof newFilters === "function" ? newFilters(filters) : newFilters;
 
@@ -464,12 +470,12 @@ export function ShopClient() {
 
   return (
     <div className="container mx-auto px-4 py-8">
-
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-3xl font-bold">
           {filters.searchTerm
-            ? `Search: "${filters.searchTerm}"`
-            : "Shop All Products"}
+            ? t("filters.searchResult", { term: filters.searchTerm }) ||
+              `Search: "${filters.searchTerm}"`
+            : t("header.shop") || "Shop All Products"}
         </h1>
 
         <Sheet>
@@ -479,7 +485,7 @@ export function ShopClient() {
               className="lg:hidden flex items-center gap-2"
             >
               <Filter className="h-4 w-4" />
-              Filters
+              {t("filters.title") || "Filters"}
             </Button>
           </SheetTrigger>
           <SheetContent side="left" className="w-[85vw] sm:w-[350px]">
