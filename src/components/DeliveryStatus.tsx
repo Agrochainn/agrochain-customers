@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { MapPin, Truck, AlertCircle, Loader2, ChevronDown } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -10,7 +11,10 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { locationService, type DeliveryStatus as DeliveryStatusType } from "@/lib/services/locationService";
+import {
+  locationService,
+  type DeliveryStatus as DeliveryStatusType,
+} from "@/lib/services/locationService";
 import { DeliveryCountriesDropdown } from "@/components/DeliveryCountriesDropdown";
 import { shopDeliveryService } from "@/lib/services/shopDeliveryService";
 
@@ -19,9 +23,12 @@ interface DeliveryStatusProps {
 }
 
 export function DeliveryStatus({ className = "" }: DeliveryStatusProps) {
-  const [deliveryStatus, setDeliveryStatus] = useState<DeliveryStatusType | null>(null);
+  const { t } = useTranslation();
+  const [deliveryStatus, setDeliveryStatus] =
+    useState<DeliveryStatusType | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [shopCount, setShopCount] = useState<number>(0);
 
   const checkDeliveryStatus = async () => {
     try {
@@ -29,15 +36,15 @@ export function DeliveryStatus({ className = "" }: DeliveryStatusProps) {
       setError(null);
       const status = await locationService.checkDeliveryAvailability();
       setDeliveryStatus(status);
-      
-      // If we got a status but it shows as unavailable due to API issues, 
+
+      // If we got a status but it shows as unavailable due to API issues,
       // still show the country information
-      if (status.country === 'Unknown') {
-        setError('Location detection failed');
+      if (status.country === "Unknown") {
+        setError(t("delivery.locationFailed"));
       }
     } catch (err) {
-      setError('Failed to check delivery status');
-      console.error('Delivery status check failed:', err);
+      setError(t("delivery.checkFailed"));
+      console.error("Delivery status check failed:", err);
     } finally {
       setIsLoading(false);
     }
@@ -56,36 +63,41 @@ export function DeliveryStatus({ className = "" }: DeliveryStatusProps) {
     try {
       setIsLoading(true);
       setError(null);
-      
+
       // Check delivery for the selected country
       const status = await locationService.checkDeliveryForCountry(country);
-      
+
       // Check if shops deliver to this country
       try {
         const countries = await shopDeliveryService.getCountriesWithDelivery();
-        const countryInfo = countries.find(c => c.country.toLowerCase() === country.toLowerCase());
+        const countryInfo = countries.find(
+          (c) => c.country.toLowerCase() === country.toLowerCase(),
+        );
         if (countryInfo) {
           setShopCount(countryInfo.shopCount);
           if (countryInfo.shopCount > 0) {
             status.available = true;
-            status.message = `${countryInfo.shopCount} shop${countryInfo.shopCount > 1 ? 's' : ''} deliver${countryInfo.shopCount > 1 ? '' : 's'} to ${country}`;
+            status.message = t("delivery.shopsDeliver", {
+              count: countryInfo.shopCount,
+              country,
+            });
           } else {
             status.available = false;
-            status.message = `No shops currently deliver to ${country}`;
+            status.message = t("delivery.noShopsDeliver", { country });
           }
         } else {
           status.available = false;
-          status.message = `No shops currently deliver to ${country}`;
+          status.message = t("delivery.noShopsDeliver", { country });
           setShopCount(0);
         }
       } catch (err) {
-        console.error('Error checking shop delivery:', err);
+        console.error("Error checking shop delivery:", err);
       }
-      
+
       setDeliveryStatus(status);
     } catch (err) {
-      setError('Failed to check delivery for selected country');
-      console.error('Country selection failed:', err);
+      setError(t("delivery.countrySelectFailed"));
+      console.error("Country selection failed:", err);
     } finally {
       setIsLoading(false);
     }
@@ -95,7 +107,9 @@ export function DeliveryStatus({ className = "" }: DeliveryStatusProps) {
     return (
       <div className={`flex items-center gap-2 ${className}`}>
         <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
-        <span className="text-sm text-muted-foreground">Checking delivery...</span>
+        <span className="text-sm text-muted-foreground">
+          {t("delivery.checking")}
+        </span>
       </div>
     );
   }
@@ -112,11 +126,13 @@ export function DeliveryStatus({ className = "" }: DeliveryStatusProps) {
               className={`flex items-center gap-2 h-auto p-2 ${className}`}
             >
               <AlertCircle className="h-4 w-4 text-muted-foreground" />
-              <span className="text-sm text-muted-foreground">Location unavailable</span>
+              <span className="text-sm text-muted-foreground">
+                {t("delivery.locationUnavailable")}
+              </span>
             </Button>
           </TooltipTrigger>
           <TooltipContent>
-            <p>Click to retry location detection</p>
+            <p>{t("delivery.clickToRetry")}</p>
           </TooltipContent>
         </Tooltip>
       </TooltipProvider>
@@ -139,14 +155,20 @@ export function DeliveryStatus({ className = "" }: DeliveryStatusProps) {
                 {deliveryStatus.country}
               </span>
               {deliveryStatus.available ? (
-                <Badge variant="secondary" className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+                <Badge
+                  variant="secondary"
+                  className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
+                >
                   <Truck className="h-3 w-3 mr-1" />
-                  We deliver
+                  {t("delivery.weDeliver")}
                 </Badge>
               ) : (
-                <Badge variant="secondary" className="bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200">
+                <Badge
+                  variant="secondary"
+                  className="bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200"
+                >
                   <AlertCircle className="h-3 w-3 mr-1" />
-                  No delivery
+                  {t("delivery.noDelivery")}
                 </Badge>
               )}
             </Button>
@@ -158,15 +180,15 @@ export function DeliveryStatus({ className = "" }: DeliveryStatusProps) {
                 {deliveryStatus.message}
               </p>
               <p className="text-xs text-muted-foreground mt-1">
-                Click to refresh location
+                {t("delivery.clickToRefresh")}
               </p>
             </div>
           </TooltipContent>
         </Tooltip>
       </TooltipProvider>
-      
+
       {/* Countries Dropdown */}
-      <DeliveryCountriesDropdown 
+      <DeliveryCountriesDropdown
         currentCountry={deliveryStatus.country}
         onCountrySelect={handleCountrySelect}
       />

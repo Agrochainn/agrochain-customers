@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
@@ -55,7 +56,10 @@ import { useToast } from "@/hooks/use-toast";
 import { useAppSelector } from "@/lib/store/hooks";
 import { formatPrice as formatPriceUtil } from "@/lib/utils/priceFormatter";
 import { PaymentIcons } from "@/components/PaymentIcons";
-import { ShopCapabilityBadge, ShopCapabilityDialog } from "@/components/ShopCapabilityDialog";
+import {
+  ShopCapabilityBadge,
+  ShopCapabilityDialog,
+} from "@/components/ShopCapabilityDialog";
 import {
   Tooltip,
   TooltipContent,
@@ -64,15 +68,20 @@ import {
 } from "@/components/ui/tooltip";
 
 export default function CartPage() {
+  const { t } = useTranslation();
   const router = useRouter();
   const { isAuthenticated } = useAppSelector((state) => state.auth);
   const [cart, setCart] = useState<CartResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [isRemovingItem, setIsRemovingItem] = useState<string | null>(null);
   const [isUpdatingItem, setIsUpdatingItem] = useState<string | null>(null);
-  const [editingQuantity, setEditingQuantity] = useState<{[key: string]: string}>({});
+  const [editingQuantity, setEditingQuantity] = useState<{
+    [key: string]: string;
+  }>({});
   const [showCapabilityDialog, setShowCapabilityDialog] = useState(false);
-  const [selectedCapability, setSelectedCapability] = useState<"VISUALIZATION_ONLY" | "PICKUP_ORDERS" | "FULL_ECOMMERCE" | "HYBRID" | null>(null);
+  const [selectedCapability, setSelectedCapability] = useState<
+    "VISUALIZATION_ONLY" | "PICKUP_ORDERS" | "FULL_ECOMMERCE" | "HYBRID" | null
+  >(null);
 
   // Pagination
   const [currentPage, setCurrentPage] = useState(0); // Backend uses 0-based pagination
@@ -113,13 +122,16 @@ export default function CartPage() {
       const cartData = await CartService.getCart(currentPage, itemsPerPage);
       setCart(cartData);
       setTotalPages(cartData.totalPages || 1);
-      
+
       // Debug: Log cart data to understand discount structure
       console.log("Cart Data:", cartData);
-      console.log("Cart Items with hasDiscount flag:", cartData.items.filter(item => item.hasDiscount));
+      console.log(
+        "Cart Items with hasDiscount flag:",
+        cartData.items.filter((item) => item.hasDiscount),
+      );
     } catch (error) {
       console.error("Error loading cart:", error);
-      toast.error("Failed to load cart items.");
+      toast.error(t("cart.loadError") || "Failed to load cart items.");
     } finally {
       setLoading(false);
     }
@@ -134,9 +146,9 @@ export default function CartPage() {
 
   // Handle quantity input change
   const handleQuantityInputChange = (itemId: string, value: string) => {
-    setEditingQuantity(prev => ({
+    setEditingQuantity((prev) => ({
       ...prev,
-      [itemId]: value
+      [itemId]: value,
     }));
   };
 
@@ -146,22 +158,24 @@ export default function CartPage() {
     if (!inputValue) return;
 
     const newQuantity = parseInt(inputValue, 10);
-    const item = cart?.items.find((item: CartItemResponse) => item.id === itemId);
-    
+    const item = cart?.items.find(
+      (item: CartItemResponse) => item.id === itemId,
+    );
+
     if (!item) return;
 
     if (isNaN(newQuantity) || newQuantity < 1) {
       // Reset to current quantity if invalid
-      setEditingQuantity(prev => ({
+      setEditingQuantity((prev) => ({
         ...prev,
-        [itemId]: item.quantity.toString()
+        [itemId]: item.quantity.toString(),
       }));
       return;
     }
 
     // If quantity hasn't changed, just clear the editing state
     if (newQuantity === item.quantity) {
-      setEditingQuantity(prev => {
+      setEditingQuantity((prev) => {
         const newState = { ...prev };
         delete newState[itemId];
         return newState;
@@ -173,8 +187,11 @@ export default function CartPage() {
   };
 
   // Handle Enter key press in quantity input
-  const handleQuantityInputKeyPress = (e: React.KeyboardEvent, itemId: string) => {
-    if (e.key === 'Enter') {
+  const handleQuantityInputKeyPress = (
+    e: React.KeyboardEvent,
+    itemId: string,
+  ) => {
+    if (e.key === "Enter") {
       handleQuantityInputBlur(itemId);
     }
   };
@@ -193,9 +210,9 @@ export default function CartPage() {
       toast.warning(`Only ${maxStock} items available in stock.`);
     }
 
-    setEditingQuantity(prev => ({
+    setEditingQuantity((prev) => ({
       ...prev,
-      [itemId]: newQuantity.toString()
+      [itemId]: newQuantity.toString(),
     }));
 
     setIsUpdatingItem(itemId);
@@ -209,9 +226,9 @@ export default function CartPage() {
       setCart(updatedCart);
       dispatchCartUpdatedEvent();
       toast.success("Cart updated successfully");
-      
+
       // Clear the editing state after successful update
-      setEditingQuantity(prev => {
+      setEditingQuantity((prev) => {
         const newState = { ...prev };
         delete newState[itemId];
         return newState;
@@ -220,7 +237,7 @@ export default function CartPage() {
       console.error("Error updating cart:", error);
       toast.error("Failed to update cart item.");
       // Reset the editing quantity on error
-      setEditingQuantity(prev => {
+      setEditingQuantity((prev) => {
         const newState = { ...prev };
         delete newState[itemId];
         return newState;
@@ -283,7 +300,8 @@ export default function CartPage() {
     if (!cart || !cart.items) return 0;
     return cart.items.reduce((total, item) => {
       // Use originalPrice * quantity to get the price before any discounts
-      const originalItemPrice = (item.originalPrice || item.price) * item.quantity;
+      const originalItemPrice =
+        (item.originalPrice || item.price) * item.quantity;
       return total + originalItemPrice;
     }, 0);
   };
@@ -296,13 +314,18 @@ export default function CartPage() {
       if (item.discountAmount && item.discountAmount > 0) {
         return total + item.discountAmount;
       }
-      
+
       // Otherwise, calculate discount from originalPrice and current price
-      if (item.hasDiscount && item.originalPrice && item.originalPrice > item.price) {
-        const discountPerItem = (item.originalPrice - item.price) * item.quantity;
+      if (
+        item.hasDiscount &&
+        item.originalPrice &&
+        item.originalPrice > item.price
+      ) {
+        const discountPerItem =
+          (item.originalPrice - item.price) * item.quantity;
         return total + discountPerItem;
       }
-      
+
       return total;
     }, 0);
   };
@@ -313,12 +336,16 @@ export default function CartPage() {
     if (item.discountAmount && item.discountAmount > 0) {
       return item.discountAmount;
     }
-    
+
     // Otherwise, calculate discount from originalPrice and current price
-    if (item.hasDiscount && item.originalPrice && item.originalPrice > item.price) {
+    if (
+      item.hasDiscount &&
+      item.originalPrice &&
+      item.originalPrice > item.price
+    ) {
       return (item.originalPrice - item.price) * item.quantity;
     }
-    
+
     return 0;
   };
 
@@ -337,13 +364,13 @@ export default function CartPage() {
 
     // Validate that no items are from VISUALIZATION_ONLY shops
     const visualizationOnlyItems = cart.items.filter(
-      (item) => item.shopCapability === "VISUALIZATION_ONLY"
+      (item) => item.shopCapability === "VISUALIZATION_ONLY",
     );
 
     if (visualizationOnlyItems.length > 0) {
       toast.error(
         `Cannot proceed to checkout. ${visualizationOnlyItems.length} item(s) are from shops that only display products and do not accept orders. Please remove these items or contact the shops directly.`,
-        { duration: 6000 }
+        { duration: 6000 },
       );
       return;
     }
@@ -375,7 +402,7 @@ export default function CartPage() {
         >
           1
         </PaginationLink>
-      </PaginationItem>
+      </PaginationItem>,
     );
 
     // Show ellipsis if needed
@@ -383,7 +410,7 @@ export default function CartPage() {
       items.push(
         <PaginationItem key="ellipsis-start">
           <PaginationEllipsis />
-        </PaginationItem>
+        </PaginationItem>,
       );
     }
 
@@ -402,7 +429,7 @@ export default function CartPage() {
           >
             {i + 1}
           </PaginationLink>
-        </PaginationItem>
+        </PaginationItem>,
       );
     }
 
@@ -411,7 +438,7 @@ export default function CartPage() {
       items.push(
         <PaginationItem key="ellipsis-end">
           <PaginationEllipsis />
-        </PaginationItem>
+        </PaginationItem>,
       );
     }
 
@@ -425,7 +452,7 @@ export default function CartPage() {
           >
             {totalPages}
           </PaginationLink>
-        </PaginationItem>
+        </PaginationItem>,
       );
     }
 
@@ -438,7 +465,7 @@ export default function CartPage() {
         <div className="flex flex-col items-center justify-center min-h-[50vh]">
           <div className="flex items-center gap-2">
             <Loader2 className="h-6 w-6 animate-spin" />
-            <span>Loading your cart...</span>
+            <span>{t("home.loading")}</span>
           </div>
         </div>
       </div>
@@ -448,17 +475,15 @@ export default function CartPage() {
   if (!cart || cart.items.length === 0) {
     return (
       <div className="container mx-auto px-4 py-16">
-        <h1 className="text-3xl font-bold mb-6">Your Shopping Cart</h1>
+        <h1 className="text-3xl font-bold mb-6">{t("cart.title")}</h1>
         <div className="bg-muted/30 rounded-md p-8 text-center">
           <div className="flex justify-center mb-6">
             <ShoppingCart className="h-16 w-16 text-muted-foreground" />
           </div>
-          <h2 className="text-xl font-semibold mb-2">Your cart is empty</h2>
-          <p className="text-muted-foreground mb-8">
-            Looks like you haven't added any products to your cart yet.
-          </p>
+          <h2 className="text-xl font-semibold mb-2">{t("cart.empty")}</h2>
+          <p className="text-muted-foreground mb-8">{t("cart.emptyDesc")}</p>
           <Button size="lg" asChild>
-            <Link href="/shop">Continue Shopping</Link>
+            <Link href="/shop">{t("cart.startShopping")}</Link>
           </Button>
         </div>
       </div>
@@ -468,11 +493,11 @@ export default function CartPage() {
   return (
     <div className="container mx-auto px-4 py-8 md:py-16">
       <div className="flex items-center justify-between mb-8">
-        <h1 className="text-2xl md:text-3xl font-bold">Your Shopping Cart</h1>
+        <h1 className="text-2xl md:text-3xl font-bold">{t("cart.title")}</h1>
         <Button variant="ghost" size="sm" asChild className="hidden sm:flex">
           <Link href="/shop" className="flex items-center gap-1">
             <ArrowLeft className="h-4 w-4" />
-            Continue Shopping
+            {t("home.shopNow")}
           </Link>
         </Button>
       </div>
@@ -485,10 +510,18 @@ export default function CartPage() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="w-[300px]">Product</TableHead>
-                  <TableHead className="text-center">Price</TableHead>
-                  <TableHead className="text-center">Quantity</TableHead>
-                  <TableHead className="text-right">Subtotal</TableHead>
+                  <TableHead className="w-[300px]">
+                    {t("cart.product") || "Product"}
+                  </TableHead>
+                  <TableHead className="text-center">
+                    {t("cart.price") || "Price"}
+                  </TableHead>
+                  <TableHead className="text-center">
+                    {t("cart.quantity")}
+                  </TableHead>
+                  <TableHead className="text-right">
+                    {t("cart.subtotal")}
+                  </TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -552,7 +585,9 @@ export default function CartPage() {
                                       <button
                                         type="button"
                                         onClick={() => {
-                                          setSelectedCapability(item.shopCapability!);
+                                          setSelectedCapability(
+                                            item.shopCapability!,
+                                          );
                                           setShowCapabilityDialog(true);
                                         }}
                                         className="text-muted-foreground hover:text-foreground transition-colors"
@@ -562,7 +597,10 @@ export default function CartPage() {
                                       </button>
                                     </TooltipTrigger>
                                     <TooltipContent>
-                                      <p className="text-xs">Click to learn how this shop operates</p>
+                                      <p className="text-xs">
+                                        {t("cart.shopCapabilityInfo") ||
+                                          "Click to learn how this shop operates"}
+                                      </p>
                                     </TooltipContent>
                                   </Tooltip>
                                 </TooltipProvider>
@@ -581,7 +619,7 @@ export default function CartPage() {
                             ) : (
                               <Trash2 className="h-3 w-3" />
                             )}
-                            Remove
+                            {t("cart.remove")}
                           </Button>
                         </div>
                       </div>
@@ -619,15 +657,15 @@ export default function CartPage() {
                             size="sm"
                             className="h-8 w-8 p-0 rounded-none"
                             onClick={() => {
-                              const currentQuantity = editingQuantity[item.id] 
-                                ? parseInt(editingQuantity[item.id], 10) 
+                              const currentQuantity = editingQuantity[item.id]
+                                ? parseInt(editingQuantity[item.id], 10)
                                 : item.quantity;
                               updateQuantity(item.id, currentQuantity - 1);
                             }}
                             disabled={
-                              isUpdatingItem === item.id || 
-                              (editingQuantity[item.id] 
-                                ? parseInt(editingQuantity[item.id], 10) <= 1 
+                              isUpdatingItem === item.id ||
+                              (editingQuantity[item.id]
+                                ? parseInt(editingQuantity[item.id], 10) <= 1
                                 : item.quantity <= 1)
                             }
                           >
@@ -641,10 +679,17 @@ export default function CartPage() {
                             type="number"
                             min="1"
                             max={item.stock}
-                            value={editingQuantity[item.id] ?? item.quantity.toString()}
-                            onChange={(e) => handleQuantityInputChange(item.id, e.target.value)}
+                            value={
+                              editingQuantity[item.id] ??
+                              item.quantity.toString()
+                            }
+                            onChange={(e) =>
+                              handleQuantityInputChange(item.id, e.target.value)
+                            }
                             onBlur={() => handleQuantityInputBlur(item.id)}
-                            onKeyPress={(e) => handleQuantityInputKeyPress(e, item.id)}
+                            onKeyPress={(e) =>
+                              handleQuantityInputKeyPress(e, item.id)
+                            }
                             className="min-w-[3rem] w-auto max-w-[6rem] h-8 text-center border-0 rounded-none focus:ring-0 focus:border-0 px-2"
                             disabled={isUpdatingItem === item.id}
                           />
@@ -653,15 +698,16 @@ export default function CartPage() {
                             size="sm"
                             className="h-8 w-8 p-0 rounded-none"
                             onClick={() => {
-                              const currentQuantity = editingQuantity[item.id] 
-                                ? parseInt(editingQuantity[item.id], 10) 
+                              const currentQuantity = editingQuantity[item.id]
+                                ? parseInt(editingQuantity[item.id], 10)
                                 : item.quantity;
                               updateQuantity(item.id, currentQuantity + 1);
                             }}
                             disabled={
                               isUpdatingItem === item.id ||
-                              (editingQuantity[item.id] 
-                                ? parseInt(editingQuantity[item.id], 10) >= item.stock 
+                              (editingQuantity[item.id]
+                                ? parseInt(editingQuantity[item.id], 10) >=
+                                  item.stock
                                 : item.quantity >= item.stock)
                             }
                           >
@@ -673,7 +719,7 @@ export default function CartPage() {
                           </Button>
                         </div>
                         <div className="text-xs text-muted-foreground">
-                          {item.stock} available
+                          {item.stock} {t("cart.available") || "available"}
                         </div>
                       </div>
                     </TableCell>
@@ -781,7 +827,9 @@ export default function CartPage() {
                                   <button
                                     type="button"
                                     onClick={() => {
-                                      setSelectedCapability(item.shopCapability!);
+                                      setSelectedCapability(
+                                        item.shopCapability!,
+                                      );
                                       setShowCapabilityDialog(true);
                                     }}
                                     className="text-muted-foreground hover:text-foreground transition-colors"
@@ -791,7 +839,9 @@ export default function CartPage() {
                                   </button>
                                 </TooltipTrigger>
                                 <TooltipContent>
-                                  <p className="text-xs">Click to learn how this shop operates</p>
+                                  <p className="text-xs">
+                                    Click to learn how this shop operates
+                                  </p>
                                 </TooltipContent>
                               </Tooltip>
                             </TooltipProvider>
@@ -835,15 +885,18 @@ export default function CartPage() {
                                 size="sm"
                                 className="h-7 w-7 p-0 rounded-none"
                                 onClick={() => {
-                                  const currentQuantity = editingQuantity[item.id] 
-                                    ? parseInt(editingQuantity[item.id], 10) 
+                                  const currentQuantity = editingQuantity[
+                                    item.id
+                                  ]
+                                    ? parseInt(editingQuantity[item.id], 10)
                                     : item.quantity;
                                   updateQuantity(item.id, currentQuantity - 1);
                                 }}
                                 disabled={
-                                  isUpdatingItem === item.id || 
-                                  (editingQuantity[item.id] 
-                                    ? parseInt(editingQuantity[item.id], 10) <= 1 
+                                  isUpdatingItem === item.id ||
+                                  (editingQuantity[item.id]
+                                    ? parseInt(editingQuantity[item.id], 10) <=
+                                      1
                                     : item.quantity <= 1)
                                 }
                               >
@@ -857,10 +910,20 @@ export default function CartPage() {
                                 type="number"
                                 min="1"
                                 max={item.stock}
-                                value={editingQuantity[item.id] ?? item.quantity.toString()}
-                                onChange={(e) => handleQuantityInputChange(item.id, e.target.value)}
+                                value={
+                                  editingQuantity[item.id] ??
+                                  item.quantity.toString()
+                                }
+                                onChange={(e) =>
+                                  handleQuantityInputChange(
+                                    item.id,
+                                    e.target.value,
+                                  )
+                                }
                                 onBlur={() => handleQuantityInputBlur(item.id)}
-                                onKeyPress={(e) => handleQuantityInputKeyPress(e, item.id)}
+                                onKeyPress={(e) =>
+                                  handleQuantityInputKeyPress(e, item.id)
+                                }
                                 className="min-w-[2.5rem] w-auto max-w-[5rem] h-7 text-center text-sm border-0 rounded-none focus:ring-0 focus:border-0 px-2"
                                 disabled={isUpdatingItem === item.id}
                               />
@@ -869,15 +932,18 @@ export default function CartPage() {
                                 size="sm"
                                 className="h-7 w-7 p-0 rounded-none"
                                 onClick={() => {
-                                  const currentQuantity = editingQuantity[item.id] 
-                                    ? parseInt(editingQuantity[item.id], 10) 
+                                  const currentQuantity = editingQuantity[
+                                    item.id
+                                  ]
+                                    ? parseInt(editingQuantity[item.id], 10)
                                     : item.quantity;
                                   updateQuantity(item.id, currentQuantity + 1);
                                 }}
                                 disabled={
                                   isUpdatingItem === item.id ||
-                                  (editingQuantity[item.id] 
-                                    ? parseInt(editingQuantity[item.id], 10) >= item.stock 
+                                  (editingQuantity[item.id]
+                                    ? parseInt(editingQuantity[item.id], 10) >=
+                                      item.stock
                                     : item.quantity >= item.stock)
                                 }
                               >
@@ -903,7 +969,7 @@ export default function CartPage() {
                             </Button>
                           </div>
                           <div className="text-xs text-muted-foreground text-center">
-                            {item.stock} available
+                            {item.stock} {t("cart.available") || "available"}
                           </div>
                         </div>
                       </div>
@@ -928,7 +994,10 @@ export default function CartPage() {
                   </Button>
 
                   <span className="text-sm">
-                    Page {currentPage + 1} of {totalPages}
+                    {t("filters.pageInfo", {
+                      current: currentPage + 1,
+                      total: totalPages,
+                    })}
                   </span>
 
                   <Button
@@ -950,24 +1019,26 @@ export default function CartPage() {
               <AlertDialogTrigger asChild>
                 <Button variant="outline" size="sm">
                   <Trash2 className="h-4 w-4 mr-2" />
-                  Clear Cart
+                  {t("cart.clearCart") || "Clear Cart"}
                 </Button>
               </AlertDialogTrigger>
               <AlertDialogContent>
                 <AlertDialogHeader>
-                  <AlertDialogTitle>Clear your cart?</AlertDialogTitle>
+                  <AlertDialogTitle>
+                    {t("cart.clearCartTitle") || "Clear your cart?"}
+                  </AlertDialogTitle>
                   <AlertDialogDescription>
-                    This will remove all items from your cart. This action
-                    cannot be undone.
+                    {t("cart.clearCartDesc") ||
+                      "This will remove all items from your cart. This action cannot be undone."}
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
-                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogCancel>{t("account.cancel")}</AlertDialogCancel>
                   <AlertDialogAction
                     onClick={clearCart}
                     className="bg-destructive hover:bg-destructive/90"
                   >
-                    Clear Cart
+                    {t("cart.clearCart") || "Clear Cart"}
                   </AlertDialogAction>
                 </AlertDialogFooter>
               </AlertDialogContent>
@@ -976,7 +1047,7 @@ export default function CartPage() {
             <Button variant="ghost" size="sm" asChild className="sm:hidden">
               <Link href="/shop" className="flex items-center gap-1">
                 <ArrowLeft className="h-4 w-4" />
-                Continue Shopping
+                {t("home.shopNow")}
               </Link>
             </Button>
           </div>
@@ -986,26 +1057,33 @@ export default function CartPage() {
         <div className="mt-4 lg:mt-0">
           <div className="rounded-md border overflow-hidden sticky top-24">
             <div className="bg-muted px-6 py-4">
-              <h2 className="font-semibold text-lg">Order Summary</h2>
+              <h2 className="font-semibold text-lg">{t("cart.summary")}</h2>
             </div>
 
             <div className="p-6 space-y-4">
               {/* Original Subtotal (before discounts) */}
               <div className="flex justify-between">
-                <span className="text-muted-foreground">Subtotal</span>
+                <span className="text-muted-foreground">
+                  {t("cart.subtotal")}
+                </span>
                 <span className="font-medium">
                   {formatPrice(calculateOriginalSubtotal())}
                 </span>
               </div>
 
-              {cart.items.some((item) => item.hasDiscount || calculateItemDiscount(item) > 0) && (
+              {cart.items.some(
+                (item) => item.hasDiscount || calculateItemDiscount(item) > 0,
+              ) && (
                 <>
                   <div className="space-y-2">
                     <div className="text-sm font-medium text-green-600">
-                      Discounts Applied
+                      {t("cart.discountsApplied") || "Discounts Applied"}
                     </div>
                     {cart.items
-                      .filter((item) => item.hasDiscount || calculateItemDiscount(item) > 0)
+                      .filter(
+                        (item) =>
+                          item.hasDiscount || calculateItemDiscount(item) > 0,
+                      )
                       .map((item, index) => (
                         <div
                           key={index}
@@ -1021,24 +1099,26 @@ export default function CartPage() {
                           </div>
                           {item.discountName && (
                             <span className="text-xs text-green-600">
-                              {item.discountName} ({Math.round(item.discountPercentage || 0)}% off)
+                              {item.discountName} (
+                              {Math.round(item.discountPercentage || 0)}% off)
                             </span>
                           )}
                         </div>
                       ))}
                     <div className="flex justify-between text-sm font-medium text-green-600 border-t pt-2">
-                      <span>Total Discount</span>
-                      <span>
-                        -{formatPrice(calculateTotalDiscount())}
-                      </span>
+                      <span>{t("cart.totalDiscount") || "Total Discount"}</span>
+                      <span>-{formatPrice(calculateTotalDiscount())}</span>
                     </div>
                   </div>
-                  
+
                   <Separator />
-                  
+
                   {/* Subtotal after discount */}
                   <div className="flex justify-between">
-                    <span className="text-muted-foreground">Subtotal after discount</span>
+                    <span className="text-muted-foreground">
+                      {t("cart.subtotalAfterDiscount") ||
+                        "Subtotal after discount"}
+                    </span>
                     <span className="font-medium">
                       {formatPrice(cart.subtotal)}
                     </span>
@@ -1049,12 +1129,15 @@ export default function CartPage() {
               <Separator className="my-4" />
 
               <div className="flex justify-between text-lg font-semibold">
-                <span>Total</span>
+                <span>{t("cart.total")}</span>
                 <span>{formatPrice(getTotal())}</span>
               </div>
 
               <div className="text-sm text-muted-foreground">
-                <p>Estimated delivery: 3-5 business days</p>
+                <p>
+                  {t("cart.estimatedDelivery") ||
+                    "Estimated delivery: 3-5 business days"}
+                </p>
               </div>
 
               <Button
@@ -1062,13 +1145,16 @@ export default function CartPage() {
                 size="lg"
                 onClick={handleProceedToCheckout}
               >
-                Proceed to Checkout
+                {t("cart.checkout")}
               </Button>
 
               {/* Guest user message */}
               {!isAuthenticated && (
                 <div className="text-center text-sm text-muted-foreground mt-2">
-                  <p>Continue as guest or sign in to save your cart.</p>
+                  <p>
+                    {t("cart.guestMessage") ||
+                      "Continue as guest or sign in to save your cart."}
+                  </p>
                 </div>
               )}
 
@@ -1079,8 +1165,8 @@ export default function CartPage() {
                 <div className="flex items-start gap-2 text-sm">
                   <AlertCircle className="h-4 w-4 mt-0.5 text-muted-foreground" />
                   <p className="text-muted-foreground">
-                    Items in your cart are not reserved. Checkout now to secure
-                    your order.
+                    {t("cart.notReserved") ||
+                      "Items in your cart are not reserved. Checkout now to secure your order."}
                   </p>
                 </div>
               </div>

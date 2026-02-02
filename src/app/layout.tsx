@@ -7,6 +7,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { ReduxProvider } from "@/lib/providers/ReduxProvider";
 import { AuthProvider } from "@/lib/providers/AuthProvider";
+import { I18nProvider } from "@/lib/providers/I18nProvider";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -34,19 +35,21 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
         <ReduxProvider>
-          <AuthProvider>
-            <ThemeProvider
-              attribute="class"
-              defaultTheme="light"
-              enableSystem={false}
-              disableTransitionOnChange
-            >
-              <Header />
-              <main>{children}</main>
-              <Footer />
-              <Toaster />
-            </ThemeProvider>
-          </AuthProvider>
+          <I18nProvider>
+            <AuthProvider>
+              <ThemeProvider
+                attribute="class"
+                defaultTheme="light"
+                enableSystem={false}
+                disableTransitionOnChange
+              >
+                <Header />
+                <main>{children}</main>
+                <Footer />
+                <Toaster />
+              </ThemeProvider>
+            </AuthProvider>
+          </I18nProvider>
         </ReduxProvider>
       </body>
     </html>

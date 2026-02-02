@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -72,6 +73,7 @@ const ProductGrid = ({
   onClearAllFilters,
   onPageChange,
 }: ProductGridProps) => {
+  const { t } = useTranslation();
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [sortBy, setSortBy] = useState("createdAt");
   const [sortDirection, setSortDirection] = useState("desc");
@@ -82,16 +84,16 @@ const ProductGrid = ({
   const [wishlistItems, setWishlistItems] = useState<string[]>([]);
   const [showVariantModal, setShowVariantModal] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<ProductDTO | null>(
-    null
+    null,
   );
   const [loadingStates, setLoadingStates] = useState<Record<string, boolean>>(
-    {}
+    {},
   );
   const [wishlistLoadingStates, setWishlistLoadingStates] = useState<
     Record<string, boolean>
   >({});
   const [productsWithVariants, setProductsWithVariants] = useState<Set<string>>(
-    new Set()
+    new Set(),
   );
   const { toast } = useToast();
   const { isAuthenticated } = useAppSelector((state) => state.auth);
@@ -115,7 +117,7 @@ const ProductGrid = ({
 
   // Enhanced cart status check for individual products (like ProductCard)
   const checkIndividualProductCartStatus = async (
-    productId: string
+    productId: string,
   ): Promise<boolean> => {
     try {
       // First check if product has variants
@@ -174,26 +176,30 @@ const ProductGrid = ({
         setLoadingStates((prev) => ({ ...prev, [productId]: true }));
         const cart = await CartService.getCart();
         const cartItem = cart.items.find(
-          (item) => item.productId === productId
+          (item) => item.productId === productId,
         );
 
         if (cartItem) {
           await CartService.removeItemFromCart(cartItem.id);
           await checkCartStatus();
-          
+
           // Trigger cart update event for header
           triggerCartUpdate();
-          
+
           toast({
-            title: "Removed from cart",
-            description: "Product has been removed from your cart.",
+            title: t("cart.removedTitle") || "Removed from cart",
+            description:
+              t("cart.removedDesc") ||
+              "Product has been removed from your cart.",
           });
         }
       } catch (error) {
         console.error("Error removing from cart:", error);
         toast({
-          title: "Error",
-          description: "Failed to remove item from cart. Please try again.",
+          title: t("common.error") || "Error",
+          description:
+            t("cart.removeError") ||
+            "Failed to remove item from cart. Please try again.",
           variant: "destructive",
         });
       } finally {
@@ -221,8 +227,10 @@ const ProductGrid = ({
     } catch (error) {
       console.error("Error fetching product details:", error);
       toast({
-        title: "Error",
-        description: "Failed to fetch product details. Please try again.",
+        title: t("common.error") || "Error",
+        description:
+          t("cart.fetchingError") ||
+          "Failed to fetch product details. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -244,7 +252,7 @@ const ProductGrid = ({
       } else {
         // If product was added, check if product is in cart
         const isProductInCart = await CartService.isInCart(
-          request.productId || ""
+          request.productId || "",
         );
         if (isProductInCart) {
           setCartItems((prev) => [...prev, request.productId || ""]);
@@ -255,14 +263,16 @@ const ProductGrid = ({
       triggerCartUpdate();
 
       toast({
-        title: "Added to cart",
-        description: "Product has been added to your cart.",
+        title: t("cart.addedTitle") || "Added to cart",
+        description:
+          t("cart.addedDesc") || "Product has been added to your cart.",
       });
     } catch (error) {
       console.error("Error adding to cart:", error);
       toast({
-        title: "Error",
-        description: "Failed to add item to cart. Please try again.",
+        title: t("common.error") || "Error",
+        description:
+          t("cart.addError") || "Failed to add item to cart. Please try again.",
         variant: "destructive",
       });
     }
@@ -279,7 +289,7 @@ const ProductGrid = ({
           // For authenticated users, we need to get the wishlist item ID
           const wishlist = await WishlistService.getWishlist();
           const wishlistItem = wishlist.products.find(
-            (item) => item.productId === productId
+            (item) => item.productId === productId,
           );
 
           if (wishlistItem) {
@@ -292,8 +302,10 @@ const ProductGrid = ({
 
         await checkWishlistStatus();
         toast({
-          title: "Removed from wishlist",
-          description: "Product has been removed from your wishlist.",
+          title: t("wishlist.removedTitle") || "Removed from wishlist",
+          description:
+            t("wishlist.removedDesc") ||
+            "Product has been removed from your wishlist.",
         });
       } catch (error) {
         console.error("Error removing from wishlist:", error);
@@ -321,7 +333,7 @@ const ProductGrid = ({
         : "Product has been added to your local wishlist. Sign in to sync across devices.";
 
       toast({
-        title: "Added to wishlist",
+        title: t("wishlist.addedTitle") || "Added to wishlist",
         description: message,
       });
     } catch (error) {
@@ -354,7 +366,7 @@ const ProductGrid = ({
     if (filters.categories && filters.categories.length > 0) {
       try {
         const categoryIds = await filterMappingService.mapCategoryNamesToIds(
-          filters.categories
+          filters.categories,
         );
         if (categoryIds.length > 0) {
           searchDTO.categoryIds = categoryIds;
@@ -368,7 +380,7 @@ const ProductGrid = ({
         console.error("Error mapping category names to IDs:", error);
         console.log(
           "Falling back to category names due to error:",
-          filters.categories
+          filters.categories,
         );
         searchDTO.categoryNames = filters.categories;
       }
@@ -378,7 +390,7 @@ const ProductGrid = ({
     if (filters.brands && filters.brands.length > 0) {
       try {
         const brandIds = await filterMappingService.mapBrandNamesToIds(
-          filters.brands
+          filters.brands,
         );
         if (brandIds.length > 0) {
           searchDTO.brandIds = brandIds;
@@ -392,7 +404,7 @@ const ProductGrid = ({
         console.error("Error mapping brand names to IDs:", error);
         console.log(
           "Falling back to brand names due to error:",
-          filters.brands
+          filters.brands,
         );
         searchDTO.brandNames = filters.brands;
       }
@@ -506,7 +518,7 @@ const ProductGrid = ({
 
     if (!hasAnyFilter) {
       console.warn(
-        "No valid filter criteria found, using getAllProducts instead"
+        "No valid filter criteria found, using getAllProducts instead",
       );
       throw new Error("No valid filter criteria");
     }
@@ -529,7 +541,7 @@ const ProductGrid = ({
       filters.inStock === false ||
       filters.isBestseller === true ||
       filters.isFeatured === true ||
-      filters.organic !== null && filters.organic !== undefined
+      (filters.organic !== null && filters.organic !== undefined)
     );
   };
 
@@ -551,14 +563,17 @@ const ProductGrid = ({
           currentPage - 1,
           productsPerPage,
           sortBy,
-          sortDirection
+          sortDirection,
         );
       }
 
       setProducts(productPage);
     } catch (error) {
       console.error("Error fetching products:", error);
-      setError("Failed to load products. Please try again.");
+      setError(
+        t("filters.errorLoading") ||
+          "Failed to load products. Please try again.",
+      );
     } finally {
       setIsLoading(false);
     }
@@ -575,7 +590,7 @@ const ProductGrid = ({
         for (const product of products.content) {
           try {
             const productDetails = await ProductService.getProductById(
-              product.productId
+              product.productId,
             );
             if (ProductService.hasVariants(productDetails)) {
               variantProducts.add(product.productId);
@@ -583,7 +598,7 @@ const ProductGrid = ({
           } catch (error) {
             console.error(
               `Error checking variants for product ${product.productId}:`,
-              error
+              error,
             );
           }
         }
@@ -647,12 +662,12 @@ const ProductGrid = ({
           <AlertCircle className="h-8 w-8 text-red-500" />
         </div>
         <h3 className="font-medium text-lg mb-2 text-red-700">
-          Failed to Load Products
+          {t("filters.errorTitle")}
         </h3>
         <p className="text-red-600 mb-6">{error}</p>
         <Button onClick={handleRetry} variant="outline">
           <Loader2 className="h-4 w-4 mr-2" />
-          Try Again
+          {t("filters.retry")}
         </Button>
       </div>
     );
@@ -667,40 +682,55 @@ const ProductGrid = ({
       <div className="flex flex-col sm:flex-row gap-3 sm:items-center sm:justify-between">
         <div className="flex items-center gap-2">
           <span className="text-sm text-gray-600">
-            Showing <strong>{paginatedProducts.length}</strong> of{" "}
-            <strong>{totalProducts}</strong> products
+            {t("filters.showingResults", {
+              count: paginatedProducts.length,
+              total: totalProducts,
+            })}
           </span>
           {totalProducts > 0 && (
             <Badge variant="outline" className="text-xs">
-              Page {currentPage} of {products?.totalPages || 1}
+              {t("filters.pageInfo", {
+                current: currentPage,
+                total: products?.totalPages || 1,
+              })}
             </Badge>
           )}
         </div>
         <div className="flex items-center justify-between sm:justify-end gap-3">
           <div className="flex items-center flex-1 sm:flex-auto">
             <span className="text-sm mr-2 hidden sm:inline-block">
-              Sort by:
+              {t("filters.sortBy")}:
             </span>
             <Select
               value={`${sortBy}-${sortDirection}`}
               onValueChange={handleSortChange}
             >
               <SelectTrigger className="w-[130px] sm:w-[160px] h-9">
-                <SelectValue placeholder="Sort by" />
+                <SelectValue placeholder={t("filters.sortBy")} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="createdAt-desc">Newest First</SelectItem>
-                <SelectItem value="createdAt-asc">Oldest First</SelectItem>
+                <SelectItem value="createdAt-desc">
+                  {t("filters.newest")}
+                </SelectItem>
+                <SelectItem value="createdAt-asc">
+                  {t("filters.oldest")}
+                </SelectItem>
                 <SelectItem value="finalPrice-asc">
-                  Price: Low to High
+                  {t("filters.priceLow")}
                 </SelectItem>
                 <SelectItem value="finalPrice-desc">
-                  Price: High to Low
+                  {t("filters.priceHigh")}
                 </SelectItem>
-                <SelectItem value="rating-desc">Highest Rated</SelectItem>
-                <SelectItem value="reviewCount-desc">Most Reviews</SelectItem>
-                <SelectItem value="name-asc">Name A-Z</SelectItem>
-                <SelectItem value="name-desc">Name Z-A</SelectItem>
+                <SelectItem value="rating-desc">
+                  {t("filters.highestRated")}
+                </SelectItem>
+                <SelectItem value="reviewCount-desc">
+                  {t("filters.mostReviews")}
+                </SelectItem>
+                <SelectItem value="name-asc">{t("filters.nameAsc")}</SelectItem>
+                <SelectItem value="name-desc">
+                  {t("filters.nameDesc")}
+                </SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -729,7 +759,7 @@ const ProductGrid = ({
             onClick={onToggleFilters}
           >
             <Filter className="h-4 w-4 mr-2" />
-            Filters
+            {t("filters.title")}
           </Button>
         </div>
       </div>
@@ -741,13 +771,13 @@ const ProductGrid = ({
             <Filter className="h-8 w-8 text-gray-400" />
           </div>
           <h3 className="font-medium text-lg mb-2">
-            No products match your criteria
+            {t("filters.noProductsFound")}
           </h3>
           <p className="text-gray-600 mb-6">
-            Try adjusting your filters or search term.
+            {t("filters.noProductsFoundDesc")}
           </p>
           <Button variant="outline" onClick={clearAllFilters}>
-            Clear All Filters
+            {t("filters.clearFilters")}
           </Button>
         </div>
       ) : (
@@ -800,17 +830,17 @@ const ProductGrid = ({
 
                       {convertedProduct.isNew && (
                         <Badge className="bg-green-500 text-white text-xs">
-                          New
+                          {t("filters.new") || "New"}
                         </Badge>
                       )}
                       {convertedProduct.isBestseller && (
                         <Badge className="bg-green-500 text-white text-xs">
-                          Bestseller
+                          {t("filters.bestsellers") || "Bestseller"}
                         </Badge>
                       )}
                       {convertedProduct.isFeatured && (
                         <Badge className="bg-purple-500 text-white text-xs">
-                          Featured
+                          {t("filters.featured") || "Featured"}
                         </Badge>
                       )}
                     </div>
@@ -886,7 +916,10 @@ const ProductGrid = ({
                             <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
                             <span className="text-sm text-muted-foreground">
                               {convertedProduct.rating.toFixed(1)} (
-                              {convertedProduct.reviewCount} reviews)
+                              {t("filters.reviewsCount", {
+                                count: convertedProduct.reviewCount,
+                              }) || `${convertedProduct.reviewCount} reviews`}
+                              )
                             </span>
                           </div>
 
@@ -894,19 +927,27 @@ const ProductGrid = ({
                           <div className="mb-4">
                             {(() => {
                               const priceInfo = formatDiscountedPrice(
-                                convertedProduct.originalPrice || convertedProduct.price,
-                                convertedProduct.discountedPrice || convertedProduct.price
+                                convertedProduct.originalPrice ||
+                                  convertedProduct.price,
+                                convertedProduct.discountedPrice ||
+                                  convertedProduct.price,
                               );
-                              
+
                               return (
                                 <>
                                   <div className="flex items-center gap-3 mb-1">
                                     <span className="font-bold text-xl">
-                                      {formatPrice(convertedProduct.discountedPrice || convertedProduct.price)}
+                                      {formatPrice(
+                                        convertedProduct.discountedPrice ||
+                                          convertedProduct.price,
+                                      )}
                                     </span>
                                     {priceInfo.hasDiscount && (
                                       <span className="text-sm text-muted-foreground line-through">
-                                        {formatPrice(convertedProduct.originalPrice || convertedProduct.price)}
+                                        {formatPrice(
+                                          convertedProduct.originalPrice ||
+                                            convertedProduct.price,
+                                        )}
                                       </span>
                                     )}
                                   </div>
@@ -914,11 +955,22 @@ const ProductGrid = ({
                                     convertedProduct.discount &&
                                     priceInfo.hasDiscount && (
                                       <span className="text-sm text-green-600 font-medium">
-                                        Save {formatPrice(
-                                          (convertedProduct.originalPrice || convertedProduct.price) -
-                                          (convertedProduct.discountedPrice || convertedProduct.price),
-                                          { showCurrency: false }
-                                        )}
+                                        {t("filters.save", {
+                                          amount: formatPrice(
+                                            (convertedProduct.originalPrice ||
+                                              convertedProduct.price) -
+                                              (convertedProduct.discountedPrice ||
+                                                convertedProduct.price),
+                                            { showCurrency: false },
+                                          ),
+                                        }) ||
+                                          `Save ${formatPrice(
+                                            (convertedProduct.originalPrice ||
+                                              convertedProduct.price) -
+                                              (convertedProduct.discountedPrice ||
+                                                convertedProduct.price),
+                                            { showCurrency: false },
+                                          )}`}
                                       </span>
                                     )}
                                 </>
@@ -928,7 +980,8 @@ const ProductGrid = ({
 
                           {/* Action Buttons */}
                           <div className="flex items-center gap-3 mt-auto">
-                            {convertedProduct.shopCapability !== "VISUALIZATION_ONLY" && (
+                            {convertedProduct.shopCapability !==
+                              "VISUALIZATION_ONLY" && (
                               <Button
                                 size="sm"
                                 className={`flex-1 ${
@@ -944,17 +997,17 @@ const ProductGrid = ({
                                 {loadingStates[convertedProduct.id] ? (
                                   <>
                                     <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                                    Loading...
+                                    {t("home.loading") || "Loading..."}
                                   </>
                                 ) : isInCart(convertedProduct.id) ? (
                                   <>
                                     <Check className="h-4 w-4 mr-2" />
-                                    Added to Cart
+                                    {t("cart.added") || "Added to Cart"}
                                   </>
                                 ) : (
                                   <>
                                     <ShoppingCart className="h-4 w-4 mr-2" />
-                                    Add to Cart
+                                    {t("cart.addToCart") || "Add to Cart"}
                                   </>
                                 )}
                               </Button>
@@ -969,7 +1022,7 @@ const ProductGrid = ({
                                 className="w-full"
                               >
                                 <Eye className="h-4 w-4 mr-2" />
-                                View Details
+                                {t("orders.viewDetails") || "View Details"}
                               </Button>
                             </Link>
                           </div>

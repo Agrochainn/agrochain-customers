@@ -17,8 +17,10 @@ import {
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Loader2, Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
+import { useTranslation } from "react-i18next";
 
 export default function LoginForm() {
+  const { t } = useTranslation();
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -35,14 +37,18 @@ export default function LoginForm() {
   useEffect(() => {
     const message = searchParams?.get("message");
     if (message === "signup-success") {
-      setSuccessMessage("Account created successfully! Please log in with your credentials.");
+      setSuccessMessage(
+        "Account created successfully! Please log in with your credentials.",
+      );
       // Clear the message after 5 seconds
       const timer = setTimeout(() => {
         setSuccessMessage(null);
       }, 5000);
       return () => clearTimeout(timer);
     } else if (message === "password-reset-success") {
-      setSuccessMessage("Password reset successful! You can now log in with your new password.");
+      setSuccessMessage(
+        "Password reset successful! You can now log in with your new password.",
+      );
       // Clear the message after 5 seconds
       const timer = setTimeout(() => {
         setSuccessMessage(null);
@@ -75,10 +81,10 @@ export default function LoginForm() {
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-1">
           <CardTitle className="text-2xl font-bold text-center">
-            Sign in
+            {t("auth.signInTitle")}
           </CardTitle>
           <CardDescription className="text-center">
-            Enter your email and password to access your account
+            {t("auth.signInDesc")}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -96,12 +102,12 @@ export default function LoginForm() {
             )}
 
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email">{t("auth.email")}</Label>
               <Input
                 id="email"
                 name="email"
                 type="email"
-                placeholder="Enter your email"
+                placeholder={t("auth.emailPlaceholder")}
                 value={formData.email}
                 onChange={handleInputChange}
                 required
@@ -110,13 +116,13 @@ export default function LoginForm() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="password">{t("auth.password")}</Label>
               <div className="relative">
                 <Input
                   id="password"
                   name="password"
                   type={showPassword ? "text" : "password"}
-                  placeholder="Enter your password"
+                  placeholder={t("auth.passwordPlaceholder")}
                   value={formData.password}
                   onChange={handleInputChange}
                   required
@@ -143,10 +149,10 @@ export default function LoginForm() {
               {isLoading ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Signing in...
+                  {t("auth.signingIn")}
                 </>
               ) : (
-                "Sign in"
+                t("auth.signIn")
               )}
             </Button>
 
@@ -155,15 +161,15 @@ export default function LoginForm() {
                 href="/auth/forgot-password"
                 className="text-sm text-green-600 hover:text-green-500"
               >
-                Forgot your password?
+                {t("auth.forgotPassword")}
               </Link>
               <div className="text-sm text-gray-600">
-                Don't have an account?{" "}
+                {t("auth.noAccount")}{" "}
                 <Link
                   href="/auth/register"
                   className="text-green-600 hover:text-green-500"
                 >
-                  Sign up
+                  {t("auth.signUp")}
                 </Link>
               </div>
             </div>

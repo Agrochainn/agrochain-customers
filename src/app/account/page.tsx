@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useAppSelector, useAppDispatch } from "@/lib/store/hooks";
 import { logout } from "@/lib/store/slices/authSlice";
 import { Button } from "@/components/ui/button";
@@ -32,6 +33,7 @@ interface UserData {
 }
 
 export default function AccountPage() {
+  const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const { user, isAuthenticated } = useAppSelector((state) => state.auth);
   const [userData, setUserData] = useState<UserData | null>(null);
@@ -109,7 +111,7 @@ export default function AccountPage() {
             <div className="text-center">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
               <p className="text-muted-foreground">
-                Loading account information...
+                {t("home.loading") || "Loading account information..."}
               </p>
             </div>
           </div>
@@ -127,17 +129,20 @@ export default function AccountPage() {
             <div className="text-center space-y-6">
               <AlertCircle className="h-16 w-16 text-muted-foreground mx-auto" />
               <div>
-                <h2 className="text-2xl font-bold mb-2">Not Logged In</h2>
+                <h2 className="text-2xl font-bold mb-2">
+                  {t("account.notLoggedIn") || "Not Logged In"}
+                </h2>
                 <p className="text-muted-foreground mb-6">
-                  You need to be logged in to view your account information.
+                  {t("account.loginRequired") ||
+                    "You need to be logged in to view your account information."}
                 </p>
               </div>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Button asChild>
-                  <Link href="/auth/login">Login</Link>
+                  <Link href="/auth/login">{t("auth.login")}</Link>
                 </Button>
                 <Button variant="outline" asChild>
-                  <Link href="/auth/register">Create Account</Link>
+                  <Link href="/auth/register">{t("auth.createAccount")}</Link>
                 </Button>
               </div>
             </div>
@@ -157,9 +162,11 @@ export default function AccountPage() {
               <AlertCircle className="h-16 w-16 text-red-500 mx-auto" />
               <div>
                 <h2 className="text-2xl font-bold mb-2">
-                  Error Loading Account
+                  {t("account.errorLoading") || "Error Loading Account"}
                 </h2>
-                <p className="text-muted-foreground mb-6">{error}</p>
+                <p className="text-muted-foreground mb-6">
+                  {error || t("cart.loadError")}
+                </p>
               </div>
               <Button onClick={() => window.location.reload()}>
                 Try Again
@@ -175,7 +182,10 @@ export default function AccountPage() {
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="max-w-4xl mx-auto">
-        <AccountHeader title="My Account" subtitle="Manage your account settings and preferences" />
+        <AccountHeader
+          title={t("account.title")}
+          subtitle={t("account.overviewDesc")}
+        />
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-1">

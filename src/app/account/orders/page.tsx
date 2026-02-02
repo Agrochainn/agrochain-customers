@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useRouter } from "next/navigation";
 import {
   Eye,
@@ -35,6 +36,7 @@ import Link from "next/link";
 import { formatPrice } from "@/lib/utils/priceFormatter";
 
 export default function AccountOrdersPage() {
+  const { t } = useTranslation();
   const router = useRouter();
   const [orders, setOrders] = useState<OrderResponse[]>([]);
   const [loading, setLoading] = useState(true);
@@ -66,7 +68,7 @@ export default function AccountOrdersPage() {
   const filteredOrders = orders.filter(
     (order) =>
       order.orderNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      order.status.toLowerCase().includes(searchTerm.toLowerCase())
+      order.status.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
   const getStatusBadgeVariant = (status: string) => {
@@ -97,17 +99,20 @@ export default function AccountOrdersPage() {
             <div className="text-center space-y-6">
               <AlertCircle className="h-16 w-16 text-muted-foreground mx-auto" />
               <div>
-                <h2 className="text-2xl font-bold mb-2">Not Logged In</h2>
+                <h2 className="text-2xl font-bold mb-2">
+                  {t("account.notLoggedIn") || "Not Logged In"}
+                </h2>
                 <p className="text-muted-foreground mb-6">
-                  You need to be logged in to view your orders.
+                  {t("account.loginRequired") ||
+                    "You need to be logged in to view your orders."}
                 </p>
               </div>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Button asChild>
-                  <Link href="/auth/login">Login</Link>
+                  <Link href="/auth/login">{t("auth.login")}</Link>
                 </Button>
                 <Button variant="outline" asChild>
-                  <Link href="/auth/register">Create Account</Link>
+                  <Link href="/auth/register">{t("auth.createAccount")}</Link>
                 </Button>
               </div>
             </div>
@@ -127,9 +132,11 @@ export default function AccountOrdersPage() {
               <AlertCircle className="h-16 w-16 text-red-500 mx-auto" />
               <div>
                 <h2 className="text-2xl font-bold mb-2">
-                  Error Loading Orders
+                  {t("account.errorLoading") || "Error Loading Orders"}
                 </h2>
-                <p className="text-muted-foreground mb-6">{error}</p>
+                <p className="text-muted-foreground mb-6">
+                  {error || t("cart.loadError")}
+                </p>
               </div>
               <Button onClick={() => window.location.reload()}>
                 Try Again
@@ -150,14 +157,14 @@ export default function AccountOrdersPage() {
             <Button variant="ghost" asChild>
               <Link href="/account">
                 <ArrowLeft className="mr-2 h-4 w-4" />
-                Back to Account
+                {t("account.backToAccount") || "Back to Account"}
               </Link>
             </Button>
           </div>
           <div>
-            <h1 className="text-3xl font-bold">My Orders</h1>
+            <h1 className="text-3xl font-bold">{t("account.orderHistory")}</h1>
             <p className="text-muted-foreground">
-              View and track your order history
+              {t("account.orderHistoryDesc")}
             </p>
           </div>
         </div>
@@ -168,7 +175,10 @@ export default function AccountOrdersPage() {
             <div className="relative">
               <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
               <Input
-                placeholder="Search by order number or status..."
+                placeholder={
+                  t("account.searchOrders") ||
+                  "Search by order number or status..."
+                }
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="pl-10"
@@ -177,8 +187,10 @@ export default function AccountOrdersPage() {
             <div className="flex justify-between items-center mt-4">
               <p className="text-sm text-muted-foreground">
                 {loading
-                  ? "Loading orders..."
-                  : `Showing ${filteredOrders.length} orders`}
+                  ? t("home.loading")
+                  : t("account.showingOrders", {
+                      count: filteredOrders.length,
+                    })}
               </p>
             </div>
           </CardContent>
@@ -191,11 +203,13 @@ export default function AccountOrdersPage() {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Order Number</TableHead>
-                    <TableHead>Date</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Total</TableHead>
-                    <TableHead className="text-right">Actions</TableHead>
+                    <TableHead>{t("account.orderNumber")}</TableHead>
+                    <TableHead>{t("account.date")}</TableHead>
+                    <TableHead>{t("account.status")}</TableHead>
+                    <TableHead>{t("cart.total")}</TableHead>
+                    <TableHead className="text-right">
+                      {t("wishlist.actions")}
+                    </TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -216,12 +230,13 @@ export default function AccountOrdersPage() {
                           <Package className="h-8 w-8 text-muted-foreground" />
                           <p className="text-muted-foreground">
                             {searchTerm
-                              ? "No orders found matching your search"
-                              : "No orders yet"}
+                              ? t("account.noOrdersFound") ||
+                                "No orders found matching your search"
+                              : t("account.noOrdersYet") || "No orders yet"}
                           </p>
                           {!searchTerm && (
                             <Button asChild>
-                              <Link href="/">Start Shopping</Link>
+                              <Link href="/">{t("cart.startShopping")}</Link>
                             </Button>
                           )}
                         </div>
@@ -245,7 +260,9 @@ export default function AccountOrdersPage() {
                         </TableCell>
                         <TableCell>
                           <div className="flex flex-col gap-1.5 items-start">
-                            <Badge variant={getStatusBadgeVariant(order.status)}>
+                            <Badge
+                              variant={getStatusBadgeVariant(order.status)}
+                            >
                               {order.status}
                             </Badge>
                             {order.hasReturnRequest && (
@@ -253,7 +270,8 @@ export default function AccountOrdersPage() {
                                 variant="outline"
                                 className="text-orange-600 border-orange-200 bg-orange-50 text-[10px] whitespace-nowrap"
                               >
-                                Return Requested
+                                {t("order.returnRequested") ||
+                                  "Return Requested"}
                               </Badge>
                             )}
                           </div>

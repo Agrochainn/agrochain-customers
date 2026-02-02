@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Dialog,
   DialogContent,
@@ -29,6 +30,7 @@ export function GiveFeedbackDialog({
   defaultName = "",
   defaultEmail = "",
 }: GiveFeedbackDialogProps) {
+  const { t } = useTranslation();
   const [name, setName] = useState(defaultName);
   const [email, setEmail] = useState(defaultEmail);
   const [content, setContent] = useState("");
@@ -51,15 +53,15 @@ export function GiveFeedbackDialog({
     const trimmedEmail = email.trim();
     const trimmedContent = content.trim();
     if (!trimmedName) {
-      toast.error("Please enter your name");
+      toast.error(t("feedback.nameRequired"));
       return;
     }
     if (!trimmedEmail) {
-      toast.error("Please enter your email");
+      toast.error(t("feedback.emailRequired"));
       return;
     }
     if (!trimmedContent) {
-      toast.error("Please enter your feedback");
+      toast.error(t("feedback.feedbackRequired"));
       return;
     }
     try {
@@ -70,11 +72,11 @@ export function GiveFeedbackDialog({
         content: trimmedContent,
       };
       await submitFeedback(request);
-      toast.success("Thank you! Your feedback has been sent.");
+      toast.success(t("feedback.success"));
       handleClose(false);
     } catch (err: unknown) {
       const e = err as { message?: string };
-      toast.error(e.message || "Failed to send feedback");
+      toast.error(e.message || t("feedback.error"));
     } finally {
       setSending(false);
     }
@@ -86,39 +88,39 @@ export function GiveFeedbackDialog({
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <MessageSquare className="h-5 w-5" />
-            Give Feedback
+            {t("feedback.title")}
           </DialogTitle>
-          <DialogDescription>
-            Share your ideas to help us improve. No account required.
-          </DialogDescription>
+          <DialogDescription>{t("feedback.description")}</DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <Label htmlFor="feedback-name">Your name</Label>
+            <Label htmlFor="feedback-name">{t("feedback.nameLabel")}</Label>
             <Input
               id="feedback-name"
-              placeholder="Name"
+              placeholder={t("feedback.namePlaceholder")}
               value={name}
               onChange={(e) => setName(e.target.value)}
               className="mt-1"
             />
           </div>
           <div>
-            <Label htmlFor="feedback-email">Email</Label>
+            <Label htmlFor="feedback-email">{t("feedback.emailLabel")}</Label>
             <Input
               id="feedback-email"
               type="email"
-              placeholder="you@example.com"
+              placeholder={t("feedback.emailPlaceholder")}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               className="mt-1"
             />
           </div>
           <div>
-            <Label htmlFor="feedback-content">Your feedback</Label>
+            <Label htmlFor="feedback-content">
+              {t("feedback.contentLabel")}
+            </Label>
             <Textarea
               id="feedback-content"
-              placeholder="Tell us what we can improve..."
+              placeholder={t("feedback.contentPlaceholder")}
               value={content}
               onChange={(e) => setContent(e.target.value)}
               rows={4}
@@ -126,19 +128,23 @@ export function GiveFeedbackDialog({
             />
           </div>
           <div className="flex justify-end gap-2 pt-2">
-            <Button type="button" variant="outline" onClick={() => handleClose(false)}>
-              Close
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => handleClose(false)}
+            >
+              {t("feedback.close")}
             </Button>
             <Button type="submit" disabled={sending}>
               {sending ? (
                 <span className="flex items-center gap-2">
                   <span className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
-                  Sending...
+                  {t("feedback.sending")}
                 </span>
               ) : (
                 <>
                   <Send className="h-4 w-4 mr-2" />
-                  Send
+                  {t("feedback.send")}
                 </>
               )}
             </Button>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
@@ -56,12 +57,13 @@ import { formatPrice } from "@/lib/utils/priceFormatter";
 import VariantSelectionModal from "@/components/VariantSelectionModal";
 
 export default function WishlistPage() {
+  const { t } = useTranslation();
   const router = useRouter();
   const { toast } = useToast();
   const { isAuthenticated } = useAppSelector((state) => state.auth);
 
   const [wishlistProducts, setWishlistProducts] = useState<WishlistProduct[]>(
-    []
+    [],
   );
   const [isLoading, setIsLoading] = useState(true);
   const [isActionLoading, setIsActionLoading] = useState(false);
@@ -105,7 +107,7 @@ export default function WishlistPage() {
 
   // Handle remove from wishlist
   const handleRemoveFromWishlist = async (
-    wishlistProductId: number | string
+    wishlistProductId: number | string,
   ) => {
     try {
       setIsActionLoading(true);
@@ -116,7 +118,7 @@ export default function WishlistPage() {
       } else {
         // For guest users, remove by productId
         const product = wishlistProducts.find(
-          (p) => p.id === wishlistProductId
+          (p) => p.id === wishlistProductId,
         );
         if (product) {
           await WishlistService.removeFromWishlist(product.productId);
@@ -150,7 +152,7 @@ export default function WishlistPage() {
 
       // Check if the product has variants
       const product = await ProductService.getProductById(
-        wishlistProduct.productId
+        wishlistProduct.productId,
       );
 
       if (product.variants && product.variants.length > 0) {
@@ -251,7 +253,7 @@ export default function WishlistPage() {
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="flex items-center gap-2">
           <Loader2 className="h-6 w-6 animate-spin" />
-          <span>Loading your wishlist...</span>
+          <span>{t("wishlist.loading")}</span>
         </div>
       </div>
     );
@@ -273,9 +275,12 @@ export default function WishlistPage() {
                 <ArrowLeft className="h-4 w-4" />
               </Button>
               <div>
-                <h1 className="text-2xl font-bold">My Wishlist</h1>
+                <h1 className="text-2xl font-bold">{t("wishlist.title")}</h1>
                 <p className="text-muted-foreground">
-                  {totalProducts} {totalProducts === 1 ? "item" : "items"}
+                  {totalProducts}{" "}
+                  {totalProducts === 1
+                    ? t("wishlist.item")
+                    : t("wishlist.items")}
                 </p>
               </div>
             </div>
@@ -288,24 +293,25 @@ export default function WishlistPage() {
                     ) : (
                       <Trash2 className="h-4 w-4 mr-2" />
                     )}
-                    Clear All
+                    {t("wishlist.clearAll")}
                   </Button>
                 </AlertDialogTrigger>
                 <AlertDialogContent>
                   <AlertDialogHeader>
-                    <AlertDialogTitle>Clear Wishlist</AlertDialogTitle>
+                    <AlertDialogTitle>
+                      {t("wishlist.clearAll")}
+                    </AlertDialogTitle>
                     <AlertDialogDescription>
-                      Are you sure you want to remove all products from your
-                      wishlist? This action cannot be undone.
+                      {t("wishlist.clearAllDesc")}
                     </AlertDialogDescription>
                   </AlertDialogHeader>
                   <AlertDialogFooter>
-                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogCancel>{t("account.cancel")}</AlertDialogCancel>
                     <AlertDialogAction
                       onClick={handleClearWishlist}
                       className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                     >
-                      Clear All
+                      {t("wishlist.clearAll")}
                     </AlertDialogAction>
                   </AlertDialogFooter>
                 </AlertDialogContent>
@@ -322,12 +328,12 @@ export default function WishlistPage() {
             <AlertCircle className="h-5 w-5 text-green-400 mr-3" />
             <div className="flex-1">
               <p className="text-sm text-green-700">
-                <strong>Guest Mode:</strong> You're viewing your local wishlist.
+                <strong>{t("wishlist.guestModeTitle")}:</strong>{" "}
+                {t("wishlist.guestModeDesc")}
                 <Link href="/auth/login" className="underline ml-1">
-                  Sign in
+                  {t("auth.login")}
                 </Link>{" "}
-                to sync your wishlist across all devices and never lose your
-                saved items.
+                {t("wishlist.guestModeSync")}
               </p>
             </div>
             <Button
@@ -335,7 +341,7 @@ export default function WishlistPage() {
               onClick={() => router.push("/auth/login")}
               className="ml-4"
             >
-              Sign In
+              {t("auth.login")}
             </Button>
           </div>
         </div>
@@ -346,12 +352,12 @@ export default function WishlistPage() {
         {wishlistProducts.length === 0 ? (
           <div className="text-center py-12">
             <Heart className="h-16 w-16 mx-auto text-muted-foreground mb-4" />
-            <h2 className="text-2xl font-bold mb-2">Your wishlist is empty</h2>
+            <h2 className="text-2xl font-bold mb-2">{t("wishlist.empty")}</h2>
             <p className="text-muted-foreground mb-6">
-              Start adding products to your wishlist to save them for later.
+              {t("wishlist.emptyDesc")}
             </p>
             <Button onClick={() => router.push("/shop")}>
-              Browse Products
+              {t("wishlist.browse")}
             </Button>
           </div>
         ) : (
@@ -362,11 +368,13 @@ export default function WishlistPage() {
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead>Product</TableHead>
-                      <TableHead>Price</TableHead>
-                      <TableHead>Stock</TableHead>
-                      <TableHead>Added</TableHead>
-                      <TableHead className="text-right">Actions</TableHead>
+                      <TableHead>{t("cart.product")}</TableHead>
+                      <TableHead>{t("cart.price")}</TableHead>
+                      <TableHead>{t("wishlist.stock")}</TableHead>
+                      <TableHead>{t("wishlist.added")}</TableHead>
+                      <TableHead className="text-right">
+                        {t("wishlist.actions")}
+                      </TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -442,11 +450,13 @@ export default function WishlistPage() {
                             }
                             className="text-xs"
                           >
-                            {product.inStock ? "In Stock" : "Out of Stock"}
+                            {product.inStock
+                              ? t("wishlist.inStock")
+                              : t("wishlist.outOfStock")}
                           </Badge>
                           {product.inStock && (
                             <p className="text-xs text-muted-foreground mt-1">
-                              {product.availableStock} available
+                              {product.availableStock} {t("cart.available")}
                             </p>
                           )}
                         </TableCell>
@@ -464,7 +474,7 @@ export default function WishlistPage() {
                               disabled={isActionLoading || !product.inStock}
                             >
                               <ShoppingCart className="h-4 w-4 mr-1" />
-                              Move to Cart
+                              {t("wishlist.moveToCart")}
                             </Button>
                             <AlertDialog>
                               <AlertDialogTrigger asChild>
@@ -479,11 +489,12 @@ export default function WishlistPage() {
                               <AlertDialogContent>
                                 <AlertDialogHeader>
                                   <AlertDialogTitle>
-                                    Remove from Wishlist
+                                    {t("wishlist.removeFromWishlist")}
                                   </AlertDialogTitle>
                                   <AlertDialogDescription>
-                                    Are you sure you want to remove "
-                                    {product.productName}" from your wishlist?
+                                    {t("wishlist.removeConfirm", {
+                                      product: product.productName,
+                                    })}
                                   </AlertDialogDescription>
                                 </AlertDialogHeader>
                                 <AlertDialogFooter>
@@ -494,7 +505,7 @@ export default function WishlistPage() {
                                     }
                                     className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                                   >
-                                    Remove
+                                    {t("cart.remove")}
                                   </AlertDialogAction>
                                 </AlertDialogFooter>
                               </AlertDialogContent>
@@ -584,7 +595,7 @@ export default function WishlistPage() {
                             className="flex-1"
                           >
                             <ShoppingCart className="h-4 w-4 mr-1" />
-                            Move to Cart
+                            {t("wishlist.moveToCart")}
                           </Button>
                           <AlertDialog>
                             <AlertDialogTrigger asChild>

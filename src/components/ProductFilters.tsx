@@ -23,6 +23,7 @@ import {
   Search,
 } from "lucide-react";
 import { useState, useEffect, useCallback, useRef } from "react";
+import { useTranslation } from "react-i18next";
 import { FilterService, FilterOptions, FilterError } from "@/lib/filterService";
 import { discountService, DiscountInfo } from "@/lib/discountService";
 import CountdownTimer from "@/components/CountdownTimer";
@@ -57,16 +58,17 @@ const ProductFilters = ({
   hideTitle = false,
   shopId,
 }: ProductFiltersProps) => {
+  const { t } = useTranslation();
   const [expandedCategories, setExpandedCategories] = useState<string[]>([]);
   const [collapsedSections, setCollapsedSections] = useState<string[]>([]);
   const [filterOptions, setFilterOptions] = useState<FilterOptions | null>(
-    null
+    null,
   );
   const [filterErrors, setFilterErrors] = useState<FilterError[]>([]);
   const [isLoading, setIsLoading] = useState(!customOptions);
   const [retryCount, setRetryCount] = useState(0);
   const [localPriceRange, setLocalPriceRange] = useState(
-    filters.priceRange || [0, 1000]
+    filters.priceRange || [0, 1000],
   );
   const priceRangeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const isUpdatingPriceRef = useRef(false);
@@ -91,7 +93,7 @@ const ProductFilters = ({
   const [attributeTypesLoading, setAttributeTypesLoading] = useState(false);
   const [attributeTypeSearch, setAttributeTypeSearch] = useState("");
   const [searchedAttributeTypes, setSearchedAttributeTypes] = useState<any[]>(
-    []
+    [],
   );
   const [attributeTypeSearchLoading, setAttributeTypeSearchLoading] =
     useState(false);
@@ -100,7 +102,7 @@ const ProductFilters = ({
     number[]
   >([]);
   const [attributeValues, setAttributeValues] = useState<Record<number, any[]>>(
-    {}
+    {},
   );
   const [attributeValueSearch, setAttributeValueSearch] = useState<
     Record<number, string>
@@ -235,7 +237,7 @@ const ProductFilters = ({
             searchTerm,
             0,
             10,
-            shopId
+            shopId,
           );
           setSearchedCategories(result.content || []);
         } catch (error) {
@@ -246,7 +248,7 @@ const ProductFilters = ({
         }
       }, 300);
     },
-    [shopId]
+    [shopId],
   );
 
   // Search brands handler
@@ -270,7 +272,7 @@ const ProductFilters = ({
             searchTerm,
             0,
             10,
-            shopId
+            shopId,
           );
           setSearchedBrands(result.content || []);
         } catch (error) {
@@ -281,7 +283,7 @@ const ProductFilters = ({
         }
       }, 300);
     },
-    [shopId]
+    [shopId],
   );
 
   const handleRetry = () => {
@@ -324,7 +326,7 @@ const ProductFilters = ({
         return { ...safePrevFilters, [key]: value };
       });
     },
-    [onFiltersChange]
+    [onFiltersChange],
   );
 
   const updatePriceRange = useCallback(
@@ -341,7 +343,7 @@ const ProductFilters = ({
         }, 100);
       }, 300);
     },
-    [updateFilters]
+    [updateFilters],
   );
 
   useEffect(() => {
@@ -356,7 +358,7 @@ const ProductFilters = ({
     setExpandedCategories((prev) =>
       prev.includes(categoryName)
         ? prev.filter((c) => c !== categoryName)
-        : [...prev, categoryName]
+        : [...prev, categoryName],
     );
   }, []);
 
@@ -364,7 +366,7 @@ const ProductFilters = ({
     setCollapsedSections((prev) =>
       prev.includes(sectionName)
         ? prev.filter((s) => s !== sectionName)
-        : [...prev, sectionName]
+        : [...prev, sectionName],
     );
   }, []);
 
@@ -423,7 +425,7 @@ const ProductFilters = ({
             searchTerm,
             0,
             10,
-            shopId
+            shopId,
           );
           setSearchedAttributeTypes(result.content || []);
         } catch (error) {
@@ -434,7 +436,7 @@ const ProductFilters = ({
         }
       }, 300);
     },
-    [shopId]
+    [shopId],
   );
 
   // Toggle attribute type expansion and load values
@@ -453,7 +455,7 @@ const ProductFilters = ({
           : prev.filter((id) => id !== attributeTypeId);
       });
     },
-    [attributeValues, shopId]
+    [attributeValues, shopId],
   );
 
   // Load attribute values for a specific type
@@ -463,7 +465,7 @@ const ProductFilters = ({
         attributeTypeId,
         0,
         10,
-        sid
+        sid,
       );
       setAttributeValues((prev) => ({
         ...prev,
@@ -508,7 +510,7 @@ const ProductFilters = ({
               attributeTypeId,
               0,
               10,
-              shopId
+              shopId,
             );
             setAttributeValues((prev) => ({
               ...prev,
@@ -527,10 +529,10 @@ const ProductFilters = ({
             }));
           }
         },
-        300
+        300,
       );
     },
-    []
+    [],
   );
 
   const hasActiveFilters =
@@ -595,7 +597,7 @@ const ProductFilters = ({
         {hasSubcategories && isExpanded && (
           <div className="mt-1">
             {category.subcategories.map((subcategory: any) =>
-              renderCategory(subcategory, level + 1)
+              renderCategory(subcategory, level + 1),
             )}
           </div>
         )}
@@ -633,7 +635,7 @@ const ProductFilters = ({
         <div className="flex items-center justify-center py-8">
           <div className="flex flex-col items-center space-y-4">
             <Loader2 className="h-8 w-8 animate-spin text-primary" />
-            <p className="text-sm text-gray-600">Loading filters...</p>
+            <p className="text-sm text-gray-600">{t("filters.loading")}</p>
           </div>
         </div>
       </div>
@@ -644,7 +646,9 @@ const ProductFilters = ({
     <div className="h-[calc(100vh-150px)] overflow-y-auto pr-2 space-y-4">
       {/* Filter Controls */}
       <div className="flex items-center justify-between sticky top-0 bg-white z-10 py-2">
-        {!hideTitle && <h3 className="text-sm font-medium">Product Filters</h3>}
+        {!hideTitle && (
+          <h3 className="text-sm font-medium">{t("filters.title")}</h3>
+        )}
         {hasActiveFilters && (
           <Button
             variant="ghost"
@@ -653,7 +657,7 @@ const ProductFilters = ({
             className="text-xs h-8 px-2 py-1"
           >
             <RefreshCw className="h-3 w-3 mr-1" />
-            Reset All
+            {t("filters.resetAll")}
           </Button>
         )}
       </div>
@@ -665,7 +669,7 @@ const ProductFilters = ({
             <div className="flex items-center gap-2">
               <AlertCircle className="h-4 w-4 text-red-500" />
               <CardTitle className="text-sm text-red-700">
-                Filter Loading Issues
+                {t("filters.errorTitle") || "Filter Loading Issues"}
               </CardTitle>
             </div>
           </CardHeader>
@@ -685,8 +689,11 @@ const ProductFilters = ({
               className="mt-2 w-full"
             >
               <RefreshCw className="h-3 w-3 mr-1" />
-              Retry Loading (
-              {retryCount > 0 ? `Attempt ${retryCount + 1}` : "Retry"})
+              {t("filters.retry") || "Retry Loading"} (
+              {retryCount > 0
+                ? t("filters.attempt", { count: retryCount + 1 })
+                : t("filters.retry")}
+              )
             </Button>
           </CardContent>
         </Card>
@@ -697,7 +704,9 @@ const ProductFilters = ({
         <Card className="border shadow-sm">
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
-              <CardTitle className="text-sm">Active Filters</CardTitle>
+              <CardTitle className="text-sm">
+                {t("filters.activeFilters")}
+              </CardTitle>
             </div>
           </CardHeader>
           <CardContent className="space-y-2">
@@ -714,7 +723,9 @@ const ProductFilters = ({
                     onClick={() =>
                       updateFilters(
                         "categories",
-                        filters.categories.filter((c: string) => c !== category)
+                        filters.categories.filter(
+                          (c: string) => c !== category,
+                        ),
                       )
                     }
                   />
@@ -733,8 +744,8 @@ const ProductFilters = ({
                       updateFilters(
                         "brands",
                         (filters.brands || []).filter(
-                          (b: string) => b !== brand
-                        )
+                          (b: string) => b !== brand,
+                        ),
                       )
                     }
                   />
@@ -754,7 +765,7 @@ const ProductFilters = ({
                         onClick={() => {
                           const currentAttributes = { ...filters.attributes };
                           const updatedValues = currentAttributes[type].filter(
-                            (v: string) => v !== value
+                            (v: string) => v !== value,
                           );
                           if (updatedValues.length === 0) {
                             delete currentAttributes[type];
@@ -765,11 +776,11 @@ const ProductFilters = ({
                         }}
                       />
                     </Badge>
-                  ))
+                  )),
                 )}
               {filters.selectedDiscounts?.map((discountId: string) => {
                 const discount = activeDiscounts.find(
-                  (d) => d.discountId === discountId
+                  (d) => d.discountId === discountId,
                 );
                 return (
                   <Badge
@@ -784,8 +795,8 @@ const ProductFilters = ({
                         updateFilters(
                           "selectedDiscounts",
                           filters.selectedDiscounts.filter(
-                            (d: string) => d !== discountId
-                          )
+                            (d: string) => d !== discountId,
+                          ),
                         )
                       }
                     />
@@ -794,7 +805,7 @@ const ProductFilters = ({
               })}
               {filters.inStock === false && (
                 <Badge key="inStock" variant="secondary" className="text-xs">
-                  Include Out of Stock
+                  {t("filters.outOfStock")}
                   <X
                     className="ml-1 h-3 w-3 cursor-pointer"
                     onClick={() => updateFilters("inStock", true)}
@@ -807,7 +818,7 @@ const ProductFilters = ({
                   variant="secondary"
                   className="text-xs"
                 >
-                  Bestseller
+                  {t("filters.bestsellers")}
                   <X
                     className="ml-1 h-3 w-3 cursor-pointer"
                     onClick={() => updateFilters("isBestseller", false)}
@@ -816,7 +827,7 @@ const ProductFilters = ({
               )}
               {filters.isFeatured && (
                 <Badge key="isFeatured" variant="secondary" className="text-xs">
-                  Featured
+                  {t("filters.featured")}
                   <X
                     className="ml-1 h-3 w-3 cursor-pointer"
                     onClick={() => updateFilters("isFeatured", false)}
@@ -825,7 +836,7 @@ const ProductFilters = ({
               )}
               {filters.rating && (
                 <Badge key="rating" variant="secondary" className="text-xs">
-                  {filters.rating}+ Stars
+                  {filters.rating}+ {t("filters.ratings")}
                   <X
                     className="ml-1 h-3 w-3 cursor-pointer"
                     onClick={() => updateFilters("rating", null)}
@@ -834,7 +845,8 @@ const ProductFilters = ({
               )}
               {(filters.priceRange[0] > 0 || filters.priceRange[1] < 1000) && (
                 <Badge key="price" variant="secondary" className="text-xs">
-                  {formatPrice(filters.priceRange[0])} - {formatPrice(filters.priceRange[1])}
+                  {formatPrice(filters.priceRange[0])} -{" "}
+                  {formatPrice(filters.priceRange[1])}
                   <X
                     className="ml-1 h-3 w-3 cursor-pointer"
                     onClick={() => updateFilters("priceRange", [0, 1000])}
@@ -843,7 +855,7 @@ const ProductFilters = ({
               )}
               {filters.organic === true && (
                 <Badge key="organic" variant="secondary" className="text-xs">
-                  Organic
+                  {t("filters.organic")}
                   <X
                     className="ml-1 h-3 w-3 cursor-pointer"
                     onClick={() => updateFilters("organic", null)}
@@ -852,7 +864,7 @@ const ProductFilters = ({
               )}
               {filters.organic === false && (
                 <Badge key="nonOrganic" variant="secondary" className="text-xs">
-                  Non-Organic
+                  {t("filters.nonOrganic") || "Non-Organic"}
                   <X
                     className="ml-1 h-3 w-3 cursor-pointer"
                     onClick={() => updateFilters("organic", null)}
@@ -866,7 +878,7 @@ const ProductFilters = ({
 
       {/* Price Range Filter */}
       {renderFilterSection(
-        "Price Range",
+        t("filters.priceRange"),
         <div className="space-y-4">
           <Slider
             value={localPriceRange || [0, 1000]}
@@ -882,19 +894,19 @@ const ProductFilters = ({
               {(localPriceRange || [0, 1000])[1] === 1000 && "+"}
             </span>
           </div>
-        </div>
+        </div>,
       )}
 
       {/* Categories Filter */}
       {renderFilterSection(
-        "Categories",
+        t("filters.categories"),
         <div className="space-y-3">
           {/* Search Bar */}
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
             <input
               type="text"
-              placeholder="Search categories..."
+              placeholder={t("filters.search")}
               value={categorySearch}
               onChange={(e) => handleCategorySearch(e.target.value)}
               className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
@@ -911,14 +923,17 @@ const ProductFilters = ({
               categorySearchLoading ? (
                 <div className="text-center py-4 text-gray-500">
                   <Loader2 className="h-5 w-5 animate-spin mx-auto mb-2" />
-                  <p className="text-sm">Searching...</p>
+                  <p className="text-sm">
+                    {t("filters.searching") || "Searching..."}
+                  </p>
                 </div>
               ) : searchedCategories.length > 0 ? (
                 searchedCategories.map((category) => renderCategory(category))
               ) : (
                 <div className="text-center py-4 text-gray-500">
                   <p className="text-sm">
-                    No categories found for "{categorySearch}"
+                    {t("filters.noCategoriesFound", { term: categorySearch }) ||
+                      `No categories found for "${categorySearch}"`}
                   </p>
                 </div>
               )
@@ -927,26 +942,32 @@ const ProductFilters = ({
               currentData.categories.map((category) => renderCategory(category))
             ) : (
               <div className="text-center py-4 text-gray-500">
-                <p className="text-sm">No categories available</p>
+                <p className="text-sm">
+                  {t("filters.noCategoriesAvailable") ||
+                    "No categories available"}
+                </p>
                 {filterErrors.some((e) => e.type === "categories") && (
-                  <p className="text-xs mt-1">Failed to load categories</p>
+                  <p className="text-xs mt-1">
+                    {t("filters.failedLoadCategories") ||
+                      "Failed to load categories"}
+                  </p>
                 )}
               </div>
             )}
           </div>
-        </div>
+        </div>,
       )}
 
       {/* Brands Filter */}
       {renderFilterSection(
-        "Brands",
+        t("filters.brands"),
         <div className="space-y-3">
           {/* Search Bar */}
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
             <input
               type="text"
-              placeholder="Search brands..."
+              placeholder={t("filters.search")}
               value={brandSearch}
               onChange={(e) => handleBrandSearch(e.target.value)}
               className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
@@ -980,7 +1001,7 @@ const ProductFilters = ({
                         const newBrands = checked
                           ? [...(filters.brands || []), brand.brandName]
                           : (filters.brands || []).filter(
-                              (b: string) => b !== brand.brandName
+                              (b: string) => b !== brand.brandName,
                             );
                         updateFilters("brands", newBrands);
                       }}
@@ -998,7 +1019,10 @@ const ProductFilters = ({
                 ))
               ) : (
                 <div className="text-center py-4 text-gray-500">
-                  <p className="text-sm">No brands found for "{brandSearch}"</p>
+                  <p className="text-sm">
+                    {t("filters.noBrandsFound", { term: brandSearch }) ||
+                      `No brands found for "${brandSearch}"`}
+                  </p>
                 </div>
               )
             ) : // Show default brands
@@ -1015,7 +1039,7 @@ const ProductFilters = ({
                       const newBrands = checked
                         ? [...(filters.brands || []), brand.brandName]
                         : (filters.brands || []).filter(
-                            (b: string) => b !== brand.brandName
+                            (b: string) => b !== brand.brandName,
                           );
                       updateFilters("brands", newBrands);
                     }}
@@ -1033,25 +1057,31 @@ const ProductFilters = ({
               ))
             ) : (
               <div className="text-center py-4 text-gray-500">
-                <p className="text-sm">No brands available</p>
+                <p className="text-sm">
+                  {t("filters.noBrandsAvailable") || "No brands available"}
+                </p>
                 {filterErrors.some((e) => e.type === "brands") && (
-                  <p className="text-xs mt-1">Failed to load brands</p>
+                  <p className="text-xs mt-1">
+                    {t("filters.failedLoadBrands") || "Failed to load brands"}
+                  </p>
                 )}
               </div>
             )}
           </div>
-        </div>
+        </div>,
       )}
 
       {/* Product Attributes Filter - New Implementation */}
       {renderFilterSection(
-        "Product Attributes",
+        t("filters.attributes"),
         <div className="space-y-3">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
             <input
               type="text"
-              placeholder="Search attributes..."
+              placeholder={
+                t("filters.searchAttributes") || "Search attributes..."
+              }
               value={attributeTypeSearch}
               onChange={(e) => handleAttributeTypeSearch(e.target.value)}
               className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
@@ -1066,7 +1096,9 @@ const ProductFilters = ({
             {attributeTypesLoading ? (
               <div className="text-center py-4 text-gray-500">
                 <Loader2 className="h-5 w-5 animate-spin mx-auto mb-2" />
-                <p className="text-sm">Loading attributes...</p>
+                <p className="text-sm">
+                  {t("filters.loadingAttributes") || "Loading attributes..."}
+                </p>
               </div>
             ) : attributeTypeSearch.trim() ? (
               // Show search results
@@ -1090,7 +1122,7 @@ const ProductFilters = ({
                     >
                       <div className="flex items-center space-x-2 flex-1">
                         {expandedAttributeTypes.includes(
-                          attrType.attributeTypeId
+                          attrType.attributeTypeId,
                         ) ? (
                           <ChevronDown className="h-4 w-4 text-gray-500" />
                         ) : (
@@ -1107,7 +1139,7 @@ const ProductFilters = ({
 
                     {/* Attribute Values (Expanded) */}
                     {expandedAttributeTypes.includes(
-                      attrType.attributeTypeId
+                      attrType.attributeTypeId,
                     ) && (
                       <div className="px-3 pb-3 space-y-2">
                         {/* Search bar for values */}
@@ -1115,7 +1147,9 @@ const ProductFilters = ({
                           <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 h-3 w-3 text-gray-400" />
                           <input
                             type="text"
-                            placeholder="Search values..."
+                            placeholder={
+                              t("filters.searchValues") || "Search values..."
+                            }
                             value={
                               attributeValueSearch[attrType.attributeTypeId] ||
                               ""
@@ -1123,7 +1157,7 @@ const ProductFilters = ({
                             onChange={(e) =>
                               handleAttributeValueSearch(
                                 attrType.attributeTypeId,
-                                e.target.value
+                                e.target.value,
                               )
                             }
                             className="w-full pl-8 pr-3 py-1.5 border border-gray-200 rounded text-xs focus:outline-none focus:ring-1 focus:ring-green-500"
@@ -1158,7 +1192,7 @@ const ProductFilters = ({
                                     const newTypeValues = checked
                                       ? [...currentTypeValues, value.value]
                                       : currentTypeValues.filter(
-                                          (v: string) => v !== value.value
+                                          (v: string) => v !== value.value,
                                         );
 
                                     const newAttributes = {
@@ -1178,7 +1212,7 @@ const ProductFilters = ({
                                         ) {
                                           delete newAttributes[key];
                                         }
-                                      }
+                                      },
                                     );
 
                                     updateFilters("attributes", newAttributes);
@@ -1194,13 +1228,14 @@ const ProductFilters = ({
                                   ({value.productCount || 0})
                                 </span>
                               </div>
-                            )
+                            ),
                           )}
                           {!attributeValues[attrType.attributeTypeId] ||
                           attributeValues[attrType.attributeTypeId].length ===
                             0 ? (
                             <p className="text-xs text-gray-500 text-center py-2">
-                              No values available
+                              {t("filters.noValuesAvailable") ||
+                                "No values available"}
                             </p>
                           ) : null}
                         </div>
@@ -1231,7 +1266,7 @@ const ProductFilters = ({
                   >
                     <div className="flex items-center space-x-2 flex-1">
                       {expandedAttributeTypes.includes(
-                        attrType.attributeTypeId
+                        attrType.attributeTypeId,
                       ) ? (
                         <ChevronDown className="h-4 w-4 text-gray-500" />
                       ) : (
@@ -1248,7 +1283,7 @@ const ProductFilters = ({
 
                   {/* Attribute Values (Expanded) */}
                   {expandedAttributeTypes.includes(
-                    attrType.attributeTypeId
+                    attrType.attributeTypeId,
                   ) && (
                     <div className="px-3 pb-3 space-y-2">
                       {/* Search bar for values */}
@@ -1263,7 +1298,7 @@ const ProductFilters = ({
                           onChange={(e) =>
                             handleAttributeValueSearch(
                               attrType.attributeTypeId,
-                              e.target.value
+                              e.target.value,
                             )
                           }
                           className="w-full pl-8 pr-3 py-1.5 border border-gray-200 rounded text-xs focus:outline-none focus:ring-1 focus:ring-green-500"
@@ -1287,7 +1322,7 @@ const ProductFilters = ({
                                 id={`attr-${value.attributeValueId}`}
                                 checked={
                                   filters.attributes?.[attrType.name]?.includes(
-                                    value.value
+                                    value.value,
                                   ) || false
                                 }
                                 onCheckedChange={(checked) => {
@@ -1298,7 +1333,7 @@ const ProductFilters = ({
                                   const newTypeValues = checked
                                     ? [...currentTypeValues, value.value]
                                     : currentTypeValues.filter(
-                                        (v: string) => v !== value.value
+                                        (v: string) => v !== value.value,
                                       );
 
                                   const newAttributes = {
@@ -1332,7 +1367,7 @@ const ProductFilters = ({
                                 ({value.productCount || 0})
                               </span>
                             </div>
-                          )
+                          ),
                         )}
                         {!attributeValues[attrType.attributeTypeId] ||
                         attributeValues[attrType.attributeTypeId].length ===
@@ -1352,19 +1387,19 @@ const ProductFilters = ({
               </div>
             )}
           </div>
-        </div>
+        </div>,
       )}
 
       {/* Active Discounts Filter */}
       {activeDiscounts.length > 0 &&
         renderFilterSection(
-          "Active Discounts",
+          t("filters.activeDiscountsTitle") || "Active Discounts",
           <div className="space-y-4">
             {discountsLoading ? (
               <div className="flex items-center justify-center py-4">
                 <Loader2 className="h-4 w-4 animate-spin text-primary" />
                 <span className="ml-2 text-sm text-gray-600">
-                  Loading discounts...
+                  {t("filters.loadingDiscounts") || "Loading discounts..."}
                 </span>
               </div>
             ) : discountsError ? (
@@ -1377,7 +1412,7 @@ const ProductFilters = ({
                   className="mt-2"
                 >
                   <RefreshCw className="h-3 w-3 mr-1" />
-                  Retry
+                  {t("home.tryAgain") || "Retry"}
                 </Button>
               </div>
             ) : (
@@ -1391,7 +1426,7 @@ const ProductFilters = ({
                       id={`discount-${discount.discountId}`}
                       checked={
                         filters.selectedDiscounts?.includes(
-                          discount.discountId
+                          discount.discountId,
                         ) || false
                       }
                       onCheckedChange={(checked) => {
@@ -1401,11 +1436,11 @@ const ProductFilters = ({
                               discount.discountId,
                             ]
                           : (filters.selectedDiscounts || []).filter(
-                              (d: string) => d !== discount.discountId
+                              (d: string) => d !== discount.discountId,
                             );
                         updateFilters(
                           "selectedDiscounts",
-                          newSelectedDiscounts
+                          newSelectedDiscounts,
                         );
                       }}
                     />
@@ -1417,7 +1452,9 @@ const ProductFilters = ({
                         <PercentIcon className="h-3 w-3 text-red-500" />
                         <span className="font-semibold">{discount.name}</span>
                         <Badge variant="destructive" className="text-xs">
-                          {discount.percentage}% OFF
+                          {t("filters.percentOff", {
+                            percent: discount.percentage,
+                          }) || `${discount.percentage}% OFF`}
                         </Badge>
                       </div>
                     </label>
@@ -1436,7 +1473,7 @@ const ProductFilters = ({
                         <Clock className="h-3 w-3 text-red-500" />
                         <div className="text-center">
                           <p className="text-red-600 text-xs font-medium mb-1">
-                            Ends in
+                            {t("filters.endsIn") || "Ends in"}
                           </p>
                           <CountdownTimer
                             endDate={discount.endDate}
@@ -1453,19 +1490,27 @@ const ProductFilters = ({
                     {/* Discount Info */}
                     <div className="grid grid-cols-2 gap-2 text-xs text-gray-500">
                       <div>
-                        <span className="font-medium">Products:</span>{" "}
+                        <span className="font-medium">
+                          {t("filters.products") || "Products:"}
+                        </span>{" "}
                         {discount.productCount}
                       </div>
                       <div>
-                        <span className="font-medium">Code:</span>{" "}
+                        <span className="font-medium">
+                          {t("filters.code") || "Code:"}
+                        </span>{" "}
                         {discount.discountCode}
                       </div>
                       <div>
-                        <span className="font-medium">Used:</span>{" "}
+                        <span className="font-medium">
+                          {t("filters.used") || "Used:"}
+                        </span>{" "}
                         {discount.usedCount}/{discount.usageLimit}
                       </div>
                       <div>
-                        <span className="font-medium">Remaining:</span>{" "}
+                        <span className="font-medium">
+                          {t("filters.remaining") || "Remaining:"}
+                        </span>{" "}
                         {discount.remainingCount}
                       </div>
                     </div>
@@ -1473,14 +1518,14 @@ const ProductFilters = ({
                 </div>
               ))
             )}
-          </div>
+          </div>,
         )}
 
       {/* Colors and Sizes are now handled through Product Attributes above */}
 
       {/* Rating Filter */}
       {renderFilterSection(
-        "Customer Rating",
+        t("filters.ratings"),
         <div className="space-y-3">
           {[4, 3, 2, 1].map((rating) => (
             <div key={rating} className="flex items-center space-x-2">
@@ -1507,16 +1552,16 @@ const ProductFilters = ({
                     />
                   ))}
                 </div>
-                <span>& up</span>
+                <span>{t("filters.andUp") || "& up"}</span>
               </label>
             </div>
           ))}
-        </div>
+        </div>,
       )}
 
       {/* Product Status Filters */}
       {renderFilterSection(
-        "Product Status",
+        t("filters.availability"),
         <div className="space-y-3">
           <div className="flex items-center space-x-2">
             <Checkbox
@@ -1528,7 +1573,7 @@ const ProductFilters = ({
               htmlFor="inStock"
               className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
             >
-              In Stock Only
+              {t("filters.inStock")}
             </label>
           </div>
           <div className="flex items-center space-x-2">
@@ -1543,7 +1588,7 @@ const ProductFilters = ({
               htmlFor="isBestseller"
               className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
             >
-              Bestseller
+              {t("filters.bestsellers")}
             </label>
           </div>
           <div className="flex items-center space-x-2">
@@ -1558,15 +1603,15 @@ const ProductFilters = ({
               htmlFor="isFeatured"
               className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
             >
-              Featured
+              {t("filters.featured")}
             </label>
           </div>
-        </div>
+        </div>,
       )}
 
       {/* Organic Filter */}
       {renderFilterSection(
-        "Organic Status",
+        t("filters.organic"),
         <div className="space-y-3">
           <div className="flex items-center space-x-2">
             <Checkbox
@@ -1585,7 +1630,7 @@ const ProductFilters = ({
               htmlFor="organic"
               className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
             >
-              Organic Only
+              {t("filters.organic")}
             </label>
           </div>
           <div className="flex items-center space-x-2">
@@ -1605,10 +1650,10 @@ const ProductFilters = ({
               htmlFor="nonOrganic"
               className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
             >
-              Non-Organic Only
+              {t("filters.nonOrganicOnly") || "Non-Organic Only"}
             </label>
           </div>
-        </div>
+        </div>,
       )}
     </div>
   );

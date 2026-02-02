@@ -358,7 +358,7 @@ function OrderDetailPageContent() {
                   key={shopOrder.shopOrderId}
                   shopOrder={shopOrder}
                   isGuest={true}
-                  guestToken={token}
+                  guestToken={token ?? undefined}
                 />
               ))
             ) : (
