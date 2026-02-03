@@ -291,12 +291,68 @@ export default function RegisterForm() {
                 id="phoneNumber"
                 name="phoneNumber"
                 type="tel"
-                placeholder={t("auth.phoneNumber")}
+                placeholder="+250 788 123 456 (Sample)"
                 value={formData.phoneNumber}
                 onChange={handleInputChange}
                 disabled={isLoading}
                 className={validationErrors.phoneNumber ? "border-red-500" : ""}
               />
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-1 text-[11px] mt-1 bg-gray-50 p-2 rounded border border-gray-100">
+                <div className="flex items-center gap-1">
+                  <div
+                    className={`h-1.5 w-1.5 rounded-full ${formData.phoneNumber.replace(/[^0-9]/g, "").length >= 7 && formData.phoneNumber.replace(/[^0-9]/g, "").length <= 15 ? "bg-green-500" : "bg-gray-300"}`}
+                  />
+                  <span
+                    className={
+                      formData.phoneNumber.replace(/[^0-9]/g, "").length >= 7 &&
+                      formData.phoneNumber.replace(/[^0-9]/g, "").length <= 15
+                        ? "text-green-700 font-medium"
+                        : "text-gray-500"
+                    }
+                  >
+                    7-15 digits
+                  </span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <div
+                    className={`h-1.5 w-1.5 rounded-full ${/^[+]?[0-9\s-]*$/.test(formData.phoneNumber) && formData.phoneNumber.length > 0 ? "bg-green-500" : "bg-gray-300"}`}
+                  />
+                  <span
+                    className={
+                      /^[+]?[0-9\s-]*$/.test(formData.phoneNumber) &&
+                      formData.phoneNumber.length > 0
+                        ? "text-green-700 font-medium"
+                        : "text-gray-500"
+                    }
+                  >
+                    Digits & + allowed
+                  </span>
+                </div>
+                {formData.phoneNumber.startsWith("0") && (
+                  <div className="flex items-center gap-1 col-span-full">
+                    <div
+                      className={`h-1.5 w-1.5 rounded-full ${formData.phoneNumber.replace(/[^0-9]/g, "").length === 10 || formData.phoneNumber.replace(/[^0-9]/g, "").length === 9 ? "bg-green-500" : "bg-amber-500"}`}
+                    />
+                    <span
+                      className={
+                        formData.phoneNumber.replace(/[^0-9]/g, "").length ===
+                          10 ||
+                        formData.phoneNumber.replace(/[^0-9]/g, "").length === 9
+                          ? "text-green-700 font-medium"
+                          : "text-amber-700"
+                      }
+                    >
+                      Local format: 9-10 digits (current:{" "}
+                      {formData.phoneNumber.replace(/[^0-9]/g, "").length})
+                    </span>
+                  </div>
+                )}
+                {!formData.phoneNumber && (
+                  <span className="text-[10px] text-gray-400 italic col-span-full">
+                    Format: +250... or 078...
+                  </span>
+                )}
+              </div>
               {validationErrors.phoneNumber && (
                 <p className="text-sm text-red-600">
                   {validationErrors.phoneNumber}
@@ -331,7 +387,7 @@ export default function RegisterForm() {
       </Card>
 
       <RewardDialog
-        isOpen={!!signupResponse && signupResponse.awardedPoints > 0}
+        isOpen={!!signupResponse && (signupResponse.awardedPoints ?? 0) > 0}
         onClose={() => {
           // Redirect immediately when user closes the dialog
           router.push("/auth/login?message=signup-success");
