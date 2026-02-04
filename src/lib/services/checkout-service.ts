@@ -1,4 +1,4 @@
-import { API_BASE_URL } from "../api";
+import { API_BASE_URL, apiCall } from "../api";
 
 export interface AddressDto {
   streetAddress: string;
@@ -10,8 +10,8 @@ export interface AddressDto {
 }
 
 export interface CartItemDTO {
-  productId?: string; 
-  variantId?: number; 
+  productId?: string;
+  variantId?: number;
   quantity: number;
   weight?: number;
 }
@@ -19,25 +19,30 @@ export interface CartItemDTO {
 // Validation function for cart items
 export function validateCartItems(items: CartItemDTO[]): string[] {
   const errors: string[] = [];
-  
+
   items.forEach((item, index) => {
     if (!item.productId && !item.variantId) {
       errors.push(`Item ${index + 1}: Must have either productId or variantId`);
     }
-    
-    if (item.variantId && (typeof item.variantId !== 'number' || item.variantId <= 0)) {
-      errors.push(`Item ${index + 1}: Invalid variantId - must be a positive number`);
+
+    if (
+      item.variantId &&
+      (typeof item.variantId !== "number" || item.variantId <= 0)
+    ) {
+      errors.push(
+        `Item ${index + 1}: Invalid variantId - must be a positive number`,
+      );
     }
-    
-    if (item.productId && typeof item.productId !== 'string') {
+
+    if (item.productId && typeof item.productId !== "string") {
       errors.push(`Item ${index + 1}: Invalid productId - must be a string`);
     }
-    
+
     if (!item.quantity || item.quantity <= 0) {
       errors.push(`Item ${index + 1}: Quantity must be greater than 0`);
     }
   });
-  
+
   return errors;
 }
 
@@ -72,7 +77,11 @@ export interface ShopSummary {
   selectedWarehouseCountry?: string;
   isInternationalShipping?: boolean;
   // Shop capability and fulfillment information
-  shopCapability?: "VISUALIZATION_ONLY" | "PICKUP_ORDERS" | "FULL_ECOMMERCE" | "HYBRID";
+  shopCapability?:
+    | "VISUALIZATION_ONLY"
+    | "PICKUP_ORDERS"
+    | "FULL_ECOMMERCE"
+    | "HYBRID";
   fulfillmentType?: "PICKUP" | "DELIVERY";
   packagingFee?: number;
   requiresFulfillmentChoice?: boolean;
@@ -101,90 +110,30 @@ class CheckoutService {
   private baseUrl = `${API_BASE_URL}/checkout`;
 
   async calculateShippingCost(
-    request: CalculateOrderShippingRequest
+    request: CalculateOrderShippingRequest,
   ): Promise<number> {
-    const response = await fetch(`${this.baseUrl}/calculate-shipping`, {
+    return apiCall<number>(`${this.baseUrl}/calculate-shipping`, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
       body: JSON.stringify(request),
     });
-
-    if (!response.ok) {
-      throw new Error("Failed to calculate shipping cost");
-    }
-
-    return response.json();
   }
 
   async getPaymentSummary(
-    request: CalculateOrderShippingRequest
+    request: CalculateOrderShippingRequest,
   ): Promise<PaymentSummaryDTO> {
-    try {
-      console.log(
-        "Making payment summary request to:",
-        `${this.baseUrl}/payment-summary`
-      );
-      console.log("Request payload:", request);
-
-      const response = await fetch(`${this.baseUrl}/payment-summary`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(request),
-      });
-
-      console.log("Payment summary response status:", response.status);
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error("Payment summary error response:", errorText);
-
-        if (response.status === 400) {
-          throw new Error(
-            "Invalid address or order information. Please check your details."
-          );
-        } else if (response.status === 500) {
-          throw new Error(
-            "Unable to calculate shipping costs. Please try again later."
-          );
-        } else {
-          throw new Error(`Failed to get payment summary: ${response.status}`);
-        }
-      }
-
-      const result = await response.json();
-      console.log("Payment summary result:", result);
-      return result;
-    } catch (error) {
-      console.error("Error in getPaymentSummary:", error);
-      throw error;
-    }
+    return apiCall<PaymentSummaryDTO>(`${this.baseUrl}/payment-summary`, {
+      method: "POST",
+      body: JSON.stringify(request),
+    });
   }
 
   async handlePaymentCancellation(sessionId: string): Promise<void> {
-    try {
-      const response = await fetch(
-        `${this.baseUrl}/webhook/cancel?session_id=${sessionId}`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error("Failed to handle payment cancellation");
-      }
-
-      console.log("Payment cancellation handled successfully");
-    } catch (error) {
-      console.error("Error handling payment cancellation:", error);
-      throw error;
-    }
+    return apiCall<void>(
+      `${this.baseUrl}/webhook/cancel?session_id=${sessionId}`,
+      {
+        method: "POST",
+      },
+    );
   }
 }
 

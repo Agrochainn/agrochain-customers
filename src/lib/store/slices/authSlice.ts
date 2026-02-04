@@ -34,7 +34,7 @@ export const register = createAsyncThunk(
     } catch (error) {
       return rejectWithValue("Registration failed");
     }
-  }
+  },
 );
 
 export const login = createAsyncThunk(
@@ -49,7 +49,7 @@ export const login = createAsyncThunk(
     } catch (error) {
       return rejectWithValue("Login failed");
     }
-  }
+  },
 );
 
 export const getCurrentUser = createAsyncThunk(
@@ -64,7 +64,7 @@ export const getCurrentUser = createAsyncThunk(
     } catch (error) {
       return rejectWithValue("Failed to get user data");
     }
-  }
+  },
 );
 
 export const requestPasswordReset = createAsyncThunk(
@@ -79,7 +79,7 @@ export const requestPasswordReset = createAsyncThunk(
     } catch (error) {
       return rejectWithValue("Password reset request failed");
     }
-  }
+  },
 );
 
 export const verifyResetCode = createAsyncThunk(
@@ -94,7 +94,7 @@ export const verifyResetCode = createAsyncThunk(
     } catch (error) {
       return rejectWithValue("Code verification failed");
     }
-  }
+  },
 );
 
 export const resetPassword = createAsyncThunk(
@@ -109,7 +109,7 @@ export const resetPassword = createAsyncThunk(
     } catch (error) {
       return rejectWithValue("Password reset failed");
     }
-  }
+  },
 );
 
 export const logout = createAsyncThunk(
@@ -124,7 +124,7 @@ export const logout = createAsyncThunk(
     } catch (error) {
       return rejectWithValue("Logout failed");
     }
-  }
+  },
 );
 
 const authSlice = createSlice({
@@ -181,7 +181,18 @@ const authSlice = createSlice({
       .addCase(login.fulfilled, (state, action) => {
         state.isLoading = false;
         if (action.payload) {
-          state.user = action.payload.user;
+          state.user = {
+            id: action.payload.userId,
+            email: action.payload.userEmail,
+            userName: action.payload.userName,
+            firstName: action.payload.userName?.split(" ")[0] || "",
+            lastName:
+              action.payload.userName?.split(" ").slice(1).join(" ") || "",
+            phoneNumber: action.payload.userPhone,
+            isActive: true,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+          } as User;
           state.token = action.payload.token;
           state.isAuthenticated = true;
         }
@@ -199,7 +210,16 @@ const authSlice = createSlice({
       .addCase(getCurrentUser.fulfilled, (state, action) => {
         state.isLoading = false;
         if (action.payload) {
-          state.user = action.payload;
+          // Map backend UserDTO to frontend User interface
+          state.user = {
+            ...action.payload,
+            id: action.payload.id || state.user?.id,
+            email:
+              action.payload.userEmail ||
+              action.payload.email ||
+              state.user?.email,
+            isActive: action.payload.enabled ?? true,
+          } as User;
           state.isAuthenticated = true;
         }
         state.error = null;

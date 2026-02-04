@@ -102,7 +102,7 @@ export const API_ENDPOINTS = {
     `${API_BASE_URL}/returns/order/${orderId}?customerId=${customerId}`,
   RETURN_REQUESTS_BY_ORDER_GUEST: (orderNumber: string, token: string) =>
     `${API_BASE_URL}/returns/order/guest?orderNumber=${encodeURIComponent(
-      orderNumber
+      orderNumber,
     )}&token=${encodeURIComponent(token)}`,
   RETURN_SUBMIT: `${API_BASE_URL}/returns/submit`,
 
@@ -115,7 +115,7 @@ export const API_ENDPOINTS = {
   // Public Delivery endpoints (no authentication required)
   DELIVERY_CHECK_AVAILABILITY: (country: string) =>
     `${API_BASE_URL}/public/delivery/check-availability?country=${encodeURIComponent(
-      country
+      country,
     )}`,
   DELIVERY_AVAILABLE_COUNTRIES: `${API_BASE_URL}/public/delivery/available-countries`,
 
@@ -153,30 +153,64 @@ export interface ApiError {
   timestamp: string;
 }
 
+import { toast } from "sonner";
+
 // API Helper functions
 export const apiCall = async <T>(
   url: string,
-  options: RequestInit = {}
+  options: RequestInit = {},
 ): Promise<T> => {
+  const token =
+    typeof window !== "undefined" ? localStorage.getItem("authToken") : null;
+
   const defaultOptions: RequestInit = {
     headers: {
       "Content-Type": "application/json",
+      "X-Skip-Global-Toast": "true",
+      ...(token && { Authorization: `Bearer ${token}` }),
     },
   };
 
-  const config = { ...defaultOptions, ...options };
+  const config = {
+    ...defaultOptions,
+    ...options,
+    headers: {
+      ...defaultOptions.headers,
+      ...(options.headers || {}),
+    },
+  };
 
   try {
     const response = await fetch(url, config);
 
     if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+      let errorMessage = `HTTP error! status: ${response.status}`;
+      try {
+        const errorData = await response.json();
+        errorMessage = errorData.message || errorData.error || errorMessage;
+      } catch (e) {
+        // Fallback if not JSON
+      }
+
+      // Show toast error in top center
+      toast.error("Process Failed", {
+        description: errorMessage,
+        position: "top-center",
+        duration: 5000,
+      });
+
+      throw new Error(errorMessage);
     }
 
     const data = await response.json();
     return data;
-  } catch (error) {
-    console.error("API call failed:", error);
+  } catch (error: any) {
+    if (error.message && !error.message.includes("HTTP error")) {
+      toast.error("Network Error", {
+        description: "Failed to connect to the server.",
+        position: "top-center",
+      });
+    }
     throw error;
   }
 };
@@ -184,7 +218,7 @@ export const apiCall = async <T>(
 // Public API call (no authentication required)
 export const publicApiCall = async <T>(
   url: string,
-  options: RequestInit = {}
+  options: RequestInit = {},
 ): Promise<T> => {
   return apiCall<T>(url, options);
 };
