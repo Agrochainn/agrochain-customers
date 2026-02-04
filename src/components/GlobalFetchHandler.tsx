@@ -13,17 +13,33 @@ export function GlobalFetchHandler() {
       try {
         const response = await originalFetch(...args);
 
-        if (!response.ok) {
-          // Check if we should skip the global toast (e.g. if handled by apiCall)
+        const options = args[1] as RequestInit | undefined;
+        let skipGlobalToast = false;
+
+        if (options?.headers) {
+          if (options.headers instanceof Headers) {
+            skipGlobalToast =
+              options.headers.get("X-Skip-Global-Toast") === "true";
+          } else {
+            skipGlobalToast =
+              (options.headers as Record<string, string>)[
+                "X-Skip-Global-Toast"
+              ] === "true";
+          }
+        }
+
+        if (!response.ok && !skipGlobalToast) {
+          const isAuthPage = window.location.pathname.includes("/auth");
+
+          // Don't show global error toasts for 401/403 on auth pages
           if (
-            args[1]?.headers &&
-            (args[1].headers as any)["X-Skip-Global-Toast"]
+            isAuthPage &&
+            (response.status === 401 || response.status === 403)
           ) {
             return response;
           }
 
           const clone = response.clone();
-
           try {
             const data = await clone.json();
             const errorMessage =
@@ -31,41 +47,24 @@ export function GlobalFetchHandler() {
               data.error ||
               `Error ${response.status}: ${response.statusText}`;
 
-            // Avoid showing toasts for certain silent errors if needed
-            // But user asked for EVERY fetch error
             toast.error("Process Failed", {
               description: errorMessage,
               position: "top-center",
               duration: 5000,
             });
           } catch (e) {
-            // If response is not JSON, show a generic error
             toast.error("Process Failed", {
               description: `Server returned ${response.status}: ${response.statusText}`,
               position: "top-center",
               duration: 5000,
             });
           }
-
-          // Handle 401 Unauthorized globally
-          if (
-            response.status === 401 &&
-            !window.location.pathname.includes("/auth")
-          ) {
-            // Clear token if necessary
-            // localStorage.removeItem("authToken");
-          }
         }
 
         return response;
       } catch (error: any) {
-        // Network errors (e.g., DNS failure, connection refused)
-        toast.error("Network Error", {
-          description:
-            "Failed to connect to the server. Please check your internet connection.",
-          position: "top-center",
-          duration: 5000,
-        });
+        // Network errors are already handled by apiCall in api.ts
+        // We only rethrow here without showing a second toast
         throw error;
       }
     };

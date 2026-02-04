@@ -167,6 +167,12 @@ const authSlice = createSlice({
         if (action.payload) {
           state.signupResponse = action.payload;
         }
+        // Clear any old token to prevent AuthProvider from trying to validate it
+        state.token = null;
+        state.isAuthenticated = false;
+        if (typeof window !== "undefined") {
+          localStorage.removeItem("authToken");
+        }
         state.error = null;
       })
       .addCase(register.rejected, (state, action) => {
