@@ -3,7 +3,11 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAppDispatch, useAppSelector } from "@/lib/store/hooks";
-import { register, clearError } from "@/lib/store/slices/authSlice";
+import {
+  register,
+  clearError,
+  clearSignupResponse,
+} from "@/lib/store/slices/authSlice";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -42,15 +46,12 @@ export default function RegisterForm() {
     (state) => state.auth,
   );
 
+  // Removed automatic timer redirect to show success dialog properly
   useEffect(() => {
     if (signupResponse && signupResponse.userId) {
-      const timer = setTimeout(() => {
-        router.push("/auth/login?message=signup-success");
-      }, 3000);
-
-      return () => clearTimeout(timer);
+      console.log("Signup successful, showing dialog");
     }
-  }, [signupResponse, router]);
+  }, [signupResponse]);
 
   const validateForm = () => {
     const errors: { [key: string]: string } = {};
@@ -387,9 +388,9 @@ export default function RegisterForm() {
       </Card>
 
       <RewardDialog
-        isOpen={!!signupResponse && (signupResponse.awardedPoints ?? 0) > 0}
+        isOpen={!!signupResponse}
         onClose={() => {
-          // Redirect immediately when user closes the dialog
+          dispatch(clearSignupResponse());
           router.push("/auth/login?message=signup-success");
         }}
         awardedPoints={signupResponse?.awardedPoints || 0}

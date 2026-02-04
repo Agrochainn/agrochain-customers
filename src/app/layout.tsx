@@ -8,6 +8,7 @@ import { ThemeProvider } from "@/components/ThemeProvider";
 import { ReduxProvider } from "@/lib/providers/ReduxProvider";
 import { AuthProvider } from "@/lib/providers/AuthProvider";
 import { I18nProvider } from "@/lib/providers/I18nProvider";
+import { GlobalFetchHandler } from "@/components/GlobalFetchHandler";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -47,6 +48,7 @@ export default function RootLayout({
                 <main>{children}</main>
                 <Footer />
                 <Toaster />
+                <GlobalFetchHandler />
               </ThemeProvider>
             </AuthProvider>
           </I18nProvider>

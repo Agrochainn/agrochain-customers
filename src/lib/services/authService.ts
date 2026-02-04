@@ -9,18 +9,9 @@ import {
   ResetPasswordRequest,
   ApiResponse,
 } from "@/lib/types/auth";
-
-import { API_ENDPOINTS } from "../api";
+import { API_ENDPOINTS, apiCall } from "../api";
 
 class AuthService {
-  private getAuthHeaders(): HeadersInit {
-    const token = this.getToken();
-    return {
-      "Content-Type": "application/json",
-      ...(token && { Authorization: `Bearer ${token}` }),
-    };
-  }
-
   private getToken(): string | null {
     if (typeof window === "undefined") return null;
     return localStorage.getItem("authToken");
@@ -37,241 +28,76 @@ class AuthService {
   }
 
   async register(
-    userData: UserRegistrationDTO
+    userData: UserRegistrationDTO,
   ): Promise<ApiResponse<SignupResponseDTO>> {
-    try {
-      const response = await fetch(`${API_ENDPOINTS.AUTH_REGISTER}`, {
+    return apiCall<ApiResponse<SignupResponseDTO>>(
+      API_ENDPOINTS.AUTH_REGISTER,
+      {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
         body: JSON.stringify(userData),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        return {
-          success: false,
-          error: data.message || data.error || "Registration failed",
-        };
-      }
-
-      return {
-        success: true,
-        data: data.data,
-        message: data.message || "Registration successful",
-      };
-    } catch (error) {
-      console.error("Registration error:", error);
-      return {
-        success: false,
-        error:
-          "Network error occurred. Please check your connection and try again.",
-      };
-    }
+      },
+    );
   }
 
   async login(credentials: LoginDto): Promise<ApiResponse<LoginResponseDto>> {
-    try {
-      const response = await fetch(`${API_ENDPOINTS.AUTH_LOGIN}`, {
+    const data = await apiCall<ApiResponse<LoginResponseDto>>(
+      API_ENDPOINTS.AUTH_LOGIN,
+      {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
         body: JSON.stringify(credentials),
-      });
+      },
+    );
 
-      const data = await response.json();
-
-      if (!response.ok) {
-        return {
-          success: false,
-          error: data.message || data.error || "Login failed",
-        };
-      }
-
-      if (data.data && data.data.token) {
-        this.setToken(data.data.token);
-      }
-
-      return {
-        success: true,
-        data: data,
-        message: data.message || "Login successful",
-      };
-    } catch (error) {
-      console.error("Login error:", error);
-      return {
-        success: false,
-        error:
-          "Network error occurred. Please check your connection and try again.",
-      };
+    if (data.success && data.data && data.data.token) {
+      this.setToken(data.data.token);
+    } else if ((data as any).token) {
+      this.setToken((data as any).token);
+    } else if (data.data && (data.data as any).token) {
+      this.setToken((data.data as any).token);
     }
+
+    return data;
   }
 
   async getCurrentUser(): Promise<ApiResponse<User>> {
-    try {
-      const response = await fetch(`${API_ENDPOINTS.AUTH_ME}`, {
-        method: "GET",
-        headers: this.getAuthHeaders(),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        if (response.status === 401) {
-          this.removeToken();
-        }
-        return {
-          success: false,
-          error: data.message || "Failed to get user data",
-        };
-      }
-
-      return {
-        success: true,
-        data: data.data,
-      };
-    } catch (error) {
-      return {
-        success: false,
-        error: "Network error occurred",
-      };
-    }
+    return apiCall<ApiResponse<User>>(API_ENDPOINTS.AUTH_ME, {
+      method: "GET",
+    });
   }
 
   async requestPasswordReset(
-    request: PasswordResetRequest
+    request: PasswordResetRequest,
   ): Promise<ApiResponse<string>> {
-    try {
-      const response = await fetch(`${API_ENDPOINTS.AUTH_PASSWORD_RESET}`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(request),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        return {
-          success: false,
-          error: data.message || "Password reset request failed",
-        };
-      }
-
-      return {
-        success: data.success !== false,
-        message: data.message || "Password reset link has been sent to your email",
-      };
-    } catch (error) {
-      console.error("Password reset request error:", error);
-      return {
-        success: false,
-        error: "Network error occurred. Please check your connection and try again.",
-      };
-    }
+    return apiCall<ApiResponse<string>>(API_ENDPOINTS.AUTH_PASSWORD_RESET, {
+      method: "POST",
+      body: JSON.stringify(request),
+    });
   }
 
   async verifyResetCode(
-    request: VerifyResetCodeRequest
+    request: VerifyResetCodeRequest,
   ): Promise<ApiResponse<boolean>> {
-    try {
-      const response = await fetch(`${API_ENDPOINTS.AUTH_VERIFY_RESET}`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(request),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        return {
-          success: false,
-          error: data.message || "Code verification failed",
-        };
-      }
-
-      return {
-        success: true,
-        data: data === "Valid code",
-        message:
-          data === "Valid code" ? "Code verified successfully" : "Invalid code",
-      };
-    } catch (error) {
-      return {
-        success: false,
-        error: "Network error occurred",
-      };
-    }
+    return apiCall<ApiResponse<boolean>>(API_ENDPOINTS.AUTH_VERIFY_RESET, {
+      method: "POST",
+      body: JSON.stringify(request),
+    });
   }
 
   async resetPassword(
-    request: ResetPasswordRequest
+    request: ResetPasswordRequest,
   ): Promise<ApiResponse<string>> {
-    try {
-      const response = await fetch(`${API_ENDPOINTS.AUTH_RESET_PASSWORD}`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(request),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        return {
-          success: false,
-          error: data.message || "Password reset failed",
-        };
-      }
-
-      return {
-        success: true,
-        message: data || "Password reset successful",
-      };
-    } catch (error) {
-      return {
-        success: false,
-        error: "Network error occurred",
-      };
-    }
+    return apiCall<ApiResponse<string>>(API_ENDPOINTS.AUTH_RESET_PASSWORD, {
+      method: "POST",
+      body: JSON.stringify(request),
+    });
   }
 
   async logout(): Promise<ApiResponse<string>> {
-    try {
-      const response = await fetch(`${API_ENDPOINTS.AUTH_LOGOUT}`, {
-        method: "POST",
-        headers: this.getAuthHeaders(),
-      });
-
-      const data = await response.json();
-
-      this.removeToken();
-
-      if (!response.ok) {
-        return {
-          success: false,
-          error: data.message || "Logout failed",
-        };
-      }
-
-      return {
-        success: true,
-        message: data || "Logout successful",
-      };
-    } catch (error) {
-      this.removeToken();
-      return {
-        success: false,
-        error: "Network error occurred",
-      };
-    }
+    const data = await apiCall<ApiResponse<string>>(API_ENDPOINTS.AUTH_LOGOUT, {
+      method: "POST",
+    });
+    this.removeToken();
+    return data;
   }
 
   isAuthenticated(): boolean {

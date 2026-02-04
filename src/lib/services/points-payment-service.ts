@@ -1,4 +1,4 @@
-import { API_ENDPOINTS, getAuthHeaders } from "../api";
+import { API_ENDPOINTS, apiCall } from "../api";
 
 export interface PointsPaymentPreview {
   totalAmount: number;
@@ -92,173 +92,48 @@ export interface PointsEligibilityRequest {
 
 class PointsPaymentService {
   async previewPointsPayment(
-    request: PointsPaymentRequest
+    request: PointsPaymentRequest,
   ): Promise<PointsPaymentPreview> {
-    try {
-      console.log(
-        "Making points payment preview request to:",
-        API_ENDPOINTS.POINTS_PAYMENT_PREVIEW
-      );
-      console.log("Request payload:", request);
-
-      const response = await fetch(API_ENDPOINTS.POINTS_PAYMENT_PREVIEW, {
-        method: "POST",
-        headers: getAuthHeaders(),
-        body: JSON.stringify(request),
-      });
-
-      console.log("Points payment preview response status:", response.status);
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error("Points payment preview error response:", errorText);
-
-        if (response.status === 400) {
-          throw new Error(
-            "Some of the products in your cart are no longer available."
-          );
-        } else if (response.status === 401) {
-          throw new Error("Please log in to use points payment.");
-        } else if (response.status === 404) {
-          throw new Error("User not found or insufficient points.");
-        } else {
-          throw new Error(
-            `Failed to preview points payment: ${response.status}`
-          );
-        }
-      }
-
-      const result = await response.json();
-      console.log("Points payment preview result:", result);
-      return result;
-    } catch (error) {
-      console.error("Error in previewPointsPayment:", error);
-      throw error;
-    }
+    return apiCall<PointsPaymentPreview>(API_ENDPOINTS.POINTS_PAYMENT_PREVIEW, {
+      method: "POST",
+      body: JSON.stringify(request),
+    });
   }
 
   async processPointsPayment(
-    request: PointsPaymentRequest
+    request: PointsPaymentRequest,
   ): Promise<PointsPaymentResult> {
-    try {
-      console.log(
-        "Making points payment process request to:",
-        API_ENDPOINTS.POINTS_PAYMENT_PROCESS
-      );
-      console.log("Request payload:", request);
-
-      const response = await fetch(API_ENDPOINTS.POINTS_PAYMENT_PROCESS, {
-        method: "POST",
-        headers: getAuthHeaders(),
-        body: JSON.stringify(request),
-      });
-
-      console.log("Points payment process response status:", response.status);
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error("Points payment process error response:", errorText);
-
-        if (response.status === 400) {
-          throw new Error(
-            "Invalid payment request. Please check your cart and address information."
-          );
-        } else if (response.status === 401) {
-          throw new Error("Please log in to process payment.");
-        } else if (response.status === 402) {
-          throw new Error("Insufficient points or payment required.");
-        } else if (response.status === 409) {
-          throw new Error("Some items in your cart are no longer available.");
-        } else {
-          throw new Error(
-            `Failed to process points payment: ${response.status}`
-          );
-        }
-      }
-
-      const result = await response.json();
-      console.log("Points payment process result:", result);
-      return result;
-    } catch (error) {
-      console.error("Error in processPointsPayment:", error);
-      throw error;
-    }
+    return apiCall<PointsPaymentResult>(API_ENDPOINTS.POINTS_PAYMENT_PROCESS, {
+      method: "POST",
+      body: JSON.stringify(request),
+    });
   }
 
   async completeHybridPayment(
     userId: string,
     orderId: string,
-    stripeSessionId: string
+    stripeSessionId: string,
   ): Promise<PointsPaymentResult> {
-    try {
-      const endpoint = `${API_ENDPOINTS.POINTS_PAYMENT_COMPLETE_HYBRID(
-        userId,
-        orderId
-      )}?stripeSessionId=${encodeURIComponent(stripeSessionId)}`;
-      console.log("Making hybrid payment completion request to:", endpoint);
+    const endpoint = `${API_ENDPOINTS.POINTS_PAYMENT_COMPLETE_HYBRID(
+      userId,
+      orderId,
+    )}?stripeSessionId=${encodeURIComponent(stripeSessionId)}`;
 
-      const response = await fetch(endpoint, {
-        method: "POST",
-        headers: getAuthHeaders(),
-      });
-
-      console.log(
-        "Hybrid payment completion response status:",
-        response.status
-      );
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error("Hybrid payment completion error response:", errorText);
-
-        if (response.status === 400) {
-          throw new Error("Invalid payment completion request.");
-        } else if (response.status === 401) {
-          throw new Error("Please log in to complete payment.");
-        } else if (response.status === 404) {
-          throw new Error("Order not found or already completed.");
-        } else {
-          throw new Error(
-            `Failed to complete hybrid payment: ${response.status}`
-          );
-        }
-      }
-
-      const result = await response.json();
-      console.log("Hybrid payment completion result:", result);
-      return result;
-    } catch (error) {
-      console.error("Error in completeHybridPayment:", error);
-      throw error;
-    }
+    return apiCall<PointsPaymentResult>(endpoint, {
+      method: "POST",
+    });
   }
 
   async checkPointsEligibility(
-    request: PointsEligibilityRequest
+    request: PointsEligibilityRequest,
   ): Promise<PointsEligibilityResponse> {
-    try {
-      console.log(
-        "Making points eligibility check request to:",
-        API_ENDPOINTS.POINTS_PAYMENT_ELIGIBILITY
-      );
-
-      const response = await fetch(API_ENDPOINTS.POINTS_PAYMENT_ELIGIBILITY, {
+    return apiCall<PointsEligibilityResponse>(
+      API_ENDPOINTS.POINTS_PAYMENT_ELIGIBILITY,
+      {
         method: "POST",
-        headers: getAuthHeaders(),
         body: JSON.stringify(request),
-      });
-
-      if (!response.ok) {
-        throw new Error(`Failed to check eligibility: ${response.status}`);
-      }
-
-      const result = await response.json();
-      console.log("Points eligibility result:", result);
-      return result;
-    } catch (error) {
-      console.error("Error in checkPointsEligibility:", error);
-      throw error;
-    }
+      },
+    );
   }
 }
 

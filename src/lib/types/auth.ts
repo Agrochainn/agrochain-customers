@@ -8,6 +8,8 @@ export interface SignupResponseDTO {
 export interface User {
   id: string;
   email: string;
+  userEmail?: string; // from backend UserDTO
+  enabled?: boolean; // from backend UserDTO
   firstName?: string;
   lastName?: string;
   userName?: string;
@@ -15,6 +17,7 @@ export interface User {
   dateOfBirth?: string;
   gender?: string;
   isActive: boolean;
+  role?: string;
   points?: number;
   createdAt: string;
   updatedAt: string;
@@ -35,7 +38,11 @@ export interface LoginDto {
 
 export interface LoginResponseDto {
   token: string;
-  user: User;
+  userId: string;
+  userName: string;
+  userEmail: string;
+  userPhone?: string;
+  role: string;
   message: string;
 }
 
