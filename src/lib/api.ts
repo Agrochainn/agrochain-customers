@@ -205,10 +205,12 @@ export const apiCall = async <T>(
     const data = await response.json();
     return data;
   } catch (error: any) {
-    if (error.message && !error.message.includes("HTTP error")) {
+    if (error.name === "TypeError" && error.message === "Failed to fetch") {
       toast.error("Network Error", {
-        description: "Failed to connect to the server.",
+        description:
+          "Failed to connect to the server. Please check your internet connection.",
         position: "top-center",
+        duration: 5000,
       });
     }
     throw error;
