@@ -24,6 +24,9 @@ import {
   MapPin,
   Phone,
   Mail,
+  Scale,
+  Thermometer,
+  FileText,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import ProductCard from "@/components/ProductCard";
@@ -41,7 +44,10 @@ import { triggerCartUpdate } from "@/lib/utils/cartUtils";
 import VariantSelectionModal from "@/components/VariantSelectionModal";
 import SimilarProducts from "@/components/SimilarProducts";
 import ReviewSection from "@/components/ReviewSection";
-import { ShopCapabilityBadge, ShopCapabilityDialog } from "@/components/ShopCapabilityDialog";
+import {
+  ShopCapabilityBadge,
+  ShopCapabilityDialog,
+} from "@/components/ShopCapabilityDialog";
 import {
   Tooltip,
   TooltipContent,
@@ -136,7 +142,7 @@ export function ProductPageClient({ productId }: { productId: string }) {
       const effectiveDiscount = getEffectiveDiscount(variant);
       if (effectiveDiscount) {
         const discountedPrice = formatPriceUtil(
-          effectiveDiscount.discountedPrice
+          effectiveDiscount.discountedPrice,
         );
 
         return (
@@ -177,11 +183,11 @@ export function ProductPageClient({ productId }: { productId: string }) {
     const lensSize = 95;
     const lensX = Math.max(
       0,
-      Math.min(x - lensSize / 2, rect.width - lensSize)
+      Math.min(x - lensSize / 2, rect.width - lensSize),
     );
     const lensY = Math.max(
       0,
-      Math.min(y - lensSize / 2, rect.height - lensSize)
+      Math.min(y - lensSize / 2, rect.height - lensSize),
     );
     const zoomX = (x / rect.width) * 100;
     const zoomY = (y / rect.height) * 100;
@@ -256,7 +262,7 @@ export function ProductPageClient({ productId }: { productId: string }) {
         setDisplayPrice(
           effectiveDiscount
             ? effectiveDiscount.discountedPrice
-            : selectedVariant.price || 0
+            : selectedVariant.price || 0,
         );
         // Calculate total stock from all warehouses for this variant
         setDisplayStock(ProductService.getVariantTotalStock(selectedVariant));
@@ -265,7 +271,7 @@ export function ProductPageClient({ productId }: { productId: string }) {
         setDisplayImages(product.images || []);
         setDisplayPrice(product.discountedPrice || product.basePrice || 0);
         setDisplayStock(
-          product.totalWarehouseStock || product.stockQuantity || 0
+          product.totalWarehouseStock || product.stockQuantity || 0,
         );
       }
       // Reset selected image when switching between product and variant images
@@ -298,7 +304,7 @@ export function ProductPageClient({ productId }: { productId: string }) {
 
       // Get all cart items for this product
       const productCartItems = cart.items.filter(
-        (item) => item.productId === product.productId
+        (item) => item.productId === product.productId,
       );
 
       if (product && ProductService.hasVariants(product)) {
@@ -306,7 +312,7 @@ export function ProductPageClient({ productId }: { productId: string }) {
         const variantIds = new Set(
           productCartItems
             .filter((item) => item.variantId)
-            .map((item) => item.variantId!)
+            .map((item) => item.variantId!),
         );
         setVariantsInCart(variantIds);
 
@@ -319,7 +325,7 @@ export function ProductPageClient({ productId }: { productId: string }) {
       } else {
         // For simple products, check if product itself is in cart
         const isProductInCart = productCartItems.some(
-          (item) => !item.variantId
+          (item) => !item.variantId,
         );
         setIsInCart(isProductInCart);
         setVariantsInCart(new Set());
@@ -337,7 +343,7 @@ export function ProductPageClient({ productId }: { productId: string }) {
     try {
       // Check if the product is in wishlist
       const isProductInWishlist = await WishlistService.isInWishlist(
-        product.productId
+        product.productId,
       );
       setIsInWishlist(isProductInWishlist);
     } catch (error) {
@@ -352,7 +358,8 @@ export function ProductPageClient({ productId }: { productId: string }) {
     if (product?.shopCapability === "VISUALIZATION_ONLY") {
       toast({
         title: "Cannot Add to Cart",
-        description: "This product is from a shop that only displays products and does not accept orders. Please contact the shop directly for inquiries.",
+        description:
+          "This product is from a shop that only displays products and does not accept orders. Please contact the shop directly for inquiries.",
         variant: "destructive",
       });
       return;
@@ -370,12 +377,12 @@ export function ProductPageClient({ productId }: { productId: string }) {
           cartItem = cart.items.find(
             (item) =>
               item.productId === product!.productId &&
-              item.variantId === selectedVariant.variantId.toString()
+              item.variantId === selectedVariant.variantId.toString(),
           );
         } else {
           // Find the product in cart (no variants)
           cartItem = cart.items.find(
-            (item) => item.productId === product!.productId && !item.variantId
+            (item) => item.productId === product!.productId && !item.variantId,
           );
         }
 
@@ -447,7 +454,8 @@ export function ProductPageClient({ productId }: { productId: string }) {
     if (product?.shopCapability === "VISUALIZATION_ONLY") {
       toast({
         title: "Cannot Add to Cart",
-        description: "This product is from a shop that only displays products and does not accept orders. Please contact the shop directly for inquiries.",
+        description:
+          "This product is from a shop that only displays products and does not accept orders. Please contact the shop directly for inquiries.",
         variant: "destructive",
       });
       return;
@@ -461,7 +469,7 @@ export function ProductPageClient({ productId }: { productId: string }) {
       if (request.variantId) {
         // Add variant to cart set
         setVariantsInCart((prev) =>
-          new Set(prev).add(request.variantId!.toString())
+          new Set(prev).add(request.variantId!.toString()),
         );
       }
       setIsInCart(true);
@@ -597,7 +605,9 @@ export function ProductPageClient({ productId }: { productId: string }) {
             {isDesktop && displayImages && displayImages.length > 0 && (
               <div className="bg-gradient-to-r from-green-50 to-indigo-50 border border-green-200 rounded-md p-3 shadow-sm">
                 <div className="flex items-center gap-3">
-                  <span className="text-sm font-medium text-gray-700 whitespace-nowrap">Image Zoom:</span>
+                  <span className="text-sm font-medium text-gray-700 whitespace-nowrap">
+                    Image Zoom:
+                  </span>
                   <input
                     type="range"
                     min="1.5"
@@ -607,15 +617,19 @@ export function ProductPageClient({ productId }: { productId: string }) {
                     onChange={(e) => setZoomLevel(parseFloat(e.target.value))}
                     className="flex-1 h-2 bg-gray-300 rounded-md appearance-none cursor-pointer"
                     style={{
-                      background: `linear-gradient(to right, #3b82f6 0%, #3b82f6 ${((zoomLevel - 1.5) / (5 - 1.5)) * 100}%, #d1d5db ${((zoomLevel - 1.5) / (5 - 1.5)) * 100}%, #d1d5db 100%)`
+                      background: `linear-gradient(to right, #3b82f6 0%, #3b82f6 ${((zoomLevel - 1.5) / (5 - 1.5)) * 100}%, #d1d5db ${((zoomLevel - 1.5) / (5 - 1.5)) * 100}%, #d1d5db 100%)`,
                     }}
                   />
-                  <span className="text-sm font-mono font-semibold text-green-600 w-10">{zoomLevel.toFixed(1)}×</span>
+                  <span className="text-sm font-mono font-semibold text-green-600 w-10">
+                    {zoomLevel.toFixed(1)}×
+                  </span>
                 </div>
-                <p className="text-xs text-gray-500 mt-1">Hover over the image to zoom in and explore details</p>
+                <p className="text-xs text-gray-500 mt-1">
+                  Hover over the image to zoom in and explore details
+                </p>
               </div>
             )}
-            
+
             <div
               className="aspect-square relative rounded-md overflow-hidden border bg-muted cursor-crosshair"
               onMouseEnter={handleMouseEnter}
@@ -670,7 +684,7 @@ export function ProductPageClient({ productId }: { productId: string }) {
                     className="absolute left-2 top-1/2 -translate-y-1/2 bg-background/80 hover:bg-background"
                     onClick={() =>
                       setSelectedImage((prev) =>
-                        prev === 0 ? displayImages.length - 1 : prev - 1
+                        prev === 0 ? displayImages.length - 1 : prev - 1,
                       )
                     }
                   >
@@ -682,7 +696,7 @@ export function ProductPageClient({ productId }: { productId: string }) {
                     className="absolute right-2 top-1/2 -translate-y-1/2 bg-background/80 hover:bg-background"
                     onClick={() =>
                       setSelectedImage((prev) =>
-                        prev === displayImages.length - 1 ? 0 : prev + 1
+                        prev === displayImages.length - 1 ? 0 : prev + 1,
                       )
                     }
                   >
@@ -748,9 +762,15 @@ export function ProductPageClient({ productId }: { productId: string }) {
             )}
           </div>
 
-          {isZooming && displayImages && displayImages.length > 0 && isDesktop ? (
+          {isZooming &&
+          displayImages &&
+          displayImages.length > 0 &&
+          isDesktop ? (
             <div className="space-y-4">
-              <div className="flex flex-col bg-white border-2 border-green-500 rounded-md shadow-2xl overflow-hidden" style={{ height: '600px' }}>
+              <div
+                className="flex flex-col bg-white border-2 border-green-500 rounded-md shadow-2xl overflow-hidden"
+                style={{ height: "600px" }}
+              >
                 {/* Zoom Controls Header */}
                 <div className="bg-black bg-opacity-90 text-white p-3 flex-shrink-0">
                   <div className="flex items-center justify-between mb-2">
@@ -764,7 +784,7 @@ export function ProductPageClient({ productId }: { productId: string }) {
                       {zoomLevel.toFixed(1)}× magnification
                     </div>
                   </div>
-                  
+
                   <div className="flex items-center gap-3">
                     <span className="text-xs whitespace-nowrap">Zoom:</span>
                     <input
@@ -776,10 +796,12 @@ export function ProductPageClient({ productId }: { productId: string }) {
                       onChange={(e) => setZoomLevel(parseFloat(e.target.value))}
                       className="flex-1 h-2 bg-gray-600 rounded-md appearance-none cursor-pointer slider"
                       style={{
-                        background: `linear-gradient(to right, #3b82f6 0%, #3b82f6 ${((zoomLevel - 1.5) / (5 - 1.5)) * 100}%, #4b5563 ${((zoomLevel - 1.5) / (5 - 1.5)) * 100}%, #4b5563 100%)`
+                        background: `linear-gradient(to right, #3b82f6 0%, #3b82f6 ${((zoomLevel - 1.5) / (5 - 1.5)) * 100}%, #4b5563 ${((zoomLevel - 1.5) / (5 - 1.5)) * 100}%, #4b5563 100%)`,
                       }}
                     />
-                    <span className="text-xs font-mono w-8">{zoomLevel.toFixed(1)}×</span>
+                    <span className="text-xs font-mono w-8">
+                      {zoomLevel.toFixed(1)}×
+                    </span>
                   </div>
                 </div>
 
@@ -802,9 +824,11 @@ export function ProductPageClient({ productId }: { productId: string }) {
                       transform: "translate(-50%, -50%)",
                     }}
                   >
-                    <div className="absolute inset-0 border-2 border-white rounded-full shadow-lg"
+                    <div
+                      className="absolute inset-0 border-2 border-white rounded-full shadow-lg"
                       style={{
-                        boxShadow: "0 0 0 2px rgba(0,0,0,0.3), inset 0 0 0 2px rgba(255,255,255,0.8)"
+                        boxShadow:
+                          "0 0 0 2px rgba(0,0,0,0.3), inset 0 0 0 2px rgba(255,255,255,0.8)",
                       }}
                     />
                     <div className="absolute top-1/2 left-1/2 w-1 h-1 bg-green-500 rounded-full transform -translate-x-1/2 -translate-y-1/2" />
@@ -813,11 +837,13 @@ export function ProductPageClient({ productId }: { productId: string }) {
                   </div>
                 </div>
               </div>
-              
+
               {/* Helper text */}
               <div className="text-center text-sm text-muted-foreground">
                 <p>Move your mouse over the product image to explore details</p>
-                <p className="text-xs mt-1">Adjust zoom level with the slider above</p>
+                <p className="text-xs mt-1">
+                  Adjust zoom level with the slider above
+                </p>
               </div>
             </div>
           ) : (
@@ -857,8 +883,8 @@ export function ProductPageClient({ productId }: { productId: string }) {
                           i < fullStars
                             ? "fill-rating-star text-rating-star"
                             : i < (product.averageRating || 0)
-                            ? "text-rating-star fill-rating-star/50"
-                            : "text-muted-foreground"
+                              ? "text-rating-star fill-rating-star/50"
+                              : "text-muted-foreground"
                         }`}
                       />
                     ))}
@@ -872,19 +898,27 @@ export function ProductPageClient({ productId }: { productId: string }) {
                 {/* Price */}
                 <div className="mt-4 flex items-center gap-3">
                   <span className="text-3xl font-bold text-price">
-                    {formatPriceUtil(displayPrice, product.unit?.symbol ? { unit: product.unit.symbol } : {})}
+                    {formatPriceUtil(
+                      displayPrice,
+                      product.unit?.symbol ? { unit: product.unit.symbol } : {},
+                    )}
                   </span>
                   {selectedVariant ? (
                     <>
                       {(() => {
                         const effectiveDiscount =
                           getEffectiveDiscount(selectedVariant);
-                        const unitOpts = product.unit?.symbol ? { unit: product.unit.symbol } : {};
+                        const unitOpts = product.unit?.symbol
+                          ? { unit: product.unit.symbol }
+                          : {};
                         if (effectiveDiscount) {
                           return (
                             <>
                               <span className="text-xl text-muted-foreground line-through">
-                                {formatPriceUtil(selectedVariant.price, unitOpts)}
+                                {formatPriceUtil(
+                                  selectedVariant.price,
+                                  unitOpts,
+                                )}
                               </span>
                               <Badge
                                 variant={
@@ -922,7 +956,12 @@ export function ProductPageClient({ productId }: { productId: string }) {
                         const hasDiscount = base > 0 && sale > 0 && sale < base;
                         return hasDiscount ? (
                           <span className="text-xl text-muted-foreground line-through">
-                            {formatPriceUtil(base, product.unit?.symbol ? { unit: product.unit.symbol } : {})}
+                            {formatPriceUtil(
+                              base,
+                              product.unit?.symbol
+                                ? { unit: product.unit.symbol }
+                                : {},
+                            )}
                           </span>
                         ) : null;
                       })()}
@@ -950,7 +989,7 @@ export function ProductPageClient({ productId }: { productId: string }) {
               {product.variants && product.variants.length > 0 && (
                 <>
                   {product.variants.every(
-                    (v) => ProductService.getVariantTotalStock(v) === 0
+                    (v) => ProductService.getVariantTotalStock(v) === 0,
                   ) && (
                     <div className="p-3 bg-red-50 border border-red-200 rounded-md">
                       <div className="text-sm font-medium text-red-800">
@@ -965,7 +1004,9 @@ export function ProductPageClient({ productId }: { productId: string }) {
               {product && ProductService.hasVariants(product) && (
                 <div>
                   <div className="flex items-center justify-between mb-3">
-                    <h3 className="text-lg font-semibold">Available Variants</h3>
+                    <h3 className="text-lg font-semibold">
+                      Available Variants
+                    </h3>
                     {variantsInCart.size > 0 && (
                       <Badge
                         variant="secondary"
@@ -985,8 +1026,8 @@ export function ProductPageClient({ productId }: { productId: string }) {
                             selectedVariant?.variantId === variant.variantId
                               ? "border-primary bg-primary/5 ring-2 ring-primary/20"
                               : variantsInCart.has(variant.variantId.toString())
-                              ? "border-green-500 bg-green-50"
-                              : "hover:border-primary/50"
+                                ? "border-green-500 bg-green-50"
+                                : "hover:border-primary/50"
                           } ${
                             ProductService.getVariantTotalStock(variant) === 0
                               ? "opacity-50"
@@ -998,7 +1039,9 @@ export function ProductPageClient({ productId }: { productId: string }) {
                             <div className="text-sm font-medium">
                               {variant.variantSku}
                             </div>
-                            {variantsInCart.has(variant.variantId.toString()) && (
+                            {variantsInCart.has(
+                              variant.variantId.toString(),
+                            ) && (
                               <Badge
                                 variant="secondary"
                                 className="text-xs bg-green-500 text-white"
@@ -1013,15 +1056,27 @@ export function ProductPageClient({ productId }: { productId: string }) {
                                 <span className="font-semibold text-green-600">
                                   {formatPriceUtil(
                                     effectiveDiscount.discountedPrice,
-                                    product.unit?.symbol ? { unit: product.unit.symbol } : {}
+                                    product.unit?.symbol
+                                      ? { unit: product.unit.symbol }
+                                      : {},
                                   )}
                                 </span>
                                 <span className="line-through">
-                                  {formatPriceUtil(variant.price || 0, product.unit?.symbol ? { unit: product.unit.symbol } : {})}
+                                  {formatPriceUtil(
+                                    variant.price || 0,
+                                    product.unit?.symbol
+                                      ? { unit: product.unit.symbol }
+                                      : {},
+                                  )}
                                 </span>
                               </div>
                             ) : (
-                              formatPriceUtil(variant.price || 0, product.unit?.symbol ? { unit: product.unit.symbol } : {})
+                              formatPriceUtil(
+                                variant.price || 0,
+                                product.unit?.symbol
+                                  ? { unit: product.unit.symbol }
+                                  : {},
+                              )
                             )}
                           </div>
                           {effectiveDiscount && (
@@ -1052,7 +1107,7 @@ export function ProductPageClient({ productId }: { productId: string }) {
                           >
                             {ProductService.getVariantTotalStock(variant) > 0
                               ? `Stock: ${ProductService.getVariantTotalStock(
-                                  variant
+                                  variant,
                                 )}`
                               : "Out of Stock"}
                           </div>
@@ -1090,15 +1145,23 @@ export function ProductPageClient({ productId }: { productId: string }) {
                                   Price:{" "}
                                   {formatPriceUtil(
                                     effectiveDiscount.discountedPrice,
-                                    product.unit?.symbol ? { unit: product.unit.symbol } : {}
+                                    product.unit?.symbol
+                                      ? { unit: product.unit.symbol }
+                                      : {},
                                   )}
                                 </span>
                                 <span className="line-through">
                                   Original:{" "}
-                                  {formatPriceUtil(selectedVariant.price, product.unit?.symbol ? { unit: product.unit.symbol } : {})}
+                                  {formatPriceUtil(
+                                    selectedVariant.price,
+                                    product.unit?.symbol
+                                      ? { unit: product.unit.symbol }
+                                      : {},
+                                  )}
                                 </span>
                                 <span className="text-orange-600 font-medium">
-                                  -{Math.round(effectiveDiscount.percentage)}% OFF
+                                  -{Math.round(effectiveDiscount.percentage)}%
+                                  OFF
                                   {effectiveDiscount.isVariantSpecific
                                     ? ""
                                     : " (Product Discount)"}
@@ -1108,7 +1171,9 @@ export function ProductPageClient({ productId }: { productId: string }) {
                           }
                           return `Price: ${formatPriceUtil(
                             selectedVariant.price || 0,
-                            product.unit?.symbol ? { unit: product.unit.symbol } : {}
+                            product.unit?.symbol
+                              ? { unit: product.unit.symbol }
+                              : {},
                           )}`;
                         })()}
                         <span className="ml-2">|</span>
@@ -1126,17 +1191,19 @@ export function ProductPageClient({ productId }: { productId: string }) {
                               selectedVariant.images &&
                                 selectedVariant.images.length > 0
                                 ? selectedVariant.images
-                                : product.images || []
+                                : product.images || [],
                             );
                             const effectiveDiscount =
                               getEffectiveDiscount(selectedVariant);
                             setDisplayPrice(
                               effectiveDiscount
                                 ? effectiveDiscount.discountedPrice
-                                : selectedVariant.price || 0
+                                : selectedVariant.price || 0,
                             );
                             setDisplayStock(
-                              ProductService.getVariantTotalStock(selectedVariant)
+                              ProductService.getVariantTotalStock(
+                                selectedVariant,
+                              ),
                             );
                           }}
                           className="text-xs"
@@ -1149,7 +1216,7 @@ export function ProductPageClient({ productId }: { productId: string }) {
                           onClick={() => {
                             setDisplayImages(product.images || []);
                             setDisplayPrice(
-                              product.discountedPrice || product.basePrice || 0
+                              product.discountedPrice || product.basePrice || 0,
                             );
                             setDisplayStock(product.stockQuantity || 0);
                           }}
@@ -1170,7 +1237,9 @@ export function ProductPageClient({ productId }: { productId: string }) {
                   <div className="flex items-center border rounded-lg mt-1">
                     <button
                       className="px-3 py-2 hover:bg-muted disabled:opacity-50"
-                      onClick={() => setQuantity((prev) => Math.max(1, prev - 1))}
+                      onClick={() =>
+                        setQuantity((prev) => Math.max(1, prev - 1))
+                      }
                       disabled={quantity <= 1}
                     >
                       -
@@ -1180,7 +1249,7 @@ export function ProductPageClient({ productId }: { productId: string }) {
                       className="px-3 py-2 hover:bg-muted disabled:opacity-50"
                       onClick={() =>
                         setQuantity((prev) =>
-                          Math.min(displayStock || 999, prev + 1)
+                          Math.min(displayStock || 999, prev + 1),
                         )
                       }
                       disabled={quantity >= (displayStock || 999)}
@@ -1214,7 +1283,9 @@ export function ProductPageClient({ productId }: { productId: string }) {
               {product?.shopCapability && (
                 <div className="pt-4 border-t">
                   <div className="flex items-center gap-2">
-                    <span className="text-sm text-muted-foreground">Shop Type:</span>
+                    <span className="text-sm text-muted-foreground">
+                      Shop Type:
+                    </span>
                     <ShopCapabilityBadge
                       capability={product.shopCapability}
                       onClick={() => setShowCapabilityDialog(true)}
@@ -1232,7 +1303,9 @@ export function ProductPageClient({ productId }: { productId: string }) {
                           </button>
                         </TooltipTrigger>
                         <TooltipContent>
-                          <p className="text-xs">Click to learn how this shop operates</p>
+                          <p className="text-xs">
+                            Click to learn how this shop operates
+                          </p>
                         </TooltipContent>
                       </Tooltip>
                     </TooltipProvider>
@@ -1260,19 +1333,25 @@ export function ProductPageClient({ productId }: { productId: string }) {
                         </h3>
                         {product.shopEmail && (
                           <p className="text-sm text-muted-foreground flex items-center gap-1">
-                            <span><Mail className="h-4 w-4" /></span>
+                            <span>
+                              <Mail className="h-4 w-4" />
+                            </span>
                             <span>{product.shopEmail}</span>
                           </p>
                         )}
                         {product.shopPhone && (
                           <p className="text-sm text-muted-foreground flex items-center gap-1">
-                            <span><Phone className="h-4 w-4" /></span>
+                            <span>
+                              <Phone className="h-4 w-4" />
+                            </span>
                             <span>{product.shopPhone}</span>
                           </p>
                         )}
                         {product.shopAddress && (
                           <p className="text-sm text-muted-foreground flex items-center gap-1">
-                            <span><MapPin className="h-4 w-4" /></span>
+                            <span>
+                              <MapPin className="h-4 w-4" />
+                            </span>
                             <span>{product.shopAddress}</span>
                           </p>
                         )}
@@ -1303,42 +1382,44 @@ export function ProductPageClient({ productId }: { productId: string }) {
                         ProductService.hasVariants(product) &&
                         !selectedVariant) ||
                       (selectedVariant &&
-                        ProductService.getVariantTotalStock(selectedVariant) === 0)
+                        ProductService.getVariantTotalStock(selectedVariant) ===
+                          0)
                     }
                   >
-                  {isCartLoading ? (
-                    <>
-                      <Loader2 className="h-5 w-5 mr-2 animate-spin" />
-                      Loading...
-                    </>
-                  ) : isInCart ? (
-                    <>
-                      <Check className="h-5 w-5 mr-2" />
-                      {selectedVariant
-                        ? `Added: ${selectedVariant.variantSku}`
-                        : "Added to Cart"}
-                    </>
-                  ) : selectedVariant &&
-                    ProductService.getVariantTotalStock(selectedVariant) === 0 ? (
-                    <>
-                      <AlertCircle className="h-5 w-5 mr-2" />
-                      Out of Stock
-                    </>
-                  ) : product &&
-                    ProductService.hasVariants(product) &&
-                    !selectedVariant ? (
-                    <>
-                      <ShoppingCart className="h-5 w-5 mr-2" />
-                      Select Variant
-                    </>
-                  ) : (
-                    <>
-                      <ShoppingCart className="h-5 w-5 mr-2" />
-                      {selectedVariant
-                        ? `Add ${selectedVariant.variantSku}`
-                        : "Add to Cart"}
-                    </>
-                  )}
+                    {isCartLoading ? (
+                      <>
+                        <Loader2 className="h-5 w-5 mr-2 animate-spin" />
+                        Loading...
+                      </>
+                    ) : isInCart ? (
+                      <>
+                        <Check className="h-5 w-5 mr-2" />
+                        {selectedVariant
+                          ? `Added: ${selectedVariant.variantSku}`
+                          : "Added to Cart"}
+                      </>
+                    ) : selectedVariant &&
+                      ProductService.getVariantTotalStock(selectedVariant) ===
+                        0 ? (
+                      <>
+                        <AlertCircle className="h-5 w-5 mr-2" />
+                        Out of Stock
+                      </>
+                    ) : product &&
+                      ProductService.hasVariants(product) &&
+                      !selectedVariant ? (
+                      <>
+                        <ShoppingCart className="h-5 w-5 mr-2" />
+                        Select Variant
+                      </>
+                    ) : (
+                      <>
+                        <ShoppingCart className="h-5 w-5 mr-2" />
+                        {selectedVariant
+                          ? `Add ${selectedVariant.variantSku}`
+                          : "Add to Cart"}
+                      </>
+                    )}
                   </Button>
                 )}
                 <Button
@@ -1358,7 +1439,11 @@ export function ProductPageClient({ productId }: { productId: string }) {
                     />
                   )}
                 </Button>
-                <Button variant="outline" size="icon" className="hidden sm:flex">
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="hidden sm:flex"
+                >
                   <Share2 className="h-5 w-5" />
                 </Button>
               </div>
@@ -1418,8 +1503,45 @@ export function ProductPageClient({ productId }: { productId: string }) {
                         <span>{product.material}</span>
                       </div>
                     )}
+                    {product.maximumDaysForReturn !== undefined &&
+                      product.maximumDaysForReturn !== null && (
+                        <div className="grid grid-cols-2 gap-4 py-2 border-b">
+                          <span className="text-muted-foreground">
+                            Return Period
+                          </span>
+                          <span>{product.maximumDaysForReturn} days</span>
+                        </div>
+                      )}
                   </div>
                 </div>
+
+                {product.storageInstructions && (
+                  <div className="space-y-4">
+                    <h3 className="text-lg font-medium flex items-center gap-2">
+                      <Thermometer className="h-5 w-5 text-primary" />
+                      Storage Instructions
+                    </h3>
+                    <div className="prose prose-sm max-w-none">
+                      <p className="text-muted-foreground whitespace-pre-line">
+                        {product.storageInstructions}
+                      </p>
+                    </div>
+                  </div>
+                )}
+
+                {product.nutritionalInfo && (
+                  <div className="space-y-4">
+                    <h3 className="text-lg font-medium flex items-center gap-2">
+                      <Scale className="h-5 w-5 text-primary" />
+                      Nutritional Information
+                    </h3>
+                    <div className="prose prose-sm max-w-none">
+                      <p className="text-muted-foreground whitespace-pre-line">
+                        {product.nutritionalInfo}
+                      </p>
+                    </div>
+                  </div>
+                )}
 
                 {product.careInstructions && (
                   <div className="space-y-4">
