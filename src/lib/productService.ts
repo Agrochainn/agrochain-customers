@@ -74,7 +74,14 @@ export interface ProductDTO {
   warrantyInfo?: string;
   shippingInfo?: string;
   returnPolicy?: string;
-  shopCapability?: "VISUALIZATION_ONLY" | "PICKUP_ORDERS" | "FULL_ECOMMERCE" | "HYBRID";
+  storageInstructions?: string;
+  nutritionalInfo?: string;
+  maximumDaysForReturn?: number;
+  shopCapability?:
+    | "VISUALIZATION_ONLY"
+    | "PICKUP_ORDERS"
+    | "FULL_ECOMMERCE"
+    | "HYBRID";
   organic?: boolean;
   unit?: { id: number; symbol: string; name: string };
   // Shop information
@@ -233,7 +240,11 @@ export interface ManyProductsDto {
   averageRating?: number;
   reviewCount?: number;
   hasActiveDiscount: boolean;
-  shopCapability?: "VISUALIZATION_ONLY" | "PICKUP_ORDERS" | "FULL_ECOMMERCE" | "HYBRID";
+  shopCapability?:
+    | "VISUALIZATION_ONLY"
+    | "PICKUP_ORDERS"
+    | "FULL_ECOMMERCE"
+    | "HYBRID";
   organic?: boolean;
   unit?: { id: number; symbol: string; name: string };
 }
@@ -365,7 +376,7 @@ export const ProductService = {
     page = 0,
     size = 12,
     sortBy = "createdAt",
-    sortDirection = "desc"
+    sortDirection = "desc",
   ): Promise<Page<ManyProductsDto>> => {
     try {
       const response = await fetch(
@@ -375,7 +386,7 @@ export const ProductService = {
           headers: {
             "Content-Type": "application/json",
           },
-        }
+        },
       );
 
       if (!response.ok) {
@@ -394,7 +405,7 @@ export const ProductService = {
    * Search products with filters
    */
   searchProducts: async (
-    searchDTO: ProductSearchDTO
+    searchDTO: ProductSearchDTO,
   ): Promise<Page<ManyProductsDto>> => {
     try {
       const response = await fetch(`${API_ENDPOINTS.SEARCH_PRODUCTS}`, {
@@ -429,7 +440,7 @@ export const ProductService = {
           headers: {
             "Content-Type": "application/json",
           },
-        }
+        },
       );
 
       if (!response.ok) {
@@ -484,7 +495,7 @@ export const ProductService = {
     if (variant.warehouseStocks && variant.warehouseStocks.length > 0) {
       return variant.warehouseStocks.reduce(
         (total, stock) => total + stock.stockQuantity,
-        0
+        0,
       );
     }
 
@@ -622,7 +633,7 @@ export const ProductService = {
   convertToProductCardFormat: (product: ManyProductsDto) => {
     // Check if discount is currently active
     const hasActiveDiscount = ProductService.isDiscountActive(
-      product.discountInfo
+      product.discountInfo,
     );
 
     // Calculate discount percentage only if discount is active
@@ -672,7 +683,7 @@ export const ProductService = {
     page: number = 0,
     size: number = 10,
     sortBy: string = "createdAt",
-    sortDirection: string = "desc"
+    sortDirection: string = "desc",
   ): Promise<{
     data: ReviewDTO[];
     pagination: {
@@ -697,7 +708,7 @@ export const ProductService = {
           headers: {
             "Content-Type": "application/json",
           },
-        }
+        },
       );
 
       if (!response.ok) {
@@ -725,7 +736,7 @@ export const ProductService = {
    */
   getFeaturedProducts: async (
     page = 0,
-    size = 12
+    size = 12,
   ): Promise<Page<ManyProductsDto>> => {
     try {
       const response = await fetch(
@@ -735,12 +746,12 @@ export const ProductService = {
           headers: {
             "Content-Type": "application/json",
           },
-        }
+        },
       );
 
       if (!response.ok) {
         throw new Error(
-          `Failed to fetch featured products: ${response.status}`
+          `Failed to fetch featured products: ${response.status}`,
         );
       }
 
@@ -757,7 +768,7 @@ export const ProductService = {
    */
   getBestsellerProducts: async (
     page = 0,
-    size = 12
+    size = 12,
   ): Promise<Page<ManyProductsDto>> => {
     try {
       const response = await fetch(
@@ -767,12 +778,12 @@ export const ProductService = {
           headers: {
             "Content-Type": "application/json",
           },
-        }
+        },
       );
 
       if (!response.ok) {
         throw new Error(
-          `Failed to fetch bestseller products: ${response.status}`
+          `Failed to fetch bestseller products: ${response.status}`,
         );
       }
 
@@ -789,7 +800,7 @@ export const ProductService = {
    */
   getNewArrivalProducts: async (
     page = 0,
-    size = 12
+    size = 12,
   ): Promise<Page<ManyProductsDto>> => {
     try {
       const response = await fetch(
@@ -799,12 +810,12 @@ export const ProductService = {
           headers: {
             "Content-Type": "application/json",
           },
-        }
+        },
       );
 
       if (!response.ok) {
         throw new Error(
-          `Failed to fetch new arrival products: ${response.status}`
+          `Failed to fetch new arrival products: ${response.status}`,
         );
       }
 
@@ -824,24 +835,24 @@ export const ProductService = {
     page = 0,
     size = 12,
     sortBy = "createdAt",
-    sortDirection = "desc"
+    sortDirection = "desc",
   ): Promise<Page<ManyProductsDto>> => {
     try {
       const response = await fetch(
         `${API_ENDPOINTS.PRODUCTS_BY_CATEGORY(
-          categoryId
+          categoryId,
         )}?page=${page}&size=${size}&sortBy=${sortBy}&sortDirection=${sortDirection}`,
         {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
           },
-        }
+        },
       );
 
       if (!response.ok) {
         throw new Error(
-          `Failed to fetch products by category: ${response.status}`
+          `Failed to fetch products by category: ${response.status}`,
         );
       }
 
@@ -861,24 +872,24 @@ export const ProductService = {
     page = 0,
     size = 12,
     sortBy = "createdAt",
-    sortDirection = "desc"
+    sortDirection = "desc",
   ): Promise<Page<ManyProductsDto>> => {
     try {
       const response = await fetch(
         `${API_ENDPOINTS.PRODUCTS_BY_BRAND(
-          brandId
+          brandId,
         )}?page=${page}&size=${size}&sortBy=${sortBy}&sortDirection=${sortDirection}`,
         {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
           },
-        }
+        },
       );
 
       if (!response.ok) {
         throw new Error(
-          `Failed to fetch products by brand: ${response.status}`
+          `Failed to fetch products by brand: ${response.status}`,
         );
       }
 
