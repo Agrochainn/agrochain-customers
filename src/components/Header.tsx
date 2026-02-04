@@ -147,7 +147,7 @@ const Header = () => {
             <Link
               href={
                 process.env.NODE_ENV === "production"
-                  ? "https://agrochain-mng.vercel.app/"
+                  ? "https://manage.agrochain.innov.rw/"
                   : "http://localhost:3001"
               }
               className="text-muted-foreground hover:text-primary transition-colors font-medium"
