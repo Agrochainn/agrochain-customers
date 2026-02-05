@@ -75,6 +75,11 @@ interface Product {
   discountPercentage?: number;
   organic?: boolean;
   unit?: { id: number; symbol: string; name: string };
+  shopCapability?:
+    | "VISUALIZATION_ONLY"
+    | "PICKUP_ORDERS"
+    | "FULL_ECOMMERCE"
+    | "HYBRID";
 }
 
 interface ShopDetails {
@@ -153,7 +158,11 @@ export function StoreProfileClient({ storeId }: { storeId: string }) {
     // If following, proceed directly
     try {
       await StoreService.followShop(storeId);
-      setStore({ ...store, isFollowing: true, followerCount: (store.followerCount || 0) + 1 });
+      setStore({
+        ...store,
+        isFollowing: true,
+        followerCount: (store.followerCount || 0) + 1,
+      });
       toast.success("Following shop");
     } catch (error: any) {
       console.error("Error following shop:", error);
@@ -167,7 +176,11 @@ export function StoreProfileClient({ storeId }: { storeId: string }) {
 
     try {
       await StoreService.unfollowShop(storeId);
-      setStore({ ...store, isFollowing: false, followerCount: (store.followerCount || 0) - 1 });
+      setStore({
+        ...store,
+        isFollowing: false,
+        followerCount: (store.followerCount || 0) - 1,
+      });
       toast.success("Unfollowed shop");
       setUnfollowDialogOpen(false);
     } catch (error: any) {
@@ -179,7 +192,7 @@ export function StoreProfileClient({ storeId }: { storeId: string }) {
   // Check if user should be redirected after login
   useEffect(() => {
     const shouldFollow = searchParams.get("follow") === "true";
-    
+
     if (isAuthenticated && shouldFollow && store && !store.isFollowing) {
       // User just logged in and wants to follow
       handleFollowToggle();
@@ -309,16 +322,19 @@ export function StoreProfileClient({ storeId }: { storeId: string }) {
                         store.primaryCapability === "PICKUP_ORDERS"
                           ? "bg-green-100 text-green-700 border-green-200"
                           : store.primaryCapability === "FULL_ECOMMERCE"
-                          ? "bg-green-100 text-green-700 border-green-200"
-                          : store.primaryCapability === "HYBRID"
-                          ? "bg-orange-100 text-orange-700 border-orange-200"
-                          : "bg-gray-100 text-gray-700 border-gray-200"
+                            ? "bg-green-100 text-green-700 border-green-200"
+                            : store.primaryCapability === "HYBRID"
+                              ? "bg-orange-100 text-orange-700 border-orange-200"
+                              : "bg-gray-100 text-gray-700 border-gray-200"
                       }`}
                     >
-                      {store.primaryCapability === "PICKUP_ORDERS" && "Pickup Only"}
-                      {store.primaryCapability === "FULL_ECOMMERCE" && "Full E-commerce"}
+                      {store.primaryCapability === "PICKUP_ORDERS" &&
+                        "Pickup Only"}
+                      {store.primaryCapability === "FULL_ECOMMERCE" &&
+                        "Full E-commerce"}
                       {store.primaryCapability === "HYBRID" && "Hybrid"}
-                      {store.primaryCapability === "VISUALIZATION_ONLY" && "Display Only"}
+                      {store.primaryCapability === "VISUALIZATION_ONLY" &&
+                        "Display Only"}
                     </Badge>
                   )}
                 </div>
@@ -381,14 +397,16 @@ export function StoreProfileClient({ storeId }: { storeId: string }) {
                       <p className="text-muted-foreground text-xs font-semibold uppercase tracking-wider">
                         Followers
                       </p>
-                      <p className="font-medium">{store.followerCount?.toLocaleString() || 0}</p>
+                      <p className="font-medium">
+                        {store.followerCount?.toLocaleString() || 0}
+                      </p>
                     </div>
                   </div>
                 </div>
               </CardContent>
 
               <CardFooter className="flex flex-col gap-3 pb-8">
-                <Button 
+                <Button
                   className="w-full h-11 text-base shadow-lg hover:shadow-primary/20 transition-all"
                   onClick={() => setContactDialogOpen(true)}
                 >
@@ -398,17 +416,23 @@ export function StoreProfileClient({ storeId }: { storeId: string }) {
                 <TooltipProvider>
                   <Tooltip>
                     <TooltipTrigger asChild>
-                      <Button 
+                      <Button
                         variant={store.isFollowing ? "outline" : "default"}
                         className="w-full h-11"
                         onClick={handleFollowToggle}
                       >
-                        <Heart className={`mr-2 h-4 w-4 ${store.isFollowing ? "fill-red-500 text-red-500" : ""}`} />
+                        <Heart
+                          className={`mr-2 h-4 w-4 ${store.isFollowing ? "fill-red-500 text-red-500" : ""}`}
+                        />
                         {store.isFollowing ? "Following" : "Follow Store"}
                       </Button>
                     </TooltipTrigger>
                     <TooltipContent>
-                      <p>{store.isFollowing ? "Click to unfollow this store" : "Click to follow this store and stay updated"}</p>
+                      <p>
+                        {store.isFollowing
+                          ? "Click to unfollow this store"
+                          : "Click to follow this store and stay updated"}
+                      </p>
                     </TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
@@ -470,6 +494,7 @@ export function StoreProfileClient({ storeId }: { storeId: string }) {
                       hasActiveDiscount={product.hasActiveDiscount}
                       isOrganic={product.organic}
                       unit={product.unit}
+                      shopCapability={store.primaryCapability as any}
                     />
                   ))}
                 </div>
@@ -565,8 +590,8 @@ export function StoreProfileClient({ storeId }: { storeId: string }) {
                                   rating === 5
                                     ? "70%"
                                     : rating === 4
-                                    ? "20%"
-                                    : "5%",
+                                      ? "20%"
+                                      : "5%",
                               }}
                             ></div>
                           </div>
@@ -653,7 +678,7 @@ export function StoreProfileClient({ storeId }: { storeId: string }) {
               <Mail className="h-5 w-5 text-muted-foreground" />
               <div>
                 <p className="text-sm font-medium">Email</p>
-                <a 
+                <a
                   href={`mailto:${store.contactEmail}`}
                   className="text-sm text-primary hover:underline"
                 >
@@ -665,7 +690,7 @@ export function StoreProfileClient({ storeId }: { storeId: string }) {
               <Phone className="h-5 w-5 text-muted-foreground" />
               <div>
                 <p className="text-sm font-medium">Phone</p>
-                <a 
+                <a
                   href={`tel:${store.contactPhone}`}
                   className="text-sm text-primary hover:underline"
                 >
@@ -678,7 +703,9 @@ export function StoreProfileClient({ storeId }: { storeId: string }) {
                 <MapPin className="h-5 w-5 text-muted-foreground" />
                 <div>
                   <p className="text-sm font-medium">Address</p>
-                  <p className="text-sm text-muted-foreground">{store.address}</p>
+                  <p className="text-sm text-muted-foreground">
+                    {store.address}
+                  </p>
                 </div>
               </div>
             )}
@@ -697,7 +724,8 @@ export function StoreProfileClient({ storeId }: { storeId: string }) {
           </DialogHeader>
           <div className="py-4">
             <p className="text-sm text-muted-foreground mb-4">
-              Please sign in or create an account to follow {store.name} and stay updated with their latest products and offers.
+              Please sign in or create an account to follow {store.name} and
+              stay updated with their latest products and offers.
             </p>
             <div className="flex gap-3">
               <Button
@@ -705,7 +733,9 @@ export function StoreProfileClient({ storeId }: { storeId: string }) {
                 className="flex-1"
                 onClick={() => {
                   const returnUrl = `/stores/${storeId}?follow=true`;
-                  router.push(`/auth/login?returnUrl=${encodeURIComponent(returnUrl)}`);
+                  router.push(
+                    `/auth/login?returnUrl=${encodeURIComponent(returnUrl)}`,
+                  );
                 }}
               >
                 Sign In
@@ -714,7 +744,9 @@ export function StoreProfileClient({ storeId }: { storeId: string }) {
                 className="flex-1"
                 onClick={() => {
                   const returnUrl = `/stores/${storeId}?follow=true`;
-                  router.push(`/auth/register?returnUrl=${encodeURIComponent(returnUrl)}`);
+                  router.push(
+                    `/auth/register?returnUrl=${encodeURIComponent(returnUrl)}`,
+                  );
                 }}
               >
                 Sign Up
@@ -730,7 +762,8 @@ export function StoreProfileClient({ storeId }: { storeId: string }) {
           <DialogHeader>
             <DialogTitle>Unfollow {store?.name}?</DialogTitle>
             <DialogDescription>
-              Are you sure you want to unfollow this shop? You will no longer receive updates about their products and offers.
+              Are you sure you want to unfollow this shop? You will no longer
+              receive updates about their products and offers.
             </DialogDescription>
           </DialogHeader>
           <div className="flex gap-3 pt-4">

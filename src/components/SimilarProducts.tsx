@@ -16,7 +16,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Loader2, RefreshCw, Users, Star, TrendingUp, Tag, ChevronDown } from "lucide-react";
+import {
+  Loader2,
+  RefreshCw,
+  Users,
+  Star,
+  TrendingUp,
+  Tag,
+  ChevronDown,
+} from "lucide-react";
 
 interface SimilarProductsProps {
   productId: string;
@@ -60,7 +68,7 @@ export default function SimilarProducts({
 
   const fetchSimilarProducts = async (
     page: number = 0,
-    algo: string = currentAlgorithm
+    algo: string = currentAlgorithm,
   ) => {
     try {
       setLoading(true);
@@ -99,7 +107,7 @@ export default function SimilarProducts({
 
   const handleAlgorithmChange = (newAlgorithm: string) => {
     setCurrentAlgorithm(
-      newAlgorithm as "brand" | "category" | "keywords" | "popular" | "mixed"
+      newAlgorithm as "brand" | "category" | "keywords" | "popular" | "mixed",
     );
     fetchSimilarProducts(0, newAlgorithm);
   };
@@ -150,12 +158,19 @@ export default function SimilarProducts({
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <h2 className="text-xl sm:text-2xl font-bold">{title}</h2>
-            <Badge variant="secondary" className="hidden sm:flex items-center gap-1">
+            <Badge
+              variant="secondary"
+              className="hidden sm:flex items-center gap-1"
+            >
               <AlgorithmIcon className="h-3 w-3" />
-              {algorithmLabels[currentAlgorithm as keyof typeof algorithmLabels]}
+              {
+                algorithmLabels[
+                  currentAlgorithm as keyof typeof algorithmLabels
+                ]
+              }
             </Badge>
           </div>
-          
+
           <Button onClick={handleRefresh} variant="outline" size="sm">
             <RefreshCw className="h-4 w-4" />
           </Button>
@@ -166,9 +181,16 @@ export default function SimilarProducts({
           <>
             {/* Mobile Badge - Show current algorithm on small screens */}
             <div className="sm:hidden">
-              <Badge variant="secondary" className="flex items-center gap-1 w-fit">
+              <Badge
+                variant="secondary"
+                className="flex items-center gap-1 w-fit"
+              >
                 <AlgorithmIcon className="h-3 w-3" />
-                {algorithmLabels[currentAlgorithm as keyof typeof algorithmLabels]}
+                {
+                  algorithmLabels[
+                    currentAlgorithm as keyof typeof algorithmLabels
+                  ]
+                }
               </Badge>
             </div>
 
@@ -194,7 +216,9 @@ export default function SimilarProducts({
                   {Object.keys(algorithmLabels).map((algo) => (
                     <Button
                       key={algo}
-                      variant={currentAlgorithm === algo ? "default" : "outline"}
+                      variant={
+                        currentAlgorithm === algo ? "default" : "outline"
+                      }
                       size="sm"
                       onClick={() => handleAlgorithmChange(algo)}
                       className="text-xs whitespace-nowrap flex-shrink-0"
@@ -208,18 +232,26 @@ export default function SimilarProducts({
 
             {/* Mobile - Dropdown selector */}
             <div className="sm:hidden">
-              <Select value={currentAlgorithm} onValueChange={handleAlgorithmChange}>
+              <Select
+                value={currentAlgorithm}
+                onValueChange={handleAlgorithmChange}
+              >
                 <SelectTrigger className="w-full">
                   <SelectValue>
                     <div className="flex items-center gap-2">
                       <AlgorithmIcon className="h-4 w-4" />
-                      {algorithmLabels[currentAlgorithm as keyof typeof algorithmLabels]}
+                      {
+                        algorithmLabels[
+                          currentAlgorithm as keyof typeof algorithmLabels
+                        ]
+                      }
                     </div>
                   </SelectValue>
                 </SelectTrigger>
                 <SelectContent>
                   {Object.entries(algorithmLabels).map(([algo, label]) => {
-                    const Icon = algorithmIcons[algo as keyof typeof algorithmIcons];
+                    const Icon =
+                      algorithmIcons[algo as keyof typeof algorithmIcons];
                     return (
                       <SelectItem key={algo} value={algo}>
                         <div className="flex items-center gap-2">
@@ -238,8 +270,9 @@ export default function SimilarProducts({
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         {products.map((product) => {
-          const convertedProduct = ProductService.convertToProductCardFormat(product);
-          
+          const convertedProduct =
+            ProductService.convertToProductCardFormat(product);
+
           return (
             <ProductCard
               key={product.productId}
@@ -265,6 +298,7 @@ export default function SimilarProducts({
               shortDescription={convertedProduct.shortDescription}
               isOrganic={convertedProduct.isOrganic}
               unit={convertedProduct.unit}
+              shopCapability={convertedProduct.shopCapability}
             />
           );
         })}

@@ -56,6 +56,7 @@ interface ShopDetails {
     email: string;
     avatar: string | null;
   };
+  primaryCapability?: string;
 }
 
 interface FilterState {
@@ -144,7 +145,10 @@ export function StoreProductsClient({ storeId }: { storeId: string }) {
         inStock: filters.inStock,
         isBestseller: filters.isBestseller || undefined,
         isFeatured: filters.isFeatured || undefined,
-        organic: filters.organic !== null && filters.organic !== undefined ? filters.organic : undefined,
+        organic:
+          filters.organic !== null && filters.organic !== undefined
+            ? filters.organic
+            : undefined,
         discountIds:
           filters.selectedDiscounts.length > 0
             ? filters.selectedDiscounts
@@ -401,6 +405,9 @@ export function StoreProductsClient({ storeId }: { storeId: string }) {
                   <ProductCard
                     key={product.productId}
                     {...ProductService.convertToProductCardFormat(product)}
+                    shopCapability={
+                      product.shopCapability || (store.primaryCapability as any)
+                    }
                   />
                 ))}
               </div>

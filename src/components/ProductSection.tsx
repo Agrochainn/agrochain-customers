@@ -12,6 +12,11 @@ interface Product {
   discount?: number;
   isNew?: boolean;
   isBestseller?: boolean;
+  shopCapability?:
+    | "VISUALIZATION_ONLY"
+    | "PICKUP_ORDERS"
+    | "FULL_ECOMMERCE"
+    | "HYBRID";
 }
 
 interface ProductSectionProps {
@@ -21,11 +26,11 @@ interface ProductSectionProps {
   showLoadMore?: boolean;
 }
 
-const ProductSection = ({ 
-  title, 
-  products, 
-  onLoadMore, 
-  showLoadMore = true 
+const ProductSection = ({
+  title,
+  products,
+  onLoadMore,
+  showLoadMore = true,
 }: ProductSectionProps) => {
   return (
     <section className="space-y-6">
@@ -37,13 +42,13 @@ const ProductSection = ({
           </Button>
         </div>
       )}
-      
+
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-6">
-        {products.map(product => (
+        {products.map((product) => (
           <ProductCard key={product.id} {...product} />
         ))}
       </div>
-      
+
       {showLoadMore && (
         <div className="text-center">
           <Button variant="outline" onClick={onLoadMore}>
@@ -55,4 +60,4 @@ const ProductSection = ({
   );
 };
 
-export default ProductSection; 
+export default ProductSection;

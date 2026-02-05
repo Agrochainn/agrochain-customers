@@ -213,7 +213,9 @@
     "removeError": "Échec de la suppression de l'article du panier. Veuillez réessayer.",
     "addError": "Échec de l'ajout de l'article au panier. Veuillez réessayer.",
     "fetchingError": "Échec de la récupération des détails du produit. Veuillez réessayer.",
-    "added": "Ajouté au panier"
+    "added": "Ajouté au panier",
+    "viewProduct": "Voir le produit",
+    "addToCart": "Ajouter au panier"
   },
   "wishlist": {
     "title": "Ma liste de souhaits",

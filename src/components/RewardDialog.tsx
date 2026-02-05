@@ -11,7 +11,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
-import { Gift, Star, ArrowRight, Loader2 } from "lucide-react";
+import { Gift, Star, ArrowRight, Loader2, CheckCircle2 } from "lucide-react";
 import { useAppDispatch } from "@/lib/store/hooks";
 import { clearSignupResponse } from "@/lib/store/slices/authSlice";
 
@@ -55,98 +55,96 @@ export default function RewardDialog({
         }
       }}
     >
-      <DialogContent className="sm:max-w-md bg-gradient-to-b from-green-50 to-white border border-green-100 shadow-xl rounded-2xl">
+      <DialogContent className="sm:max-w-md bg-white border-2 border-green-600 shadow-[0_25px_50px_-12px_rgba(0,0,0,0.25)] rounded-3xl p-8">
         <DialogHeader className="text-center">
-          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-r from-green-500 to-indigo-500 shadow-md">
+          <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-green-600 text-white shadow-lg animate-bounce-subtle">
             {awardedPoints > 0 ? (
-              <Gift className="h-8 w-8 text-white" />
+              <Gift className="h-10 w-10" />
             ) : (
-              <Star className="h-8 w-8 text-white" />
+              <CheckCircle2 className="h-10 w-10 text-white" />
             )}
           </div>
-          <DialogTitle className="text-2xl font-bold text-green-700">
-            {awardedPoints > 0
-              ? "🎉 Welcome Bonus!"
-              : "✅ Registration Successful!"}
+          <DialogTitle className="text-3xl font-black text-black tracking-tight leading-none mb-2">
+            {awardedPoints > 0 ? "Welcome Bonus!" : "Registration Done!"}
           </DialogTitle>
-          <DialogDescription className="text-base text-gray-600 mt-1">
+          <DialogDescription className="text-base text-gray-500 font-medium">
             {awardedPoints > 0 ? (
               <>
-                You’ve just earned{" "}
-                <strong className="text-green-700 font-semibold">
+                You’ve earned{" "}
+                <span className="text-green-600 font-bold whitespace-nowrap">
                   {awardedPoints} points
-                </strong>{" "}
-                for joining us!
+                </span>{" "}
+                for joining.
               </>
             ) : (
-              "Your account has been created successfully. Welcome to the community!"
+              "Your account is ready. Welcome to the Agrochain family!"
             )}
           </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-5 mt-4">
+        <div className="space-y-6 mt-8">
           {awardedPoints > 0 ? (
-            <div className="rounded-xl bg-gradient-to-r from-green-50 to-indigo-50 p-5 text-center border border-green-100 shadow-sm">
-              <div className="flex items-center justify-center gap-2 mb-2">
-                <Star className="h-6 w-6 text-green-500 fill-current" />
-                <span className="text-3xl font-extrabold text-green-600">
-                  {awardedPoints} Points
+            <div className="rounded-2xl bg-gray-50 border-2 border-gray-100 p-6 text-center transform transition-all hover:scale-[1.02]">
+              <div className="flex items-center justify-center gap-3 mb-2">
+                <Star className="h-8 w-8 text-green-600 fill-current" />
+                <span className="text-4xl font-black text-black">
+                  {awardedPoints}
+                </span>
+                <span className="text-lg font-bold text-green-600 uppercase tracking-wider">
+                  PTS
                 </span>
               </div>
               {pointsDescription && (
-                <p className="text-sm text-gray-600 leading-relaxed">
+                <p className="text-xs text-gray-400 font-bold uppercase tracking-widest mt-2">
                   {pointsDescription}
                 </p>
               )}
             </div>
           ) : (
-            <div className="rounded-xl bg-green-50 p-5 text-center border border-green-100">
-              <p className="text-sm text-green-800">
-                You can now log in to start exploring our products and
-                supporting local farmers.
+            <div className="rounded-2xl bg-green-50 p-6 text-center border-2 border-green-100 italic">
+              <p className="text-sm font-semibold text-green-800">
+                "Small steps for farmers, giant leaps for our community."
               </p>
             </div>
           )}
 
-          <div className="space-y-3">
-            <div className="flex items-center gap-3 text-sm text-gray-600">
-              <Badge
-                variant="secondary"
-                className="bg-green-100 text-green-700 border border-green-200"
-              >
-                ✓ Success
-              </Badge>
-              <span>Account active and ready to use</span>
+          <div className="space-y-4">
+            <div className="flex items-center gap-4 group">
+              <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-black text-white group-hover:bg-green-600 transition-colors">
+                <CheckCircle2 className="h-3.5 w-3.5" />
+              </div>
+              <span className="text-sm font-bold text-gray-900">
+                Account verified and active
+              </span>
             </div>
             {awardedPoints > 0 && (
-              <div className="flex items-center gap-3 text-sm text-gray-600">
-                <Badge
-                  variant="secondary"
-                  className="bg-green-100 text-green-700 border border-green-200"
-                >
-                  Redeemable
-                </Badge>
-                <span>Use these points for discounts on future purchases</span>
+              <div className="flex items-center gap-4 group">
+                <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-black text-white group-hover:bg-green-600 transition-colors">
+                  <Star className="h-3.5 w-3.5" />
+                </div>
+                <span className="text-sm font-bold text-gray-900">
+                  Points ready for next purchase
+                </span>
               </div>
             )}
           </div>
 
-          <div className="flex flex-col gap-3 pt-5">
+          <div className="flex flex-col gap-3 pt-4">
             <Button
               onClick={handleClose}
               disabled={isRedirecting}
-              className="w-full bg-gradient-to-r from-green-600 to-indigo-600 hover:from-green-700 hover:to-indigo-700 text-white font-semibold rounded-xl shadow-md transition-all duration-200 h-12"
+              className="w-full bg-green-600 hover:bg-black text-white font-black rounded-2xl transition-all duration-300 h-14 text-lg shadow-xl hover:shadow-green-500/20 active:scale-[0.98] group"
             >
               {isRedirecting ? (
                 <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Redirecting to Login...
+                  <Loader2 className="mr-2 h-6 w-6 animate-spin" />
+                  Please wait...
                 </>
               ) : (
-                <>
-                  Go to Login
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </>
+                <span className="flex items-center justify-center">
+                  Start Exploring
+                  <ArrowRight className="ml-3 h-6 w-6 transition-transform group-hover:translate-x-1" />
+                </span>
               )}
             </Button>
 
@@ -155,9 +153,9 @@ export default function RewardDialog({
                 variant="ghost"
                 onClick={handleLearnMore}
                 disabled={isRedirecting}
-                className="text-green-700 hover:bg-green-50 h-10"
+                className="text-black hover:text-green-600 font-bold h-10 hover:bg-transparent transition-colors uppercase text-xs tracking-widest"
               >
-                Learn More About Points
+                View Reward Benefits
               </Button>
             )}
           </div>
