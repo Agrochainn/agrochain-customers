@@ -1007,7 +1007,7 @@ const ProductGrid = ({
                                 ) : (
                                   <>
                                     <ShoppingCart className="h-4 w-4 mr-2" />
-                                    {t("cart.addToCart") || "Add to Cart"}
+                                    {t("cart.addToCart", "Add to Cart")}
                                   </>
                                 )}
                               </Button>

@@ -445,7 +445,7 @@ const ProductCard = ({
                     ) : (
                       <>
                         <ShoppingCart className="h-4 w-4 mr-2" />
-                        {t("cart.addToCart") || "Add to Cart"}
+                        {t("cart.addToCart", "Add to Cart")}
                       </>
                     )}
                   </Button>
@@ -457,7 +457,7 @@ const ProductCard = ({
                     className="w-full h-10 sm:h-9 text-sm border-background/80 bg-background/80 backdrop-blur-sm hover:bg-background hover:border-primary"
                   >
                     <Eye className="h-4 w-4 mr-2" />
-                    {t("cart.viewProduct") || "View Product"}
+                    {t("cart.viewProduct", "View Product")}
                   </Button>
                 </Link>
               </div>

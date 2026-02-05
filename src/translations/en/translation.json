@@ -236,7 +236,8 @@
     "notReserved": "Items in your cart are not reserved. Checkout now to secure your order.",
     "discountsApplied": "Discounts Applied",
     "loadError": "Failed to load cart items.",
-    "shopCapabilityInfo": "Click to learn how this shop operates"
+    "shopCapabilityInfo": "Click to learn how this shop operates",
+    "addToCart": "Add to Cart"
   },
   "wishlist": {
     "title": "My Wishlist",

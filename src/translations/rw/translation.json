@@ -213,7 +213,9 @@
     "removeError": "Gukura igicuruzwa mu gikapu byanze. Ongera ugerageze.",
     "addError": "Gushyira igicuruzwa mu gikapu byanze. Ongera ugerageze.",
     "fetchingError": "Gushaka amakuru y'igicuruzwa byanze. Ongera ugerageze.",
-    "added": "Kuri mu gikapu"
+    "added": "Kuri mu gikapu",
+    "viewProduct": "Reba igicuruzwa",
+    "addToCart": "Shyira mu gikapu"
   },
   "wishlist": {
     "title": "Ibyo nifuza",
