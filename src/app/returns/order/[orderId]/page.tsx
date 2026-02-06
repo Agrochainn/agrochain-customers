@@ -420,7 +420,7 @@ function OrderReturnRequestsPageContent() {
                       <div className="bg-muted p-4 rounded-md space-y-2">
                         <p className="text-sm">
                           <span className="font-medium">Date:</span>{" "}
-                          {formatDate(request.decisionAt)}
+                          {request.decisionAt ? formatDate(request.decisionAt) : "N/A"}
                         </p>
                         {request.decisionNotes && (
                           <p className="text-sm">
@@ -450,7 +450,7 @@ function OrderReturnRequestsPageContent() {
                                 size="sm"
                                 onClick={() => {
                                   const link = document.createElement("a");
-                                  link.href = request.refundScreenshotUrl;
+                                    link.href = request.refundScreenshotUrl!;
                                   link.download = `refund-screenshot-${request.id}.png`;
                                   document.body.appendChild(link);
                                   link.click();

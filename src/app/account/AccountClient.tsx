@@ -32,7 +32,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { formatPrice } from "@/lib/utils/priceFormatter";
 import {
   Table,
   TableBody,

@@ -153,29 +153,29 @@ function ReturnRequestPageContent() {
             },
             variant: item.variant
               ? {
-                  ...item.variant,
-                  id: item.variant.id?.toString() || "",
-                  productId: item.variant?.productId || item.product?.id || "",
-                  price: item.variant?.price || item.price || 0,
-                }
+                ...item.variant,
+                id: item.variant.id?.toString() || "",
+                productId: item.variant?.productId || item.product?.id || "",
+                price: item.variant?.price || item.price || 0,
+              }
               : undefined,
           })) || [],
         customerInfo: order.customerInfo
           ? {
-              firstName:
-                order.customerInfo.name?.split(" ")[0] ||
-                order.customerInfo.firstName ||
-                "",
-              lastName:
-                order.customerInfo.name?.split(" ").slice(1).join(" ") ||
-                order.customerInfo.lastName ||
-                "",
-              email: order.customerInfo.email || "",
-              phoneNumber:
-                order.customerInfo.phone ||
-                order.customerInfo.phoneNumber ||
-                "",
-            }
+            firstName:
+              order.customerInfo.name?.split(" ")[0] ||
+              order.customerInfo.firstName ||
+              "",
+            lastName:
+              order.customerInfo.name?.split(" ").slice(1).join(" ") ||
+              order.customerInfo.lastName ||
+              "",
+            email: order.customerInfo.email || "",
+            phoneNumber:
+              order.customerInfo.phone ||
+              order.customerInfo.phoneNumber ||
+              "",
+          }
           : undefined,
       };
 
@@ -314,7 +314,8 @@ function ReturnRequestPageContent() {
         // Authenticated user return request (shopOrderId)
         response = await ReturnService.submitReturnRequest(
           {
-            orderId: shopOrderId ? parseInt(shopOrderId) : orderDetails.id,
+            customerId: orderDetails.userId || null,
+            orderId: shopOrderId ? shopOrderId : String(orderDetails.id),
             reason: generalReason,
             returnItems,
             trackingToken: trackingToken || pickupToken || undefined,
@@ -524,7 +525,7 @@ function ReturnRequestPageContent() {
                     {/* Product Image */}
                     <div className="w-16 h-16 bg-gray-100 rounded-md flex-shrink-0 overflow-hidden">
                       {displayProduct.images &&
-                      displayProduct.images.length > 0 ? (
+                        displayProduct.images.length > 0 ? (
                         <img
                           src={displayProduct.images[0]}
                           alt={displayProduct.name}
@@ -677,7 +678,7 @@ function ReturnRequestPageContent() {
                     {/* Product Image */}
                     <div className="w-16 h-16 bg-gray-100 rounded-md flex-shrink-0 overflow-hidden">
                       {displayProduct.images &&
-                      displayProduct.images.length > 0 ? (
+                        displayProduct.images.length > 0 ? (
                         <img
                           src={displayProduct.images[0]}
                           alt={displayProduct.name}
