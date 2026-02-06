@@ -126,6 +126,14 @@ export const API_ENDPOINTS = {
   ACTIVE_SHOPS: `${API_BASE_URL}/shops/active`,
   SHOP_DETAILS: (id: string) => `${API_BASE_URL}/shops/${id}/details`,
 
+  // Warehouse endpoints (public)
+  WAREHOUSES_PUBLIC_BY_SHOP: (shopId: string) =>
+    `${API_BASE_URL}/warehouses/public/shops/${shopId}`,
+
+  // Delivery area endpoints (public)
+  DELIVERY_AREAS_PUBLIC_BY_SHOP: (shopId: string) =>
+    `${API_BASE_URL}/shops/${shopId}/delivery-areas/public`,
+
   // Feedback (public, no auth required)
   FEEDBACK: `${API_BASE_URL}/feedback`,
 } as const;
