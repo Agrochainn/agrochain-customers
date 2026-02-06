@@ -53,11 +53,12 @@ export function GlobalFetchHandler() {
               duration: 5000,
             });
           } catch (e) {
-            toast.error("Process Failed", {
-              description: `Server returned ${response.status}: ${response.statusText}`,
-              position: "top-center",
-              duration: 5000,
-            });
+            // toast.error("Process Failed", {
+            //   description: `Server returned ${response.status}: ${response.statusText}`,
+            //   position: "top-center",
+            //   duration: 5000,
+            // });
+            console.error(e)
           }
         }
 
