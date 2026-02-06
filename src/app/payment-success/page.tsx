@@ -51,7 +51,7 @@ function PaymentSuccessContent() {
   const generateGroupedQRCode = async (
     token: string,
     shopName: string,
-    orderDate: string
+    orderDate: string,
   ): Promise<string> => {
     const canvas = document.createElement("canvas");
     const ctx = canvas.getContext("2d");
@@ -117,7 +117,7 @@ function PaymentSuccessContent() {
       "orderId:",
       orderId,
       "orderNumber:",
-      orderNumber
+      orderNumber,
     );
 
     if (sessionId) {
@@ -138,16 +138,15 @@ function PaymentSuccessContent() {
 
   const getShopOrderKey = (shopOrder: any) => {
     return String(
-      shopOrder?.shopOrderId ?? shopOrder?.id ?? shopOrder?.shopOrderCode ?? ""
+      shopOrder?.shopOrderId ?? shopOrder?.id ?? shopOrder?.shopOrderCode ?? "",
     );
   };
 
   const fetchOrderDetailsByNumber = async (orderNumber: string) => {
     try {
       console.log("Fetching order details for orderNumber:", orderNumber);
-      const orderDetails = await OrderService.getOrderDetailsByNumber(
-        orderNumber
-      );
+      const orderDetails =
+        await OrderService.getOrderDetailsByNumber(orderNumber);
       console.log("Order details result:", orderDetails);
 
       if (orderDetails) {
@@ -200,7 +199,7 @@ function PaymentSuccessContent() {
               const qrDataUrl = await generateGroupedQRCode(
                 shopOrder.pickupToken,
                 shopOrder.shopName,
-                orderDetails.createdAt || orderDetails.orderDate
+                orderDetails.createdAt || orderDetails.orderDate,
               );
               newQrCodes[getShopOrderKey(shopOrder)] = qrDataUrl;
             }
@@ -210,7 +209,7 @@ function PaymentSuccessContent() {
           const qrDataUrl = await generateGroupedQRCode(
             orderDetails.pickupToken,
             "Your Shop",
-            orderDetails.createdAt || orderDetails.orderDate
+            orderDetails.createdAt || orderDetails.orderDate,
           );
           setQrCodes({ main: qrDataUrl });
         }
@@ -220,7 +219,7 @@ function PaymentSuccessContent() {
     } catch (err) {
       console.error("Order fetch error:", err);
       setError(
-        err instanceof Error ? err.message : "Failed to fetch order details"
+        err instanceof Error ? err.message : "Failed to fetch order details",
       );
     } finally {
       setVerifying(false);
@@ -248,12 +247,12 @@ function PaymentSuccessContent() {
           orderDetails.transaction?.pointsValue || 0;
 
         setPointsUsed(
-          pointsUsedParam ? parseInt(pointsUsedParam) : transactionPointsUsed
+          pointsUsedParam ? parseInt(pointsUsedParam) : transactionPointsUsed,
         );
         setPointsValue(
           pointsValueParam
             ? parseFloat(pointsValueParam)
-            : transactionPointsValue
+            : transactionPointsValue,
         );
 
         // Create a verification result with transaction information
@@ -294,7 +293,7 @@ function PaymentSuccessContent() {
               const qrDataUrl = await generateGroupedQRCode(
                 shopOrder.pickupToken,
                 shopOrder.shopName,
-                orderDetails.createdAt || orderDetails.orderDate
+                orderDetails.createdAt || orderDetails.orderDate,
               );
               newQrCodes[getShopOrderKey(shopOrder)] = qrDataUrl;
             }
@@ -304,7 +303,7 @@ function PaymentSuccessContent() {
           const qrDataUrl = await generateGroupedQRCode(
             orderDetails.pickupToken,
             "Your Shop",
-            orderDetails.createdAt || orderDetails.orderDate
+            orderDetails.createdAt || orderDetails.orderDate,
           );
           setQrCodes({ main: qrDataUrl });
         }
@@ -314,7 +313,7 @@ function PaymentSuccessContent() {
     } catch (err) {
       console.error("Order fetch error:", err);
       setError(
-        err instanceof Error ? err.message : "Failed to fetch order details"
+        err instanceof Error ? err.message : "Failed to fetch order details",
       );
     } finally {
       setVerifying(false);
@@ -352,7 +351,7 @@ function PaymentSuccessContent() {
                 const qrDataUrl = await generateGroupedQRCode(
                   shopOrder.pickupToken,
                   shopOrder.shopName,
-                  result.order.createdAt
+                  result.order.createdAt,
                 );
                 newQrCodes[getShopOrderKey(shopOrder)] = qrDataUrl;
               }
@@ -362,7 +361,7 @@ function PaymentSuccessContent() {
             const qrDataUrl = await generateGroupedQRCode(
               result.order.pickupToken,
               "Your Shop",
-              result.order.createdAt
+              result.order.createdAt,
             );
             setQrCodes({ main: qrDataUrl });
           }
@@ -455,7 +454,7 @@ function PaymentSuccessContent() {
         {/* Professional Invoice Layout */}
         {orderDetails && (
           <div className="bg-white border-2 border-gray-200 rounded-md shadow-lg mb-8 print:shadow-none print:border-gray-400">
-            <div className="bg-gradient-to-r from-green-600 to-indigo-600 text-white p-6 rounded-t-lg">
+            <div className="bg-green-700 text-white p-6 rounded-t-lg">
               <div className="flex justify-between items-start">
                 <div>
                   <h2 className="text-2xl font-bold mb-2">INVOICE</h2>
@@ -555,7 +554,11 @@ function PaymentSuccessContent() {
                   orderDetails.shopOrders.map(
                     (shopOrder: any, shopIndex: number) => (
                       <div
-                        key={(shopOrder as any).shopOrderId ?? (shopOrder as any).id ?? shopIndex}
+                        key={
+                          (shopOrder as any).shopOrderId ??
+                          (shopOrder as any).id ??
+                          shopIndex
+                        }
                         className="animate-in fade-in slide-in-from-bottom-4 duration-500"
                         style={{ animationDelay: `${shopIndex * 100}ms` }}
                       >
@@ -708,7 +711,7 @@ function PaymentSuccessContent() {
                                                 onClick={() =>
                                                   downloadQRCode(
                                                     qrUrl,
-                                                    `pickup-${shopOrder.shopName}-${shopOrder.shopOrderCode}.png`
+                                                    `pickup-${shopOrder.shopName}-${shopOrder.shopOrderCode}.png`,
                                                   )
                                                 }
                                               >
@@ -726,13 +729,13 @@ function PaymentSuccessContent() {
                                       )}
                                     </tr>
                                   );
-                                }
+                                },
                               )}
                             </tbody>
                           </table>
                         </div>
                       </div>
-                    )
+                    ),
                   )
                 ) : (
                   /* Fallback to legacy single list if shopOrders is missing */
@@ -795,7 +798,7 @@ function PaymentSuccessContent() {
                                   $ {item.totalPrice?.toLocaleString()}
                                 </td>
                               </tr>
-                            )
+                            ),
                           )}
                         </tbody>
                       </table>
@@ -1125,7 +1128,7 @@ function PaymentSuccessContent() {
                       <button
                         onClick={() =>
                           navigator.clipboard.writeText(
-                            `${orderDetails.shippingAddress.latitude}, ${orderDetails.shippingAddress.longitude}`
+                            `${orderDetails.shippingAddress.latitude}, ${orderDetails.shippingAddress.longitude}`,
                           )
                         }
                         className="px-4 bg-gray-100 rounded-xl hover:bg-gray-200 transition-colors"
@@ -1185,7 +1188,7 @@ function PaymentSuccessContent() {
                 variant="outline"
                 size="lg"
                 asChild
-                className="px-10 rounded-xl border-white/20 hover:bg-white/10 text-white transition-all"
+                className="px-10 rounded-xl border-white/20 hover:bg-white/10 text-black hover:text-white transition-all"
               >
                 <Link href="/track-order">Track My Order</Link>
               </Button>
@@ -1236,7 +1239,7 @@ function PaymentSuccessContent() {
                       onClick={() =>
                         downloadQRCode(
                           selectedQRCode.url,
-                          `pickup-token-${selectedQRCode.shopName}.png`
+                          `pickup-token-${selectedQRCode.shopName}.png`,
                         )
                       }
                       className="w-full py-7 text-lg font-black rounded-2xl shadow-xl shadow-primary/30"

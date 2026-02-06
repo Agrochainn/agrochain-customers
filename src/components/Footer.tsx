@@ -76,7 +76,7 @@ const Footer = () => {
               <div className="space-y-2 text-sm">
                 <div className="flex items-center gap-2">
                   <Phone className="h-4 w-4 text-primary" />
-                  <span>+1 (555) 123-4567</span>
+                  <span>+250 788 458 261</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <Mail className="h-4 w-4 text-primary" />
@@ -84,7 +84,7 @@ const Footer = () => {
                 </div>
                 <div className="flex items-center gap-2">
                   <MapPin className="h-4 w-4 text-primary" />
-                  <span>123 Commerce St, City, State 12345</span>
+                  <span>RCA. Nyabihu RN4, Ruhengeri-Gisenyi Rd, Mukamira</span>
                 </div>
               </div>
             </div>
@@ -216,39 +216,6 @@ const Footer = () => {
                   </a>
                 </li>
               </ul>
-            </div>
-          </div>
-        </div>
-
-        {/* Features */}
-        <div className="py-8 border-t border-b">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
-            <div className="flex items-center justify-center gap-3">
-              <Truck className="h-8 w-8 text-primary" />
-              <div className="text-left">
-                <p className="font-semibold">{t("footer.freeShipping")}</p>
-                <p className="text-sm text-muted-foreground">
-                  {t("footer.freeShippingDesc", { price: formatPrice(50) })}
-                </p>
-              </div>
-            </div>
-            <div className="flex items-center justify-center gap-3">
-              <Shield className="h-8 w-8 text-primary" />
-              <div className="text-left">
-                <p className="font-semibold">{t("footer.securePayment")}</p>
-                <p className="text-sm text-muted-foreground">
-                  {t("footer.securePaymentDesc")}
-                </p>
-              </div>
-            </div>
-            <div className="flex items-center justify-center gap-3">
-              <CreditCard className="h-8 w-8 text-primary" />
-              <div className="text-left">
-                <p className="font-semibold">{t("footer.easyReturns")}</p>
-                <p className="text-sm text-muted-foreground">
-                  {t("footer.easyReturnsDesc")}
-                </p>
-              </div>
             </div>
           </div>
         </div>
