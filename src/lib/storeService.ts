@@ -155,7 +155,7 @@ export const StoreService = {
     size: number;
   }> => {
     const response = await fetch(
-      `${API_ENDPOINTS.API_BASE_URL}/warehouses/public/shops/${shopId}?page=${page}&size=${size}&sort=name`,
+      `${API_BASE_URL}/warehouses/public/shops/${shopId}?page=${page}&size=${size}&sort=name`,
       {
         method: "GET",
         headers: {
@@ -186,7 +186,7 @@ export const StoreService = {
     size: number;
   }> => {
     const response = await fetch(
-      `${API_ENDPOINTS.API_BASE_URL}/shops/${shopId}/delivery-areas/public?page=${page}&size=${size}&sortBy=name&sortDirection=ASC`,
+      `${API_BASE_URL}/shops/${shopId}/delivery-areas/public?page=${page}&size=${size}&sortBy=name&sortDirection=ASC`,
       {
         method: "GET",
         headers: {

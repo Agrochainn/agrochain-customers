@@ -136,6 +136,12 @@ function PaymentSuccessContent() {
     }
   }, [searchParams]);
 
+  const getShopOrderKey = (shopOrder: any) => {
+    return String(
+      shopOrder?.shopOrderId ?? shopOrder?.id ?? shopOrder?.shopOrderCode ?? ""
+    );
+  };
+
   const fetchOrderDetailsByNumber = async (orderNumber: string) => {
     try {
       console.log("Fetching order details for orderNumber:", orderNumber);
@@ -196,7 +202,7 @@ function PaymentSuccessContent() {
                 shopOrder.shopName,
                 orderDetails.createdAt || orderDetails.orderDate
               );
-              newQrCodes[shopOrder.id || shopOrder.shopOrderId] = qrDataUrl;
+              newQrCodes[getShopOrderKey(shopOrder)] = qrDataUrl;
             }
           }
           setQrCodes(newQrCodes);
@@ -290,7 +296,7 @@ function PaymentSuccessContent() {
                 shopOrder.shopName,
                 orderDetails.createdAt || orderDetails.orderDate
               );
-              newQrCodes[shopOrder.id || shopOrder.shopOrderId] = qrDataUrl;
+              newQrCodes[getShopOrderKey(shopOrder)] = qrDataUrl;
             }
           }
           setQrCodes(newQrCodes);
@@ -348,7 +354,7 @@ function PaymentSuccessContent() {
                   shopOrder.shopName,
                   result.order.createdAt
                 );
-                newQrCodes[shopOrder.id || shopOrder.shopOrderId] = qrDataUrl;
+                newQrCodes[getShopOrderKey(shopOrder)] = qrDataUrl;
               }
             }
             setQrCodes(newQrCodes);
@@ -549,7 +555,7 @@ function PaymentSuccessContent() {
                   orderDetails.shopOrders.map(
                     (shopOrder: any, shopIndex: number) => (
                       <div
-                        key={shopOrder.id || shopIndex}
+                        key={(shopOrder as any).shopOrderId ?? (shopOrder as any).id ?? shopIndex}
                         className="animate-in fade-in slide-in-from-bottom-4 duration-500"
                         style={{ animationDelay: `${shopIndex * 100}ms` }}
                       >
@@ -616,7 +622,8 @@ function PaymentSuccessContent() {
                                     : item.product?.images?.[0];
                                   const qrUrl =
                                     qrCodes[
-                                      shopOrder.id || shopOrder.shopOrderId
+                                      (shopOrder as any).shopOrderId ??
+                                        (shopOrder as any).id
                                     ];
 
                                   return (
