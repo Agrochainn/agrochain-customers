@@ -4,7 +4,16 @@ import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowLeft, Coins, CreditCard, LockIcon, Loader2, MapPin, Package, Truck } from "lucide-react";
+import {
+  ArrowLeft,
+  Coins,
+  CreditCard,
+  LockIcon,
+  Loader2,
+  MapPin,
+  Package,
+  Truck,
+} from "lucide-react";
 
 // Components
 import { Button } from "@/components/ui/button";
@@ -41,7 +50,10 @@ import { toast } from "sonner";
 // Google Maps removed - using mock location data
 import { CountrySelector } from "@/components/CountrySelector";
 import { PointsPaymentModal } from "@/components/PointsPaymentModal";
-import { formatStockErrorMessage, extractErrorDetails } from "@/lib/utils/errorParser";
+import {
+  formatStockErrorMessage,
+  extractErrorDetails,
+} from "@/lib/utils/errorParser";
 
 // Services
 import { CartService, CartResponse } from "@/lib/cartService";
@@ -91,7 +103,7 @@ export function CheckoutClient() {
     useState<PaymentSummaryDTO | null>(null);
   const [loadingSummary, setLoadingSummary] = useState(false);
   const [showPointsModal, setShowPointsModal] = useState(false);
-  
+
   // Error dialog state
   const [errorDialog, setErrorDialog] = useState<{
     open: boolean;
@@ -101,12 +113,12 @@ export function CheckoutClient() {
     open: false,
     message: "",
   });
-  
+
   // Shop fulfillment preferences (for HYBRID shops)
   const [shopFulfillmentPreferences, setShopFulfillmentPreferences] = useState<
     Map<string, "PICKUP" | "DELIVERY">
   >(new Map());
-  
+
   // Track which shops need fulfillment choice
   const [shopsRequiringChoice, setShopsRequiringChoice] = useState<
     Array<{ shopId: string; shopName: string; capability: string }>
@@ -130,32 +142,35 @@ export function CheckoutClient() {
 
   // Mock location data generator - returns coordinates on or near major roads
   // Note: Road validation is disabled in backend, but we still use road coordinates for accuracy
-  const generateMockLocation = (country: string, city: string): { latitude: number; longitude: number } => {
+  const generateMockLocation = (
+    country: string,
+    city: string,
+  ): { latitude: number; longitude: number } => {
     // Road coordinates - locations on major roads/streets in each country
     // These coordinates are on or very close to actual roads for delivery purposes
     const roadLocations: Record<string, { lat: number; lng: number }> = {
-      'RW': { lat: -1.9500, lng: 30.0583 }, // Kigali - KN 3 Road (KG 2 St, main road)
-      'UG': { lat: 0.3156, lng: 32.5822 }, // Kampala - Entebbe Road (major highway)
-      'KE': { lat: -1.2833, lng: 36.8167 }, // Nairobi - Uhuru Highway (A104, main road)
-      'TZ': { lat: -6.8167, lng: 39.2833 }, // Dar es Salaam - Ali Hassan Mwinyi Road
-      'US': { lat: 40.7589, lng: -73.9851 }, // New York - Broadway (Times Square area, major street)
-      'GB': { lat: 51.5074, lng: -0.1276 }, // London - Strand (major road)
-      'CA': { lat: 43.6532, lng: -79.3832 }, // Toronto - Yonge Street (main street)
-      'AU': { lat: -33.8688, lng: 151.2093 }, // Sydney - George Street (main road)
-      'ZA': { lat: -26.2041, lng: 28.0473 }, // Johannesburg - Main Street
-      'NG': { lat: 6.5244, lng: 3.3792 }, // Lagos - Ikorodu Road (major highway)
-      'GH': { lat: 5.6037, lng: -0.1870 }, // Accra - Ring Road (major road)
-      'ET': { lat: 9.1450, lng: 38.7617 }, // Addis Ababa - Bole Road (main road)
+      RW: { lat: -1.95, lng: 30.0583 }, // Kigali - KN 3 Road (KG 2 St, main road)
+      UG: { lat: 0.3156, lng: 32.5822 }, // Kampala - Entebbe Road (major highway)
+      KE: { lat: -1.2833, lng: 36.8167 }, // Nairobi - Uhuru Highway (A104, main road)
+      TZ: { lat: -6.8167, lng: 39.2833 }, // Dar es Salaam - Ali Hassan Mwinyi Road
+      US: { lat: 40.7589, lng: -73.9851 }, // New York - Broadway (Times Square area, major street)
+      GB: { lat: 51.5074, lng: -0.1276 }, // London - Strand (major road)
+      CA: { lat: 43.6532, lng: -79.3832 }, // Toronto - Yonge Street (main street)
+      AU: { lat: -33.8688, lng: 151.2093 }, // Sydney - George Street (main road)
+      ZA: { lat: -26.2041, lng: 28.0473 }, // Johannesburg - Main Street
+      NG: { lat: 6.5244, lng: 3.3792 }, // Lagos - Ikorodu Road (major highway)
+      GH: { lat: 5.6037, lng: -0.187 }, // Accra - Ring Road (major road)
+      ET: { lat: 9.145, lng: 38.7617 }, // Addis Ababa - Bole Road (main road)
     };
-    
+
     // Get country code (first 2 letters)
-    const countryCode = country?.substring(0, 2).toUpperCase() || 'RW';
-    const location = roadLocations[countryCode] || roadLocations['RW'];
-    
+    const countryCode = country?.substring(0, 2).toUpperCase() || "RW";
+    const location = roadLocations[countryCode] || roadLocations["RW"];
+
     // Add very small random offset to simulate different points along the same road
     // Small offset (±0.0005 degrees ≈ ~50m) keeps it on/near the road
-    const roadOffset = (Math.random() * 0.001 - 0.0005); // ±0.0005 degrees (~50m along road)
-    
+    const roadOffset = Math.random() * 0.001 - 0.0005; // ±0.0005 degrees (~50m along road)
+
     return {
       latitude: location.lat + roadOffset,
       longitude: location.lng + roadOffset,
@@ -236,31 +251,37 @@ export function CheckoutClient() {
     user,
     shopFulfillmentPreferences, // Re-fetch when preferences change
   ]);
-  
+
   // Auto-detect HYBRID shops from payment summary response (fallback detection)
   useEffect(() => {
     if (paymentSummary && paymentSummary.shopSummaries) {
-      console.log("Auto-detecting HYBRID shops from payment summary (useEffect)");
-      const hybridShops = paymentSummary.shopSummaries.filter(
-        (shop) => {
-          const isHybrid = shop.shopCapability === "HYBRID";
-          const requiresChoice = shop.requiresFulfillmentChoice === true;
-          const hasNoFulfillmentType = !shop.fulfillmentType || shop.fulfillmentType === null;
-          const hasPreference = shopFulfillmentPreferences.has(shop.shopId);
-          
-          // Use same logic as in fetchPaymentSummary
-          const shouldRequireChoice = isHybrid && (requiresChoice || (hasNoFulfillmentType && !hasPreference));
-          return shouldRequireChoice && !hasPreference;
-        }
+      console.log(
+        "Auto-detecting HYBRID shops from payment summary (useEffect)",
       );
-      console.log("Detected HYBRID shops requiring choice (useEffect):", hybridShops);
+      const hybridShops = paymentSummary.shopSummaries.filter((shop) => {
+        const isHybrid = shop.shopCapability === "HYBRID";
+        const requiresChoice = shop.requiresFulfillmentChoice === true;
+        const hasNoFulfillmentType =
+          !shop.fulfillmentType || shop.fulfillmentType === null;
+        const hasPreference = shopFulfillmentPreferences.has(shop.shopId);
+
+        // Use same logic as in fetchPaymentSummary
+        const shouldRequireChoice =
+          isHybrid &&
+          (requiresChoice || (hasNoFulfillmentType && !hasPreference));
+        return shouldRequireChoice && !hasPreference;
+      });
+      console.log(
+        "Detected HYBRID shops requiring choice (useEffect):",
+        hybridShops,
+      );
       if (hybridShops.length > 0) {
         setShopsRequiringChoice(
           hybridShops.map((shop) => ({
             shopId: shop.shopId,
             shopName: shop.shopName,
             capability: shop.shopCapability || "HYBRID",
-          }))
+          })),
         );
       } else {
         // Clear if all shops have preferences
@@ -270,7 +291,7 @@ export function CheckoutClient() {
   }, [paymentSummary, shopFulfillmentPreferences]);
 
   const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -289,14 +310,17 @@ export function CheckoutClient() {
   // Handle manual address input - generate mock coordinates
   const handleAddressInput = () => {
     if (formData.streetAddress && formData.city && formData.country) {
-      const mockLocation = generateMockLocation(formData.country, formData.city);
+      const mockLocation = generateMockLocation(
+        formData.country,
+        formData.city,
+      );
       setFormData((prev) => ({
         ...prev,
         latitude: mockLocation.latitude,
         longitude: mockLocation.longitude,
       }));
       setAddressSelected(true);
-      
+
       // Automatically fetch payment summary after address is complete
       setTimeout(() => {
         fetchPaymentSummary();
@@ -319,12 +343,12 @@ export function CheckoutClient() {
       });
       return;
     }
-    
+
     // Check if there are HYBRID shops that need fulfillment choice
     // This will be populated after first payment summary call if needed
     if (shopsRequiringChoice.length > 0) {
       const missingChoices = shopsRequiringChoice.filter(
-        (shop) => !shopFulfillmentPreferences.has(shop.shopId)
+        (shop) => !shopFulfillmentPreferences.has(shop.shopId),
       );
       if (missingChoices.length > 0) {
         setErrorDialog({
@@ -345,7 +369,7 @@ export function CheckoutClient() {
     // Reset loading state and clear any previous errors
     setLoadingSummary(true);
     setPaymentSummary(null);
-    
+
     try {
       console.log("Processing cart items:", cart.items);
 
@@ -394,7 +418,10 @@ export function CheckoutClient() {
       let latitude = formData.latitude;
       let longitude = formData.longitude;
       if (!latitude || !longitude) {
-        const mockLocation = generateMockLocation(formData.country, formData.city);
+        const mockLocation = generateMockLocation(
+          formData.country,
+          formData.city,
+        );
         latitude = mockLocation.latitude;
         longitude = mockLocation.longitude;
         // Update formData with mock coordinates
@@ -422,62 +449,69 @@ export function CheckoutClient() {
       });
 
       // Convert shopFulfillmentPreferences Map to array format
-      const preferencesArray = Array.from(shopFulfillmentPreferences.entries()).map(
-        ([shopId, fulfillmentType]) => ({
-          shopId,
-          fulfillmentType,
-        })
-      );
+      const preferencesArray = Array.from(
+        shopFulfillmentPreferences.entries(),
+      ).map(([shopId, fulfillmentType]) => ({
+        shopId,
+        fulfillmentType,
+      }));
 
       const summary = await checkoutService.getPaymentSummary({
         deliveryAddress: address,
         items: cartItems,
         orderValue: cart.subtotal,
         userId: isAuthenticated && user ? user.id : undefined,
-        shopFulfillmentPreferences: preferencesArray.length > 0 ? preferencesArray : undefined,
+        shopFulfillmentPreferences:
+          preferencesArray.length > 0 ? preferencesArray : undefined,
       });
 
       console.log("Payment summary received:", summary);
       setPaymentSummary(summary);
-      
+
       // Update shops requiring choice based on response
       if (summary.shopSummaries) {
         console.log("Payment summary shop summaries:", summary.shopSummaries);
-        console.log("Current shop fulfillment preferences:", Array.from(shopFulfillmentPreferences.entries()));
-        
-        const hybridShops = summary.shopSummaries.filter(
-          (shop) => {
-            // Check if shop is HYBRID and either:
-            // 1. requiresFulfillmentChoice is explicitly true, OR
-            // 2. shopCapability is HYBRID and no fulfillmentType is set (fallback detection)
-            const isHybrid = shop.shopCapability === "HYBRID";
-            const requiresChoice = shop.requiresFulfillmentChoice === true;
-            const hasNoFulfillmentType = !shop.fulfillmentType || shop.fulfillmentType === null;
-            const hasPreference = shopFulfillmentPreferences.has(shop.shopId);
-            
-            const shouldRequireChoice = isHybrid && (requiresChoice || (hasNoFulfillmentType && !hasPreference));
-            
-            console.log(`Shop ${shop.shopName}: capability=${shop.shopCapability}, requiresFulfillmentChoice=${shop.requiresFulfillmentChoice}, fulfillmentType=${shop.fulfillmentType}, hasPreference=${hasPreference}, shouldRequireChoice=${shouldRequireChoice}`);
-            
-            return shouldRequireChoice && !hasPreference;
-          }
+        console.log(
+          "Current shop fulfillment preferences:",
+          Array.from(shopFulfillmentPreferences.entries()),
         );
-        
+
+        const hybridShops = summary.shopSummaries.filter((shop) => {
+          // Check if shop is HYBRID and either:
+          // 1. requiresFulfillmentChoice is explicitly true, OR
+          // 2. shopCapability is HYBRID and no fulfillmentType is set (fallback detection)
+          const isHybrid = shop.shopCapability === "HYBRID";
+          const requiresChoice = shop.requiresFulfillmentChoice === true;
+          const hasNoFulfillmentType =
+            !shop.fulfillmentType || shop.fulfillmentType === null;
+          const hasPreference = shopFulfillmentPreferences.has(shop.shopId);
+
+          const shouldRequireChoice =
+            isHybrid &&
+            (requiresChoice || (hasNoFulfillmentType && !hasPreference));
+
+          console.log(
+            `Shop ${shop.shopName}: capability=${shop.shopCapability}, requiresFulfillmentChoice=${shop.requiresFulfillmentChoice}, fulfillmentType=${shop.fulfillmentType}, hasPreference=${hasPreference}, shouldRequireChoice=${shouldRequireChoice}`,
+          );
+
+          return shouldRequireChoice && !hasPreference;
+        });
+
         console.log("HYBRID shops requiring choice:", hybridShops);
-        
+
         if (hybridShops.length > 0) {
           setShopsRequiringChoice(
             hybridShops.map((shop) => ({
               shopId: shop.shopId,
               shopName: shop.shopName,
               capability: shop.shopCapability || "HYBRID",
-            }))
+            })),
           );
-          
+
           // Show a message (info messages can use toast, errors use dialog)
           toast.info(
             `Please select delivery method for ${hybridShops.length} shop(s) below.`,
-            { duration: 6000 }
+            { duration: 6000 },
           );
         } else {
           // Clear if all shops have preferences
@@ -486,33 +520,43 @@ export function CheckoutClient() {
       }
     } catch (error: any) {
       console.error("Error fetching payment summary:", error);
-      
+
       const errorDetails = extractErrorDetails(error);
-      
+
       // Check for shop capability errors
-      const errorMessage = errorDetails.message || error?.response?.data?.message || error?.message || "";
-      if (errorMessage.toLowerCase().includes("visualization") || 
-          errorMessage.toLowerCase().includes("does not accept orders") ||
-          errorMessage.toLowerCase().includes("only displays products")) {
+      const errorMessage =
+        errorDetails.message ||
+        error?.response?.data?.message ||
+        error?.message ||
+        "";
+      if (
+        errorMessage.toLowerCase().includes("visualization") ||
+        errorMessage.toLowerCase().includes("does not accept orders") ||
+        errorMessage.toLowerCase().includes("only displays products")
+      ) {
         setErrorDialog({
           open: true,
           title: "Cannot Proceed to Checkout",
-          message: "Cannot proceed to checkout. Some items in your cart are from shops that only display products and do not accept orders. Please remove these items from your cart.",
+          message:
+            "Cannot proceed to checkout. Some items in your cart are from shops that only display products and do not accept orders. Please remove these items from your cart.",
         });
         // Redirect to cart page
         setTimeout(() => router.push("/cart"), 3000);
         return;
       }
-      
+
       // Check for HYBRID shop fulfillment preference errors
-      if (errorMessage.toLowerCase().includes("hybrid") && 
-          (errorMessage.toLowerCase().includes("specify") || 
-           errorMessage.toLowerCase().includes("please specify") ||
-           errorMessage.toLowerCase().includes("pickup") && errorMessage.toLowerCase().includes("delivered"))) {
+      if (
+        errorMessage.toLowerCase().includes("hybrid") &&
+        (errorMessage.toLowerCase().includes("specify") ||
+          errorMessage.toLowerCase().includes("please specify") ||
+          (errorMessage.toLowerCase().includes("pickup") &&
+            errorMessage.toLowerCase().includes("delivered")))
+      ) {
         // Extract shop name from error message if possible
         const shopMatch = errorMessage.match(/Shop '([^']+)'/);
         const shopName = shopMatch ? shopMatch[1] : "a shop";
-        
+
         setErrorDialog({
           open: true,
           title: "Delivery Method Required",
@@ -520,12 +564,19 @@ export function CheckoutClient() {
         });
         // Don't return - let the UI show the fulfillment selection
       }
-      
+
       // Check for road validation errors
-      if (errorDetails.errorCode === "VALIDATION_ERROR" && 
-          (errorDetails.message?.includes("road") || errorDetails.details?.includes("road") ||
-           errorDetails.message?.includes("pickup point") || errorDetails.details?.includes("pickup point"))) {
-        const roadMessage = errorDetails.message || errorDetails.details || "Please select a pickup point on or near a road.";
+      if (
+        errorDetails.errorCode === "VALIDATION_ERROR" &&
+        (errorDetails.message?.includes("road") ||
+          errorDetails.details?.includes("road") ||
+          errorDetails.message?.includes("pickup point") ||
+          errorDetails.details?.includes("pickup point"))
+      ) {
+        const roadMessage =
+          errorDetails.message ||
+          errorDetails.details ||
+          "Please select a pickup point on or near a road.";
         setErrorDialog({
           open: true,
           title: "Invalid Address",
@@ -533,7 +584,7 @@ export function CheckoutClient() {
         });
         // Clear the address to force user to select a different location
         setAddressSelected(false);
-        setFormData(prev => ({
+        setFormData((prev) => ({
           ...prev,
           streetAddress: "",
           latitude: undefined,
@@ -541,9 +592,15 @@ export function CheckoutClient() {
         }));
       }
       // Check for country validation errors
-      else if (errorDetails.errorCode === "VALIDATION_ERROR" && 
-          (errorDetails.message?.includes("don't deliver to") || errorDetails.details?.includes("don't deliver to"))) {
-        const countryMessage = errorDetails.message || errorDetails.details || "We don't deliver to this country.";
+      else if (
+        errorDetails.errorCode === "VALIDATION_ERROR" &&
+        (errorDetails.message?.includes("don't deliver to") ||
+          errorDetails.details?.includes("don't deliver to"))
+      ) {
+        const countryMessage =
+          errorDetails.message ||
+          errorDetails.details ||
+          "We don't deliver to this country.";
         setErrorDialog({
           open: true,
           title: "Delivery Not Available",
@@ -551,7 +608,7 @@ export function CheckoutClient() {
         });
         // Clear the address selection to force user to select a different address
         setAddressSelected(false);
-        setFormData(prev => ({
+        setFormData((prev) => ({
           ...prev,
           country: "",
           city: "",
@@ -562,14 +619,22 @@ export function CheckoutClient() {
         }));
       }
       // Check if this is a stock-related error
-      else if (errorDetails.details && (errorDetails.details.includes("not available") || errorDetails.details.includes("out of stock"))) {
+      else if (
+        errorDetails.details &&
+        (errorDetails.details.includes("not available") ||
+          errorDetails.details.includes("out of stock"))
+      ) {
         const stockMessage = formatStockErrorMessage(errorDetails.details);
         setErrorDialog({
           open: true,
           title: "Stock Unavailable",
           message: stockMessage,
         });
-      } else if (errorDetails.message && (errorDetails.message.includes("not available") || errorDetails.message.includes("out of stock"))) {
+      } else if (
+        errorDetails.message &&
+        (errorDetails.message.includes("not available") ||
+          errorDetails.message.includes("out of stock"))
+      ) {
         const stockMessage = formatStockErrorMessage(errorDetails.message);
         setErrorDialog({
           open: true,
@@ -580,14 +645,16 @@ export function CheckoutClient() {
         setErrorDialog({
           open: true,
           title: "Calculation Error",
-          message: errorDetails.message || "Error calculating shipping and taxes. Please check your address and try again.",
+          message:
+            errorDetails.message ||
+            "Error calculating shipping and taxes. Please check your address and try again.",
         });
       }
       setPaymentSummary(null);
     } finally {
       // Ensure loading state is always reset
       setLoadingSummary(false);
-      
+
       // Safeguard: Force reset loading state after a short delay
       // This handles edge cases where state updates might be batched
       setTimeout(() => {
@@ -661,7 +728,8 @@ export function CheckoutClient() {
         setErrorDialog({
           open: true,
           title: "Invalid Cart",
-          message: "No valid items found in cart. Please refresh and try again.",
+          message:
+            "No valid items found in cart. Please refresh and try again.",
         });
         setSubmitting(false);
         return;
@@ -671,7 +739,10 @@ export function CheckoutClient() {
       let latitude = formData.latitude;
       let longitude = formData.longitude;
       if (!latitude || !longitude) {
-        const mockLocation = generateMockLocation(formData.country, formData.city);
+        const mockLocation = generateMockLocation(
+          formData.country,
+          formData.city,
+        );
         latitude = mockLocation.latitude;
         longitude = mockLocation.longitude;
       }
@@ -695,12 +766,12 @@ export function CheckoutClient() {
       });
 
       // Convert shopFulfillmentPreferences Map to array format
-      const preferencesArray = Array.from(shopFulfillmentPreferences.entries()).map(
-        ([shopId, fulfillmentType]) => ({
-          shopId,
-          fulfillmentType,
-        })
-      );
+      const preferencesArray = Array.from(
+        shopFulfillmentPreferences.entries(),
+      ).map(([shopId, fulfillmentType]) => ({
+        shopId,
+        fulfillmentType,
+      }));
 
       if (isAuthenticated && user) {
         // Authenticated user checkout
@@ -710,12 +781,12 @@ export function CheckoutClient() {
           currency: "usd",
           userId: user.id,
           platform: "web",
-          shopFulfillmentPreferences: preferencesArray.length > 0 ? preferencesArray : undefined,
+          shopFulfillmentPreferences:
+            preferencesArray.length > 0 ? preferencesArray : undefined,
         };
 
-        const response = await OrderService.createCheckoutSession(
-          checkoutRequest
-        );
+        const response =
+          await OrderService.createCheckoutSession(checkoutRequest);
         sessionUrl = response.sessionUrl;
       } else {
         // Guest checkout
@@ -727,18 +798,18 @@ export function CheckoutClient() {
           address: address,
           items: cartItems,
           platform: "web",
-          shopFulfillmentPreferences: preferencesArray.length > 0 ? preferencesArray : undefined,
+          shopFulfillmentPreferences:
+            preferencesArray.length > 0 ? preferencesArray : undefined,
         };
 
         console.log("Sending guest checkout request:", guestCheckoutRequest);
-        const response = await OrderService.createGuestCheckoutSession(
-          guestCheckoutRequest
-        );
+        const response =
+          await OrderService.createGuestCheckoutSession(guestCheckoutRequest);
         sessionUrl = response.sessionUrl;
       }
 
       // Check if this is a mock payment (relative URL) or Stripe session (absolute URL)
-      if (sessionUrl.startsWith('/') && !sessionUrl.startsWith('http')) {
+      if (sessionUrl.startsWith("/") && !sessionUrl.startsWith("http")) {
         // Mock payment - redirect to success page
         router.push(sessionUrl);
       } else {
@@ -749,17 +820,23 @@ export function CheckoutClient() {
       console.error("Error creating checkout session:", error);
       console.error("Error response data:", error.response?.data);
       console.error("Error response status:", error.response?.status);
-      
+
       const errorDetails = extractErrorDetails(error);
       console.error("Extracted error details:", errorDetails);
-      
+
       if (errorDetails.errorCode) {
         console.log("🔍 DEBUG: Error code detected:", errorDetails.errorCode);
         switch (errorDetails.errorCode) {
           case "VALIDATION_ERROR":
             // Handle country validation errors
-            if (errorDetails.message?.includes("don't deliver to") || errorDetails.details?.includes("don't deliver to")) {
-              const countryMessage = errorDetails.message || errorDetails.details || "We don't deliver to this country.";
+            if (
+              errorDetails.message?.includes("don't deliver to") ||
+              errorDetails.details?.includes("don't deliver to")
+            ) {
+              const countryMessage =
+                errorDetails.message ||
+                errorDetails.details ||
+                "We don't deliver to this country.";
               setErrorDialog({
                 open: true,
                 title: "Delivery Not Available",
@@ -767,7 +844,7 @@ export function CheckoutClient() {
               });
               // Clear the address selection to force user to select a different address
               setAddressSelected(false);
-              setFormData(prev => ({
+              setFormData((prev) => ({
                 ...prev,
                 country: "",
                 city: "",
@@ -781,7 +858,10 @@ export function CheckoutClient() {
               setErrorDialog({
                 open: true,
                 title: "Validation Error",
-                message: errorDetails.message || errorDetails.details || "Please check your information and try again.",
+                message:
+                  errorDetails.message ||
+                  errorDetails.details ||
+                  "Please check your information and try again.",
               });
             }
             break;
@@ -790,7 +870,8 @@ export function CheckoutClient() {
             setErrorDialog({
               open: true,
               title: "Product Not Found",
-              message: "One or more products in your cart are no longer available. Please refresh and try again.",
+              message:
+                "One or more products in your cart are no longer available. Please refresh and try again.",
             });
             break;
           case "PRODUCT_INACTIVE":
@@ -799,7 +880,9 @@ export function CheckoutClient() {
           case "VARIANT_NOT_AVAILABLE":
             // Use the enhanced error parser for stock-related issues
             if (errorDetails.details || errorDetails.message) {
-              const stockMessage = formatStockErrorMessage(errorDetails.details || errorDetails.message || "");
+              const stockMessage = formatStockErrorMessage(
+                errorDetails.details || errorDetails.message || "",
+              );
               setErrorDialog({
                 open: true,
                 title: "Product Unavailable",
@@ -809,14 +892,17 @@ export function CheckoutClient() {
               setErrorDialog({
                 open: true,
                 title: "Product Unavailable",
-                message: "Some products in your cart are no longer available for purchase. Please remove them and try again.",
+                message:
+                  "Some products in your cart are no longer available for purchase. Please remove them and try again.",
               });
             }
             break;
           case "INSUFFICIENT_STOCK":
             // Enhanced stock error handling
             if (errorDetails.details || errorDetails.message) {
-              const stockMessage = formatStockErrorMessage(errorDetails.details || errorDetails.message || "");
+              const stockMessage = formatStockErrorMessage(
+                errorDetails.details || errorDetails.message || "",
+              );
               setErrorDialog({
                 open: true,
                 title: "Insufficient Stock",
@@ -826,28 +912,51 @@ export function CheckoutClient() {
               setErrorDialog({
                 open: true,
                 title: "Insufficient Stock",
-                message: "Insufficient stock for one or more items in your cart. Please review your cart and try again.",
+                message:
+                  "Insufficient stock for one or more items in your cart. Please review your cart and try again.",
               });
             }
             break;
           case "INTERNAL_ERROR":
             console.log("🔍 DEBUG: INTERNAL_ERROR case triggered");
-            console.log("🔍 DEBUG: errorDetails.details:", errorDetails.details);
-            console.log("🔍 DEBUG: errorDetails.message:", errorDetails.message);
-            
+            console.log(
+              "🔍 DEBUG: errorDetails.details:",
+              errorDetails.details,
+            );
+            console.log(
+              "🔍 DEBUG: errorDetails.message:",
+              errorDetails.message,
+            );
+
             // Handle internal errors that might contain stock information
-            if (errorDetails.details && (errorDetails.details.includes("not available") || errorDetails.details.includes("out of stock"))) {
-              console.log("🔍 DEBUG: Stock error detected in details, formatting message...");
-              const stockMessage = formatStockErrorMessage(errorDetails.details);
+            if (
+              errorDetails.details &&
+              (errorDetails.details.includes("not available") ||
+                errorDetails.details.includes("out of stock"))
+            ) {
+              console.log(
+                "🔍 DEBUG: Stock error detected in details, formatting message...",
+              );
+              const stockMessage = formatStockErrorMessage(
+                errorDetails.details,
+              );
               console.log("🔍 DEBUG: Formatted stock message:", stockMessage);
               setErrorDialog({
                 open: true,
                 title: "Stock Error",
                 message: stockMessage,
               });
-            } else if (errorDetails.message && (errorDetails.message.includes("not available") || errorDetails.message.includes("out of stock"))) {
-              console.log("🔍 DEBUG: Stock error detected in message, formatting message...");
-              const stockMessage = formatStockErrorMessage(errorDetails.message);
+            } else if (
+              errorDetails.message &&
+              (errorDetails.message.includes("not available") ||
+                errorDetails.message.includes("out of stock"))
+            ) {
+              console.log(
+                "🔍 DEBUG: Stock error detected in message, formatting message...",
+              );
+              const stockMessage = formatStockErrorMessage(
+                errorDetails.message,
+              );
               console.log("🔍 DEBUG: Formatted stock message:", stockMessage);
               setErrorDialog({
                 open: true,
@@ -855,21 +964,36 @@ export function CheckoutClient() {
                 message: stockMessage,
               });
             } else {
-              console.log("🔍 DEBUG: No stock error detected, showing generic message");
+              console.log(
+                "🔍 DEBUG: No stock error detected, showing generic message",
+              );
               setErrorDialog({
                 open: true,
                 title: "Checkout Error",
-                message: errorDetails.message || "An unexpected error occurred while processing checkout. Please try again later.",
+                message:
+                  errorDetails.message ||
+                  "An unexpected error occurred while processing checkout. Please try again later.",
               });
             }
             break;
           default:
-            console.log("🔍 DEBUG: Default case triggered for error code:", errorDetails.errorCode);
+            console.log(
+              "🔍 DEBUG: Default case triggered for error code:",
+              errorDetails.errorCode,
+            );
             // Check if the default case also contains stock information
-            if ((errorDetails.details && (errorDetails.details.includes("not available") || errorDetails.details.includes("out of stock"))) ||
-                (errorDetails.message && (errorDetails.message.includes("not available") || errorDetails.message.includes("out of stock")))) {
+            if (
+              (errorDetails.details &&
+                (errorDetails.details.includes("not available") ||
+                  errorDetails.details.includes("out of stock"))) ||
+              (errorDetails.message &&
+                (errorDetails.message.includes("not available") ||
+                  errorDetails.message.includes("out of stock")))
+            ) {
               console.log("🔍 DEBUG: Stock error detected in default case");
-              const stockMessage = formatStockErrorMessage(errorDetails.details || errorDetails.message || "");
+              const stockMessage = formatStockErrorMessage(
+                errorDetails.details || errorDetails.message || "",
+              );
               setErrorDialog({
                 open: true,
                 title: "Checkout Error",
@@ -879,15 +1003,22 @@ export function CheckoutClient() {
               setErrorDialog({
                 open: true,
                 title: "Checkout Error",
-                message: errorDetails.message || "Error processing checkout. Please try again later.",
+                message:
+                  errorDetails.message ||
+                  "Error processing checkout. Please try again later.",
               });
             }
         }
       } else {
-        console.log("🔍 DEBUG: No error code detected, showing generic message");
+        console.log(
+          "🔍 DEBUG: No error code detected, showing generic message",
+        );
         // Even without error code, check if there's stock information
         const errorMessage = errorDetails.message || error.message || "";
-        if (errorMessage.includes("not available") || errorMessage.includes("out of stock")) {
+        if (
+          errorMessage.includes("not available") ||
+          errorMessage.includes("out of stock")
+        ) {
           console.log("🔍 DEBUG: Stock error detected without error code");
           const stockMessage = formatStockErrorMessage(errorMessage);
           setErrorDialog({
@@ -939,31 +1070,39 @@ export function CheckoutClient() {
     setShowPointsModal(true);
   };
 
-  const handlePointsSuccess = (orderId: number, orderNumber?: string, pointsUsed?: number, pointsValue?: number) => {
+  const handlePointsSuccess = (
+    orderId: number,
+    orderNumber?: string,
+    pointsUsed?: number,
+    pointsValue?: number,
+  ) => {
     setShowPointsModal(false);
     toast.success("Order placed successfully!");
-    
+
     // Build URL with orderNumber and points information
     const params = new URLSearchParams();
     if (orderNumber) {
-      params.set('orderNumber', orderNumber);
+      params.set("orderNumber", orderNumber);
     } else {
-      params.set('orderId', orderId.toString()); // Fallback to orderId if orderNumber not available
+      params.set("orderId", orderId.toString()); // Fallback to orderId if orderNumber not available
     }
     if (pointsUsed) {
-      params.set('pointsUsed', pointsUsed.toString());
+      params.set("pointsUsed", pointsUsed.toString());
     }
     if (pointsValue) {
-      params.set('pointsValue', pointsValue.toString());
+      params.set("pointsValue", pointsValue.toString());
     }
-    
+
     router.push(`/payment-success?${params.toString()}`);
   };
 
   const handleHybridPayment = (stripeSessionId: string, orderId: number) => {
     setShowPointsModal(false);
     // Check if this is a mock payment (relative URL) or Stripe session (absolute URL)
-    if (stripeSessionId.startsWith('/') && !stripeSessionId.startsWith('http')) {
+    if (
+      stripeSessionId.startsWith("/") &&
+      !stripeSessionId.startsWith("http")
+    ) {
       // Mock payment - redirect to success page
       router.push(stripeSessionId);
     } else {
@@ -1022,20 +1161,20 @@ export function CheckoutClient() {
           `${
             field.charAt(0).toUpperCase() +
             field.slice(1).replace(/([A-Z])/g, " $1")
-          } is required`
+          } is required`,
         );
       }
     });
-    
+
     // Validate HYBRID shop fulfillment preferences
     if (shopsRequiringChoice.length > 0) {
       const missingChoices = shopsRequiringChoice.filter(
-        (shop) => !shopFulfillmentPreferences.has(shop.shopId)
+        (shop) => !shopFulfillmentPreferences.has(shop.shopId),
       );
       if (missingChoices.length > 0) {
         isValid = false;
         errors.push(
-          `Please select delivery method for ${missingChoices.length} shop(s): ${missingChoices.map(s => s.shopName).join(", ")}`
+          `Please select delivery method for ${missingChoices.length} shop(s): ${missingChoices.map((s) => s.shopName).join(", ")}`,
         );
       }
     }
@@ -1097,7 +1236,7 @@ export function CheckoutClient() {
     if (!cart) return 0;
     return cart.items.reduce(
       (total, item) => total + item.price * item.quantity,
-      0
+      0,
     );
   };
 
@@ -1153,13 +1292,13 @@ export function CheckoutClient() {
                 Action Required: Choose Delivery Method
               </h3>
               <p className="text-sm text-orange-800 mb-2">
-                {shopsRequiringChoice.length === 1 
+                {shopsRequiringChoice.length === 1
                   ? `The shop "${shopsRequiringChoice[0].shopName}" offers both pickup and delivery options. Please select your preferred method below.`
-                  : `${shopsRequiringChoice.length} shops in your cart offer both pickup and delivery options. Please select your preferred method for each shop below.`
-                }
+                  : `${shopsRequiringChoice.length} shops in your cart offer both pickup and delivery options. Please select your preferred method for each shop below.`}
               </p>
               <p className="text-xs text-orange-700">
-                ⚠️ You must select a delivery method before you can proceed to payment.
+                ⚠️ You must select a delivery method before you can proceed to
+                payment.
               </p>
             </div>
           </div>
@@ -1195,7 +1334,7 @@ export function CheckoutClient() {
                     name="phoneNumber"
                     value={formData.phoneNumber}
                     onChange={handleInputChange}
-                    placeholder="+1 (555) 123-4567"
+                    placeholder="+250 788 458 261"
                     required
                   />
                 </div>
@@ -1231,7 +1370,6 @@ export function CheckoutClient() {
               <CardDescription>
                 Where should we deliver your order?
               </CardDescription>
-              
             </CardHeader>
             <CardContent className="p-6 space-y-4">
               <div className="space-y-4">
@@ -1249,7 +1387,7 @@ export function CheckoutClient() {
                     required
                   />
                 </div>
-                
+
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="city">City*</Label>
@@ -1280,7 +1418,7 @@ export function CheckoutClient() {
                     />
                   </div>
                 </div>
-                
+
                 <div className="space-y-2">
                   <Label htmlFor="country">Country*</Label>
                   <CountrySelector
@@ -1297,10 +1435,12 @@ export function CheckoutClient() {
                     <div className="mt-2 space-y-1">
                       {paymentSummary.shopSummaries.map((shop) => (
                         <div key={shop.shopId} className="text-xs">
-                          {shop.selectedWarehouseCountry === formData.country ? (
+                          {shop.selectedWarehouseCountry ===
+                          formData.country ? (
                             <span className="text-green-600 flex items-center gap-1">
                               <MapPin className="h-3 w-3" />
-                              {shop.shopName}: Warehouse available in {formData.country}
+                              {shop.shopName}: Warehouse available in{" "}
+                              {formData.country}
                             </span>
                           ) : shop.fulfillmentType === "PICKUP" ? (
                             <span className="text-green-600 flex items-center gap-1">
@@ -1310,7 +1450,8 @@ export function CheckoutClient() {
                           ) : (
                             <span className="text-orange-600 flex items-center gap-1">
                               <MapPin className="h-3 w-3" />
-                              {shop.shopName}: Checking warehouse availability...
+                              {shop.shopName}: Checking warehouse
+                              availability...
                             </span>
                           )}
                         </div>
@@ -1318,26 +1459,30 @@ export function CheckoutClient() {
                     </div>
                   )}
                 </div>
-                
-                {addressSelected && (formData.latitude && formData.longitude) && (
+
+                {addressSelected && formData.latitude && formData.longitude && (
                   <div className="p-4 bg-green-50 border border-green-200 rounded-md">
                     <div className="flex items-center gap-2 mb-2">
                       <MapPin className="h-5 w-5 text-green-600" />
-                      <h4 className="font-medium text-green-800">Delivery Address Ready</h4>
+                      <h4 className="font-medium text-green-800">
+                        Delivery Address Ready
+                      </h4>
                     </div>
                     <p className="text-sm text-green-700 mb-2">
                       {formData.streetAddress}
                     </p>
                     <p className="text-xs text-green-600">
-                      {formData.city}, {formData.stateProvince}, {formData.country}
+                      {formData.city}, {formData.stateProvince},{" "}
+                      {formData.country}
                     </p>
                     <p className="text-xs text-gray-500 mt-1">
-                      Coordinates: {formData.latitude.toFixed(6)}, {formData.longitude.toFixed(6)}
+                      Coordinates: {formData.latitude.toFixed(6)},{" "}
+                      {formData.longitude.toFixed(6)}
                     </p>
                   </div>
                 )}
               </div>
-              
+
               <div className="space-y-2">
                 <Label htmlFor="notes">Order Notes (Optional)</Label>
                 <Textarea
@@ -1358,40 +1503,51 @@ export function CheckoutClient() {
               <CardHeader className="bg-gradient-to-r from-green-200 to-green-300 border-b-2 border-green-400">
                 <CardTitle className="flex items-center gap-2 text-green-900">
                   <Package className="h-6 w-6 text-green-700" />
-                  <span className="text-lg">Choose Delivery Method for HYBRID Shops</span>
+                  <span className="text-lg">
+                    Choose Delivery Method for HYBRID Shops
+                  </span>
                 </CardTitle>
                 <CardDescription className="text-green-800 font-medium">
-                  {shopsRequiringChoice.length === 1 
+                  {shopsRequiringChoice.length === 1
                     ? `"${shopsRequiringChoice[0].shopName}" offers both pickup and delivery. Select your preference:`
-                    : `${shopsRequiringChoice.length} shops offer both pickup and delivery. Select your preference for each:`
-                  }
+                    : `${shopsRequiringChoice.length} shops offer both pickup and delivery. Select your preference for each:`}
                 </CardDescription>
               </CardHeader>
               <CardContent className="p-6 space-y-6">
                 {shopsRequiringChoice.map((shop) => (
-                  <div key={shop.shopId} className="p-5 border-2 border-green-300 rounded-xl bg-white shadow-md">
+                  <div
+                    key={shop.shopId}
+                    className="p-5 border-2 border-green-300 rounded-xl bg-white shadow-md"
+                  >
                     <div className="flex items-center gap-2 mb-4 pb-3 border-b border-green-200">
-                      <h4 className="font-bold text-base text-gray-900">{shop.shopName}</h4>
+                      <h4 className="font-bold text-base text-gray-900">
+                        {shop.shopName}
+                      </h4>
                       <span className="px-2 py-1 bg-green-200 text-green-800 text-xs font-semibold rounded">
                         HYBRID SHOP
                       </span>
                     </div>
                     <div className="space-y-4">
                       {/* Pickup Option */}
-                      <div 
+                      <div
                         onClick={() => {
                           const newPrefs = new Map(shopFulfillmentPreferences);
                           newPrefs.set(shop.shopId, "PICKUP");
                           setShopFulfillmentPreferences(newPrefs);
                           setPaymentSummary(null);
                           setTimeout(() => {
-                            if (formData.streetAddress && formData.city && formData.country) {
+                            if (
+                              formData.streetAddress &&
+                              formData.city &&
+                              formData.country
+                            ) {
                               fetchPaymentSummary();
                             }
                           }, 300);
                         }}
                         className={`flex items-start space-x-4 p-4 border-2 rounded-lg cursor-pointer transition-all ${
-                          shopFulfillmentPreferences.get(shop.shopId) === "PICKUP"
+                          shopFulfillmentPreferences.get(shop.shopId) ===
+                          "PICKUP"
                             ? "border-green-500 bg-green-50 shadow-md"
                             : "border-gray-300 bg-gray-50 hover:border-green-300 hover:bg-green-50/50"
                         }`}
@@ -1401,54 +1557,76 @@ export function CheckoutClient() {
                           id={`pickup-${shop.shopId}`}
                           name={`fulfillment-${shop.shopId}`}
                           value="PICKUP"
-                          checked={shopFulfillmentPreferences.get(shop.shopId) === "PICKUP"}
+                          checked={
+                            shopFulfillmentPreferences.get(shop.shopId) ===
+                            "PICKUP"
+                          }
                           onChange={() => {
-                            const newPrefs = new Map(shopFulfillmentPreferences);
+                            const newPrefs = new Map(
+                              shopFulfillmentPreferences,
+                            );
                             newPrefs.set(shop.shopId, "PICKUP");
                             setShopFulfillmentPreferences(newPrefs);
                             setPaymentSummary(null);
                             setTimeout(() => {
-                              if (formData.streetAddress && formData.city && formData.country) {
+                              if (
+                                formData.streetAddress &&
+                                formData.city &&
+                                formData.country
+                              ) {
                                 fetchPaymentSummary();
                               }
                             }, 300);
                           }}
                           className="mt-1 h-5 w-5 text-green-600 focus:ring-green-500"
                         />
-                        <label htmlFor={`pickup-${shop.shopId}`} className="flex-1 cursor-pointer">
+                        <label
+                          htmlFor={`pickup-${shop.shopId}`}
+                          className="flex-1 cursor-pointer"
+                        >
                           <div className="flex items-center gap-3 mb-2">
                             <Package className="h-5 w-5 text-green-600" />
-                            <span className="font-bold text-base text-gray-900">Pickup at Shop</span>
-                            {shopFulfillmentPreferences.get(shop.shopId) === "PICKUP" && (
+                            <span className="font-bold text-base text-gray-900">
+                              Pickup at Shop
+                            </span>
+                            {shopFulfillmentPreferences.get(shop.shopId) ===
+                              "PICKUP" && (
                               <span className="px-2 py-1 bg-green-100 text-green-700 text-xs font-semibold rounded">
                                 SELECTED
                               </span>
                             )}
                           </div>
                           <p className="text-sm text-gray-700 ml-8">
-                            Visit the shop location to collect your order in person. A small packaging fee may apply.
+                            Visit the shop location to collect your order in
+                            person. A small packaging fee may apply.
                           </p>
                           <p className="text-xs text-gray-500 ml-8 mt-1">
-                            ✓ No shipping costs • ✓ Quick pickup • ✓ Packaging fee applies
+                            ✓ No shipping costs • ✓ Quick pickup • ✓ Packaging
+                            fee applies
                           </p>
                         </label>
                       </div>
-                      
+
                       {/* Delivery Option */}
-                      <div 
+                      <div
                         onClick={() => {
                           const newPrefs = new Map(shopFulfillmentPreferences);
                           newPrefs.set(shop.shopId, "DELIVERY");
                           setShopFulfillmentPreferences(newPrefs);
                           setPaymentSummary(null);
                           setTimeout(() => {
-                            if (formData.streetAddress && formData.city && formData.country) {
+                            if (
+                              formData.streetAddress &&
+                              formData.city &&
+                              formData.country
+                            ) {
                               fetchPaymentSummary();
                             }
                           }, 300);
                         }}
                         className={`flex items-start space-x-4 p-4 border-2 rounded-lg cursor-pointer transition-all ${
-                          shopFulfillmentPreferences.get(shop.shopId) === "DELIVERY"
+                          shopFulfillmentPreferences.get(shop.shopId) ===
+                          "DELIVERY"
                             ? "border-green-500 bg-green-50 shadow-md"
                             : "border-gray-300 bg-gray-50 hover:border-green-300 hover:bg-green-50/50"
                         }`}
@@ -1458,35 +1636,53 @@ export function CheckoutClient() {
                           id={`delivery-${shop.shopId}`}
                           name={`fulfillment-${shop.shopId}`}
                           value="DELIVERY"
-                          checked={shopFulfillmentPreferences.get(shop.shopId) === "DELIVERY"}
+                          checked={
+                            shopFulfillmentPreferences.get(shop.shopId) ===
+                            "DELIVERY"
+                          }
                           onChange={() => {
-                            const newPrefs = new Map(shopFulfillmentPreferences);
+                            const newPrefs = new Map(
+                              shopFulfillmentPreferences,
+                            );
                             newPrefs.set(shop.shopId, "DELIVERY");
                             setShopFulfillmentPreferences(newPrefs);
                             setPaymentSummary(null);
                             setTimeout(() => {
-                              if (formData.streetAddress && formData.city && formData.country) {
+                              if (
+                                formData.streetAddress &&
+                                formData.city &&
+                                formData.country
+                              ) {
                                 fetchPaymentSummary();
                               }
                             }, 300);
                           }}
                           className="mt-1 h-5 w-5 text-green-600 focus:ring-green-500"
                         />
-                        <label htmlFor={`delivery-${shop.shopId}`} className="flex-1 cursor-pointer">
+                        <label
+                          htmlFor={`delivery-${shop.shopId}`}
+                          className="flex-1 cursor-pointer"
+                        >
                           <div className="flex items-center gap-3 mb-2">
                             <Truck className="h-5 w-5 text-green-600" />
-                            <span className="font-bold text-base text-gray-900">Home Delivery</span>
-                            {shopFulfillmentPreferences.get(shop.shopId) === "DELIVERY" && (
+                            <span className="font-bold text-base text-gray-900">
+                              Home Delivery
+                            </span>
+                            {shopFulfillmentPreferences.get(shop.shopId) ===
+                              "DELIVERY" && (
                               <span className="px-2 py-1 bg-green-100 text-green-700 text-xs font-semibold rounded">
                                 SELECTED
                               </span>
                             )}
                           </div>
                           <p className="text-sm text-gray-700 ml-8">
-                            Have your order delivered directly to your address. Shipping costs will be calculated based on your location.
+                            Have your order delivered directly to your address.
+                            Shipping costs will be calculated based on your
+                            location.
                           </p>
                           <p className="text-xs text-gray-500 ml-8 mt-1">
-                            ✓ Convenient delivery • ✓ Shipping costs apply • ✓ Delivered to your door
+                            ✓ Convenient delivery • ✓ Shipping costs apply • ✓
+                            Delivered to your door
                           </p>
                         </label>
                       </div>
@@ -1503,7 +1699,10 @@ export function CheckoutClient() {
                         Important Information
                       </p>
                       <p className="text-xs text-green-800">
-                        After selecting your preferred delivery method, the payment summary will automatically recalculate to show the correct costs (packaging fee for pickup or shipping costs for delivery).
+                        After selecting your preferred delivery method, the
+                        payment summary will automatically recalculate to show
+                        the correct costs (packaging fee for pickup or shipping
+                        costs for delivery).
                       </p>
                     </div>
                   </div>
@@ -1674,143 +1873,191 @@ export function CheckoutClient() {
 
                 <div className="space-y-4">
                   {/* Shop Summaries - Scrollable */}
-                  {paymentSummary && paymentSummary.shopSummaries && paymentSummary.shopSummaries.length > 0 ? (
+                  {paymentSummary &&
+                  paymentSummary.shopSummaries &&
+                  paymentSummary.shopSummaries.length > 0 ? (
                     <ScrollArea className="max-h-[400px] w-full">
                       <div className="space-y-4 pr-4">
                         {paymentSummary.shopSummaries.map((shop, index) => (
-                        <div key={shop.shopId} className="p-3 border rounded-lg bg-muted/30">
-                          <div className="flex items-center justify-between mb-3">
-                            <div className="flex items-center gap-2">
-                              <h4 className="font-semibold text-sm">{shop.shopName}</h4>
-                              {shop.shopCapability && (
-                                <span className={`text-xs px-2 py-0.5 rounded font-medium ${
-                                  shop.shopCapability === "PICKUP_ORDERS" 
-                                    ? "bg-green-100 text-green-700"
-                                    : shop.shopCapability === "FULL_ECOMMERCE"
-                                    ? "bg-green-100 text-green-700"
-                                    : shop.shopCapability === "HYBRID"
-                                    ? "bg-orange-100 text-orange-700"
-                                    : "bg-gray-100 text-gray-700"
-                                }`}>
-                                  {shop.shopCapability === "PICKUP_ORDERS" && "Pickup Only"}
-                                  {shop.shopCapability === "FULL_ECOMMERCE" && "Full E-commerce"}
-                                  {shop.shopCapability === "HYBRID" && "Hybrid"}
-                                  {shop.shopCapability === "VISUALIZATION_ONLY" && "Display Only"}
-                                </span>
-                              )}
-                            </div>
-                            <span className="text-xs text-muted-foreground">
-                              {shop.productCount} {shop.productCount === 1 ? 'item' : 'items'}
-                            </span>
-                          </div>
-                          
-                          {/* Fulfillment Type Badge */}
-                          {shop.fulfillmentType && (
-                            <div className="mb-2">
-                              <span className={`inline-flex items-center gap-1 px-2 py-1 rounded text-xs font-medium ${
-                                shop.fulfillmentType === "PICKUP" 
-                                  ? "bg-green-100 text-green-700 border border-green-200"
-                                  : "bg-green-100 text-green-700 border border-green-200"
-                              }`}>
-                                {shop.fulfillmentType === "PICKUP" ? (
-                                  <>
-                                    <Package className="h-3 w-3" />
-                                    Pickup at Shop
-                                  </>
-                                ) : (
-                                  <>
-                                    <Truck className="h-3 w-3" />
-                                    Home Delivery
-                                  </>
+                          <div
+                            key={shop.shopId}
+                            className="p-3 border rounded-lg bg-muted/30"
+                          >
+                            <div className="flex items-center justify-between mb-3">
+                              <div className="flex items-center gap-2">
+                                <h4 className="font-semibold text-sm">
+                                  {shop.shopName}
+                                </h4>
+                                {shop.shopCapability && (
+                                  <span
+                                    className={`text-xs px-2 py-0.5 rounded font-medium ${
+                                      shop.shopCapability === "PICKUP_ORDERS"
+                                        ? "bg-green-100 text-green-700"
+                                        : shop.shopCapability ===
+                                            "FULL_ECOMMERCE"
+                                          ? "bg-green-100 text-green-700"
+                                          : shop.shopCapability === "HYBRID"
+                                            ? "bg-orange-100 text-orange-700"
+                                            : "bg-gray-100 text-gray-700"
+                                    }`}
+                                  >
+                                    {shop.shopCapability === "PICKUP_ORDERS" &&
+                                      "Pickup Only"}
+                                    {shop.shopCapability === "FULL_ECOMMERCE" &&
+                                      "Full E-commerce"}
+                                    {shop.shopCapability === "HYBRID" &&
+                                      "Hybrid"}
+                                    {shop.shopCapability ===
+                                      "VISUALIZATION_ONLY" && "Display Only"}
+                                  </span>
                                 )}
+                              </div>
+                              <span className="text-xs text-muted-foreground">
+                                {shop.productCount}{" "}
+                                {shop.productCount === 1 ? "item" : "items"}
                               </span>
                             </div>
-                          )}
-                          
-                          <div className="space-y-1.5 text-sm">
-                            <div className="flex justify-between">
-                              <span className="text-muted-foreground">Subtotal</span>
-                              <span className="font-medium">{formatPrice(shop.subtotal)}</span>
-                            </div>
-                            
-                            {shop.discountAmount > 0 && (
-                              <div className="flex justify-between">
-                                <span className="text-muted-foreground">Discount</span>
-                                <span className="font-medium text-green-600">
-                                  -{formatPrice(shop.discountAmount)}
-                                </span>
-                              </div>
-                            )}
-                            
-                            {/* Show shipping for delivery, packaging fee for pickup */}
-                            {shop.fulfillmentType === "PICKUP" ? (
-                              shop.packagingFee && shop.packagingFee > 0 ? (
-                                <div className="flex justify-between">
-                                  <span className="text-muted-foreground">Packaging Fee</span>
-                                  <span className="font-medium">{formatPrice(shop.packagingFee)}</span>
-                                </div>
-                              ) : null
-                            ) : (
-                              <div className="flex justify-between">
-                                <span className="text-muted-foreground">Shipping</span>
-                                <span className="font-medium">
-                                  {shop.shippingCost === 0 ? (
-                                    <span className="text-green-600">Free</span>
+
+                            {/* Fulfillment Type Badge */}
+                            {shop.fulfillmentType && (
+                              <div className="mb-2">
+                                <span
+                                  className={`inline-flex items-center gap-1 px-2 py-1 rounded text-xs font-medium ${
+                                    shop.fulfillmentType === "PICKUP"
+                                      ? "bg-green-100 text-green-700 border border-green-200"
+                                      : "bg-green-100 text-green-700 border border-green-200"
+                                  }`}
+                                >
+                                  {shop.fulfillmentType === "PICKUP" ? (
+                                    <>
+                                      <Package className="h-3 w-3" />
+                                      Pickup at Shop
+                                    </>
                                   ) : (
-                                    formatPrice(shop.shippingCost)
+                                    <>
+                                      <Truck className="h-3 w-3" />
+                                      Home Delivery
+                                    </>
                                   )}
                                 </span>
                               </div>
                             )}
-                            
-                            {/* Shop-specific shipping details */}
-                            {shop.distanceKm && shop.distanceKm > 0 && (
-                              <div className="space-y-1 pl-3 border-l-2 border-muted/50 mt-2">
-                                <div className="flex justify-between text-xs">
-                                  <span className="text-muted-foreground">Distance</span>
-                                  <span className="font-medium">{shop.distanceKm.toFixed(1)} km</span>
-                                </div>
-                                {shop.costPerKm && shop.costPerKm > 0 && (
-                                  <div className="flex justify-between text-xs">
-                                    <span className="text-muted-foreground">Cost per km</span>
-                                    <span className="font-medium">{formatPrice(shop.costPerKm)}/km</span>
-                                  </div>
-                                )}
-                                {shop.selectedWarehouseName && (
-                                  <div className="flex justify-between text-xs">
-                                    <span className="text-muted-foreground">Warehouse</span>
-                                    <span className="font-medium">
-                                      {shop.selectedWarehouseName}
-                                      {shop.selectedWarehouseCountry && ` (${shop.selectedWarehouseCountry})`}
-                                    </span>
-                                  </div>
-                                )}
-                                {shop.isInternationalShipping && (
-                                  <div className="flex justify-between text-xs">
-                                    <span className="text-muted-foreground">Type</span>
-                                    <span className="font-medium text-orange-600">International</span>
-                                  </div>
-                                )}
-                              </div>
-                            )}
-                            
-                            {shop.rewardPoints > 0 && (
+
+                            <div className="space-y-1.5 text-sm">
                               <div className="flex justify-between">
-                                <span className="text-muted-foreground">Reward Points</span>
-                                <span className="font-medium text-green-600">
-                                  +{shop.rewardPoints} pts
+                                <span className="text-muted-foreground">
+                                  Subtotal
+                                </span>
+                                <span className="font-medium">
+                                  {formatPrice(shop.subtotal)}
                                 </span>
                               </div>
-                            )}
-                            
-                            <Separator className="my-2" />
-                            
-                            <div className="flex justify-between font-semibold">
-                              <span>Shop Total</span>
-                              <span>{formatPrice(shop.totalAmount)}</span>
+
+                              {shop.discountAmount > 0 && (
+                                <div className="flex justify-between">
+                                  <span className="text-muted-foreground">
+                                    Discount
+                                  </span>
+                                  <span className="font-medium text-green-600">
+                                    -{formatPrice(shop.discountAmount)}
+                                  </span>
+                                </div>
+                              )}
+
+                              {/* Show shipping for delivery, packaging fee for pickup */}
+                              {shop.fulfillmentType === "PICKUP" ? (
+                                shop.packagingFee && shop.packagingFee > 0 ? (
+                                  <div className="flex justify-between">
+                                    <span className="text-muted-foreground">
+                                      Packaging Fee
+                                    </span>
+                                    <span className="font-medium">
+                                      {formatPrice(shop.packagingFee)}
+                                    </span>
+                                  </div>
+                                ) : null
+                              ) : (
+                                <div className="flex justify-between">
+                                  <span className="text-muted-foreground">
+                                    Shipping
+                                  </span>
+                                  <span className="font-medium">
+                                    {shop.shippingCost === 0 ? (
+                                      <span className="text-green-600">
+                                        Free
+                                      </span>
+                                    ) : (
+                                      formatPrice(shop.shippingCost)
+                                    )}
+                                  </span>
+                                </div>
+                              )}
+
+                              {/* Shop-specific shipping details */}
+                              {shop.distanceKm && shop.distanceKm > 0 && (
+                                <div className="space-y-1 pl-3 border-l-2 border-muted/50 mt-2">
+                                  <div className="flex justify-between text-xs">
+                                    <span className="text-muted-foreground">
+                                      Distance
+                                    </span>
+                                    <span className="font-medium">
+                                      {shop.distanceKm.toFixed(1)} km
+                                    </span>
+                                  </div>
+                                  {shop.costPerKm && shop.costPerKm > 0 && (
+                                    <div className="flex justify-between text-xs">
+                                      <span className="text-muted-foreground">
+                                        Cost per km
+                                      </span>
+                                      <span className="font-medium">
+                                        {formatPrice(shop.costPerKm)}/km
+                                      </span>
+                                    </div>
+                                  )}
+                                  {shop.selectedWarehouseName && (
+                                    <div className="flex justify-between text-xs">
+                                      <span className="text-muted-foreground">
+                                        Warehouse
+                                      </span>
+                                      <span className="font-medium">
+                                        {shop.selectedWarehouseName}
+                                        {shop.selectedWarehouseCountry &&
+                                          ` (${shop.selectedWarehouseCountry})`}
+                                      </span>
+                                    </div>
+                                  )}
+                                  {shop.isInternationalShipping && (
+                                    <div className="flex justify-between text-xs">
+                                      <span className="text-muted-foreground">
+                                        Type
+                                      </span>
+                                      <span className="font-medium text-orange-600">
+                                        International
+                                      </span>
+                                    </div>
+                                  )}
+                                </div>
+                              )}
+
+                              {shop.rewardPoints > 0 && (
+                                <div className="flex justify-between">
+                                  <span className="text-muted-foreground">
+                                    Reward Points
+                                  </span>
+                                  <span className="font-medium text-green-600">
+                                    +{shop.rewardPoints} pts
+                                  </span>
+                                </div>
+                              )}
+
+                              <Separator className="my-2" />
+
+                              <div className="flex justify-between font-semibold">
+                                <span>Shop Total</span>
+                                <span>{formatPrice(shop.totalAmount)}</span>
+                              </div>
                             </div>
                           </div>
-                        </div>
                         ))}
                       </div>
                     </ScrollArea>
@@ -1832,7 +2079,9 @@ export function CheckoutClient() {
 
                       {paymentSummary && paymentSummary.discountAmount > 0 && (
                         <div className="flex justify-between">
-                          <span className="text-muted-foreground">Discount</span>
+                          <span className="text-muted-foreground">
+                            Discount
+                          </span>
                           <span className="font-medium text-green-600">
                             -{formatPrice(paymentSummary.discountAmount)}
                           </span>
@@ -1871,22 +2120,29 @@ export function CheckoutClient() {
                         paymentSummary.distanceKm > 0 && (
                           <div className="space-y-1 pl-4 border-l-2 border-muted">
                             <div className="flex justify-between text-xs">
-                              <span className="text-muted-foreground">Distance</span>
+                              <span className="text-muted-foreground">
+                                Distance
+                              </span>
                               <span className="font-medium">
                                 {paymentSummary.distanceKm.toFixed(1)} km
                               </span>
                             </div>
-                            {paymentSummary.costPerKm && paymentSummary.costPerKm > 0 && (
-                              <div className="flex justify-between text-xs">
-                                <span className="text-muted-foreground">Cost per km</span>
-                                <span className="font-medium">
-                                  {formatPrice(paymentSummary.costPerKm)}/km
-                                </span>
-                              </div>
-                            )}
+                            {paymentSummary.costPerKm &&
+                              paymentSummary.costPerKm > 0 && (
+                                <div className="flex justify-between text-xs">
+                                  <span className="text-muted-foreground">
+                                    Cost per km
+                                  </span>
+                                  <span className="font-medium">
+                                    {formatPrice(paymentSummary.costPerKm)}/km
+                                  </span>
+                                </div>
+                              )}
                             {paymentSummary.selectedWarehouseName && (
                               <div className="flex justify-between text-xs">
-                                <span className="text-muted-foreground">From warehouse</span>
+                                <span className="text-muted-foreground">
+                                  From warehouse
+                                </span>
                                 <span className="font-medium">
                                   {paymentSummary.selectedWarehouseName}
                                   {paymentSummary.selectedWarehouseCountry &&
@@ -1896,8 +2152,12 @@ export function CheckoutClient() {
                             )}
                             {paymentSummary.isInternationalShipping && (
                               <div className="flex justify-between text-xs">
-                                <span className="text-muted-foreground">Shipping type</span>
-                                <span className="font-medium text-orange-600">International</span>
+                                <span className="text-muted-foreground">
+                                  Shipping type
+                                </span>
+                                <span className="font-medium text-orange-600">
+                                  International
+                                </span>
                               </div>
                             )}
                           </div>
@@ -1911,26 +2171,33 @@ export function CheckoutClient() {
                           </span>
                         </div>
                       )}
-                      
+
                       {/* Show total packaging fees if any */}
-                      {paymentSummary && paymentSummary.shopSummaries && (() => {
-                        const totalPackagingFee = paymentSummary.shopSummaries.reduce(
-                          (sum, shop) => sum + (shop.packagingFee || 0),
-                          0
-                        );
-                        return totalPackagingFee > 0 ? (
-                          <div className="flex justify-between">
-                            <span className="text-muted-foreground">Packaging Fees</span>
-                            <span className="font-medium">
-                              {formatPrice(totalPackagingFee)}
-                            </span>
-                          </div>
-                        ) : null;
-                      })()}
+                      {paymentSummary &&
+                        paymentSummary.shopSummaries &&
+                        (() => {
+                          const totalPackagingFee =
+                            paymentSummary.shopSummaries.reduce(
+                              (sum, shop) => sum + (shop.packagingFee || 0),
+                              0,
+                            );
+                          return totalPackagingFee > 0 ? (
+                            <div className="flex justify-between">
+                              <span className="text-muted-foreground">
+                                Packaging Fees
+                              </span>
+                              <span className="font-medium">
+                                {formatPrice(totalPackagingFee)}
+                              </span>
+                            </div>
+                          ) : null;
+                        })()}
 
                       {paymentSummary && paymentSummary.rewardPoints > 0 && (
                         <div className="flex justify-between">
-                          <span className="text-muted-foreground">Reward Points</span>
+                          <span className="text-muted-foreground">
+                            Reward Points
+                          </span>
                           <span className="font-medium text-green-600">
                             +{paymentSummary.rewardPoints} pts
                           </span>
@@ -1967,7 +2234,8 @@ export function CheckoutClient() {
                   {paymentSummary && (
                     <div className="mt-2 p-2 bg-green-50 rounded-lg">
                       <p className="text-xs text-green-700">
-                        💡 Shipping calculated based on your address and item weight
+                        💡 Shipping calculated based on your address and item
+                        weight
                       </p>
                     </div>
                   )}
@@ -2111,19 +2379,21 @@ export function CheckoutClient() {
         onClose={() => setShowPointsModal(false)}
         onSuccess={handlePointsSuccess}
         onHybridPayment={handleHybridPayment}
-        paymentRequest={createPointsPaymentRequest() || {
-          userId: "",
-          items: [],
-          shippingAddress: {
-            streetAddress: "",
-            city: "",
-            state: "",
-            country: "",
-          },
-          useAllAvailablePoints: true,
-        }}
+        paymentRequest={
+          createPointsPaymentRequest() || {
+            userId: "",
+            items: [],
+            shippingAddress: {
+              streetAddress: "",
+              city: "",
+              state: "",
+              country: "",
+            },
+            useAllAvailablePoints: true,
+          }
+        }
       />
-      
+
       {/* Error Dialog */}
       <ErrorDialog
         open={errorDialog.open}
