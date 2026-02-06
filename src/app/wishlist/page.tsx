@@ -86,11 +86,11 @@ export default function WishlistPage() {
       setCurrentPage(response.currentPage);
     } catch (error) {
       console.error("Error fetching wishlist:", error);
-      toast({
-        title: "Error",
-        description: "Failed to load your wishlist. Please try again.",
-        variant: "destructive",
-      });
+      // toast({
+      //   title: "Error",
+      //   description: "Failed to load your wishlist. Please try again.",
+      //   variant: "destructive",
+      // });
     } finally {
       setIsLoading(false);
     }
