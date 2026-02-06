@@ -54,6 +54,9 @@ import { StoreService } from "@/lib/storeService";
 import ProductCard from "@/components/ProductCard";
 import { useAppSelector } from "@/lib/store/hooks";
 import { toast } from "sonner";
+import { WarehouseService, WarehouseDTO } from "@/lib/warehouseService";
+import { DeliveryAreaService, DeliveryAreaDTO } from "@/lib/deliveryAreaService";
+import { Warehouse, Truck } from "lucide-react";
 
 interface Product {
   productId: string;
@@ -121,6 +124,20 @@ export function StoreProfileClient({ storeId }: { storeId: string }) {
   const [contactDialogOpen, setContactDialogOpen] = useState(false);
   const [loginDialogOpen, setLoginDialogOpen] = useState(false);
   const [unfollowDialogOpen, setUnfollowDialogOpen] = useState(false);
+  
+  // Warehouses state
+  const [warehouses, setWarehouses] = useState<WarehouseDTO[]>([]);
+  const [warehousesLoading, setWarehousesLoading] = useState(false);
+  const [warehousesPage, setWarehousesPage] = useState(0);
+  const [warehousesTotalPages, setWarehousesTotalPages] = useState(0);
+  const [warehousesTotalElements, setWarehousesTotalElements] = useState(0);
+  
+  // Delivery areas state
+  const [deliveryAreas, setDeliveryAreas] = useState<DeliveryAreaDTO[]>([]);
+  const [deliveryAreasLoading, setDeliveryAreasLoading] = useState(false);
+  const [deliveryAreasPage, setDeliveryAreasPage] = useState(0);
+  const [deliveryAreasTotalPages, setDeliveryAreasTotalPages] = useState(0);
+  const [deliveryAreasTotalElements, setDeliveryAreasTotalElements] = useState(0);
 
   useEffect(() => {
     const fetchStoreDetails = async () => {
@@ -201,6 +218,40 @@ export function StoreProfileClient({ storeId }: { storeId: string }) {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isAuthenticated, searchParams, store]);
+
+  // Fetch warehouses
+  const fetchWarehouses = async (page: number) => {
+    try {
+      setWarehousesLoading(true);
+      const response = await WarehouseService.getWarehousesByShopId(storeId, page, 10);
+      setWarehouses(response.content);
+      setWarehousesPage(response.number);
+      setWarehousesTotalPages(response.totalPages);
+      setWarehousesTotalElements(response.totalElements);
+    } catch (error) {
+      console.error("Error fetching warehouses:", error);
+      toast.error("Failed to load warehouses");
+    } finally {
+      setWarehousesLoading(false);
+    }
+  };
+
+  // Fetch delivery areas
+  const fetchDeliveryAreas = async (page: number) => {
+    try {
+      setDeliveryAreasLoading(true);
+      const response = await DeliveryAreaService.getDeliveryAreasByShopId(storeId, page, 10);
+      setDeliveryAreas(response.content);
+      setDeliveryAreasPage(response.number);
+      setDeliveryAreasTotalPages(response.totalPages);
+      setDeliveryAreasTotalElements(response.totalElements);
+    } catch (error) {
+      console.error("Error fetching delivery areas:", error);
+      toast.error("Failed to load delivery areas");
+    } finally {
+      setDeliveryAreasLoading(false);
+    }
+  };
 
   if (loading) {
     return (
@@ -462,6 +513,28 @@ export function StoreProfileClient({ storeId }: { storeId: string }) {
                 >
                   Reviews ({store.totalReviews})
                 </TabsTrigger>
+                <TabsTrigger
+                  value="warehouses"
+                  className="rounded-none bg-transparent data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-primary text-base px-0 pb-3"
+                  onClick={() => {
+                    if (warehouses.length === 0 && !warehousesLoading) {
+                      fetchWarehouses(0);
+                    }
+                  }}
+                >
+                  Warehouses ({warehousesTotalElements || 0})
+                </TabsTrigger>
+                <TabsTrigger
+                  value="delivery-areas"
+                  className="rounded-none bg-transparent data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-primary text-base px-0 pb-3"
+                  onClick={() => {
+                    if (deliveryAreas.length === 0 && !deliveryAreasLoading) {
+                      fetchDeliveryAreas(0);
+                    }
+                  }}
+                >
+                  Delivery Areas ({deliveryAreasTotalElements || 0})
+                </TabsTrigger>
               </TabsList>
 
               <TabsContent value="products" className="mt-6">
@@ -638,6 +711,230 @@ export function StoreProfileClient({ storeId }: { storeId: string }) {
                       </CardContent>
                     </Card>
                   ))}
+                </div>
+              </TabsContent>
+
+              <TabsContent
+                value="warehouses"
+                className="animate-in fade-in-50 duration-500"
+              >
+                <div className="space-y-4">
+                  <h3 className="text-xl font-bold mb-6">Warehouses</h3>
+                  {warehousesLoading ? (
+                    <div className="flex items-center justify-center py-12">
+                      <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+                    </div>
+                  ) : warehouses.length === 0 ? (
+                    <Card>
+                      <CardContent className="pt-6 text-center text-muted-foreground">
+                        <Warehouse className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                        <p>No warehouses available for this store.</p>
+                      </CardContent>
+                    </Card>
+                  ) : (
+                    <>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        {warehouses.map((warehouse) => (
+                          <Card key={warehouse.id}>
+                            <CardHeader>
+                              <div className="flex items-start justify-between">
+                                <CardTitle className="text-lg">{warehouse.name}</CardTitle>
+                                {warehouse.isActive && (
+                                  <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
+                                    Active
+                                  </Badge>
+                                )}
+                              </div>
+                              {warehouse.description && (
+                                <CardDescription>{warehouse.description}</CardDescription>
+                              )}
+                            </CardHeader>
+                            <CardContent className="space-y-3">
+                              <div className="flex items-start gap-3 text-sm">
+                                <MapPin className="h-4 w-4 text-muted-foreground shrink-0 mt-0.5" />
+                                <div>
+                                  <p className="font-medium">{warehouse.address}</p>
+                                  <p className="text-muted-foreground">
+                                    {warehouse.city}
+                                    {warehouse.state && `, ${warehouse.state}`}
+                                    {warehouse.zipCode && ` ${warehouse.zipCode}`}
+                                  </p>
+                                  <p className="text-muted-foreground">{warehouse.country}</p>
+                                </div>
+                              </div>
+                              {warehouse.phone && (
+                                <div className="flex items-center gap-3 text-sm">
+                                  <Phone className="h-4 w-4 text-muted-foreground shrink-0" />
+                                  <a href={`tel:${warehouse.phone}`} className="text-primary hover:underline">
+                                    {warehouse.phone}
+                                  </a>
+                                </div>
+                              )}
+                              {warehouse.email && (
+                                <div className="flex items-center gap-3 text-sm">
+                                  <Mail className="h-4 w-4 text-muted-foreground shrink-0" />
+                                  <a href={`mailto:${warehouse.email}`} className="text-primary hover:underline">
+                                    {warehouse.email}
+                                  </a>
+                                </div>
+                              )}
+                              {warehouse.capacity && (
+                                <div className="flex items-center gap-3 text-sm">
+                                  <Package className="h-4 w-4 text-muted-foreground shrink-0" />
+                                  <span className="text-muted-foreground">
+                                    Capacity: {warehouse.capacity.toLocaleString()} units
+                                  </span>
+                                </div>
+                              )}
+                              {warehouse.productCount > 0 && (
+                                <div className="pt-2 border-t">
+                                  <p className="text-sm text-muted-foreground">
+                                    {warehouse.productCount} product{warehouse.productCount !== 1 ? 's' : ''} available
+                                  </p>
+                                </div>
+                              )}
+                            </CardContent>
+                          </Card>
+                        ))}
+                      </div>
+                      {warehousesTotalPages > 1 && (
+                        <div className="flex items-center justify-center gap-2 pt-6">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => fetchWarehouses(warehousesPage - 1)}
+                            disabled={warehousesPage === 0 || warehousesLoading}
+                          >
+                            <ArrowLeft className="h-4 w-4 mr-1" />
+                            Previous
+                          </Button>
+                          <span className="text-sm text-muted-foreground">
+                            Page {warehousesPage + 1} of {warehousesTotalPages}
+                          </span>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => fetchWarehouses(warehousesPage + 1)}
+                            disabled={warehousesPage >= warehousesTotalPages - 1 || warehousesLoading}
+                          >
+                            Next
+                            <ArrowLeft className="h-4 w-4 ml-1 rotate-180" />
+                          </Button>
+                        </div>
+                      )}
+                    </>
+                  )}
+                </div>
+              </TabsContent>
+
+              <TabsContent
+                value="delivery-areas"
+                className="animate-in fade-in-50 duration-500"
+              >
+                <div className="space-y-4">
+                  <h3 className="text-xl font-bold mb-6">Delivery Areas</h3>
+                  {deliveryAreasLoading ? (
+                    <div className="flex items-center justify-center py-12">
+                      <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+                    </div>
+                  ) : deliveryAreas.length === 0 ? (
+                    <Card>
+                      <CardContent className="pt-6 text-center text-muted-foreground">
+                        <Truck className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                        <p>No delivery areas available for this store.</p>
+                      </CardContent>
+                    </Card>
+                  ) : (
+                    <>
+                      <div className="space-y-4">
+                        {deliveryAreas.map((area) => (
+                          <Card key={area.id}>
+                            <CardHeader>
+                              <div className="flex items-start justify-between">
+                                <div>
+                                  <CardTitle className="text-lg">{area.name}</CardTitle>
+                                  {area.description && (
+                                    <CardDescription className="mt-1">{area.description}</CardDescription>
+                                  )}
+                                </div>
+                                {area.isActive && (
+                                  <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
+                                    Active
+                                  </Badge>
+                                )}
+                              </div>
+                            </CardHeader>
+                            <CardContent className="space-y-3">
+                              <div className="flex items-center gap-3 text-sm">
+                                <MapPin className="h-4 w-4 text-muted-foreground shrink-0" />
+                                <span className="font-medium">{area.country}</span>
+                              </div>
+                              {area.warehouseName && (
+                                <div className="flex items-center gap-3 text-sm">
+                                  <Warehouse className="h-4 w-4 text-muted-foreground shrink-0" />
+                                  <span className="text-muted-foreground">
+                                    Warehouse: {area.warehouseName}
+                                  </span>
+                                </div>
+                              )}
+                              {area.parentName && (
+                                <div className="flex items-center gap-3 text-sm">
+                                  <Truck className="h-4 w-4 text-muted-foreground shrink-0" />
+                                  <span className="text-muted-foreground">
+                                    Parent Area: {area.parentName}
+                                  </span>
+                                </div>
+                              )}
+                              {area.children && area.children.length > 0 && (
+                                <div className="pt-3 border-t">
+                                  <p className="text-sm font-medium mb-2">Sub-areas:</p>
+                                  <div className="flex flex-wrap gap-2">
+                                    {area.children.map((child) => (
+                                      <Badge key={child.id} variant="secondary">
+                                        {child.name}
+                                      </Badge>
+                                    ))}
+                                  </div>
+                                </div>
+                              )}
+                              {area.childrenCount !== undefined && area.childrenCount > 0 && area.children?.length === 0 && (
+                                <div className="pt-2 border-t">
+                                  <p className="text-sm text-muted-foreground">
+                                    {area.childrenCount} sub-area{area.childrenCount !== 1 ? 's' : ''}
+                                  </p>
+                                </div>
+                              )}
+                            </CardContent>
+                          </Card>
+                        ))}
+                      </div>
+                      {deliveryAreasTotalPages > 1 && (
+                        <div className="flex items-center justify-center gap-2 pt-6">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => fetchDeliveryAreas(deliveryAreasPage - 1)}
+                            disabled={deliveryAreasPage === 0 || deliveryAreasLoading}
+                          >
+                            <ArrowLeft className="h-4 w-4 mr-1" />
+                            Previous
+                          </Button>
+                          <span className="text-sm text-muted-foreground">
+                            Page {deliveryAreasPage + 1} of {deliveryAreasTotalPages}
+                          </span>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => fetchDeliveryAreas(deliveryAreasPage + 1)}
+                            disabled={deliveryAreasPage >= deliveryAreasTotalPages - 1 || deliveryAreasLoading}
+                          >
+                            Next
+                            <ArrowLeft className="h-4 w-4 ml-1 rotate-180" />
+                          </Button>
+                        </div>
+                      )}
+                    </>
+                  )}
                 </div>
               </TabsContent>
             </Tabs>

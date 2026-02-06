@@ -1,4 +1,4 @@
-import { API_ENDPOINTS, apiCall } from "./api";
+import { API_ENDPOINTS, API_BASE_URL, apiCall } from "./api";
 
 export interface Shop {
   shopId: string;
@@ -139,4 +139,116 @@ export const StoreService = {
     
     return await response.json();
   },
+
+  /**
+   * Get warehouses for a shop (public, paginated)
+   */
+  getWarehouses: async (
+    shopId: string,
+    page: number = 0,
+    size: number = 10
+  ): Promise<{
+    content: Warehouse[];
+    totalPages: number;
+    totalElements: number;
+    number: number;
+    size: number;
+  }> => {
+    const response = await fetch(
+      `${API_ENDPOINTS.API_BASE_URL}/warehouses/public/shops/${shopId}?page=${page}&size=${size}&sort=name`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    return await response.json();
+  },
+
+  /**
+   * Get delivery areas for a shop (public, paginated)
+   */
+  getDeliveryAreas: async (
+    shopId: string,
+    page: number = 0,
+    size: number = 10
+  ): Promise<{
+    content: DeliveryArea[];
+    totalPages: number;
+    totalElements: number;
+    number: number;
+    size: number;
+  }> => {
+    const response = await fetch(
+      `${API_ENDPOINTS.API_BASE_URL}/shops/${shopId}/delivery-areas/public?page=${page}&size=${size}&sortBy=name&sortDirection=ASC`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    return await response.json();
+  },
 };
+
+export interface Warehouse {
+  id: number;
+  name: string;
+  description?: string;
+  address: string;
+  city: string;
+  state?: string;
+  zipCode?: string;
+  country: string;
+  phone?: string;
+  email?: string;
+  capacity?: number;
+  latitude?: number;
+  longitude?: number;
+  isActive: boolean;
+  productCount: number;
+  shopId: string;
+  shopName?: string;
+  createdAt: string;
+  updatedAt: string;
+  images?: WarehouseImage[];
+}
+
+export interface WarehouseImage {
+  id: number;
+  imageUrl: string;
+  isPrimary: boolean;
+  sortOrder: number;
+}
+
+export interface DeliveryArea {
+  id: number;
+  name: string;
+  description?: string;
+  country: string;
+  shopId: string;
+  shopName?: string;
+  warehouseId: number;
+  warehouseName?: string;
+  parentId?: number;
+  parentName?: string;
+  isActive: boolean;
+  depth?: number;
+  isRoot?: boolean;
+  createdAt: string;
+  updatedAt: string;
+  children?: DeliveryArea[];
+  childrenCount?: number;
+}
