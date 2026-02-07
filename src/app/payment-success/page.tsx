@@ -589,8 +589,30 @@ function PaymentSuccessContent() {
                               </span>
                             </p>
                           </div>
-                          <div className="mt-2 md:mt-0 px-3 py-1 bg-green-50 text-green-700 rounded-full text-xs font-semibold uppercase tracking-wider border border-green-100">
-                            {shopOrder.status}
+                          <div className="mt-2 md:mt-0 flex flex-col md:flex-row gap-2 items-start md:items-center">
+                            <div className="px-3 py-1 bg-green-50 text-green-700 rounded-full text-xs font-semibold uppercase tracking-wider border border-green-100">
+                              {shopOrder.status}
+                            </div>
+
+                            {/* NEW: Per-Shop Payment Status */}
+                            {shopOrder.paymentStatus && (
+                              <div
+                                className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider border ${
+                                  shopOrder.paymentStatus === "POINTS_ONLY"
+                                    ? "bg-blue-50 text-blue-700 border-blue-200"
+                                    : shopOrder.paymentStatus === "HYBRID"
+                                      ? "bg-purple-50 text-purple-700 border-purple-200"
+                                      : "bg-gray-100 text-gray-700 border-gray-300"
+                                }`}
+                              >
+                                {shopOrder.paymentStatus === "POINTS_ONLY" &&
+                                  "⭐ Points Only"}
+                                {shopOrder.paymentStatus === "HYBRID" &&
+                                  "💳 Points + Card"}
+                                {shopOrder.paymentStatus === "CARD_ONLY" &&
+                                  "💳 Card"}
+                              </div>
+                            )}
                           </div>
                         </div>
 
@@ -734,6 +756,78 @@ function PaymentSuccessContent() {
                             </tbody>
                           </table>
                         </div>
+
+                        {/* NEW: Per-Shop Payment Breakdown */}
+                        <div className="mt-4 p-4 bg-gray-50 rounded-lg border border-gray-100">
+                          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                            {/* Subtotal */}
+                            <div>
+                              <p className="text-xs text-gray-600 font-semibold uppercase tracking-wide">
+                                Subtotal
+                              </p>
+                              <p className="text-lg font-bold text-gray-900 mt-1">
+                                $ {shopOrder.subtotal?.toLocaleString() || "0"}
+                              </p>
+                            </div>
+
+                            {/* Shipping */}
+                            {shopOrder.shippingCost > 0 && (
+                              <div>
+                                <p className="text-xs text-gray-600 font-semibold uppercase tracking-wide">
+                                  Shipping
+                                </p>
+                                <p className="text-lg font-bold text-gray-900 mt-1">
+                                  ${" "}
+                                  {shopOrder.shippingCost?.toLocaleString() ||
+                                    "0"}
+                                </p>
+                              </div>
+                            )}
+
+                            {/* Points Applied */}
+                            {shopOrder.pointsUsed > 0 && (
+                              <div>
+                                <p className="text-xs text-blue-600 font-semibold uppercase tracking-wide">
+                                  ⭐ Points Used
+                                </p>
+                                <p className="text-lg font-bold text-blue-700 mt-1">
+                                  {shopOrder.pointsUsed} pts
+                                </p>
+                                <p className="text-sm text-blue-600 font-medium">
+                                  ($
+                                  {shopOrder.pointsValue?.toLocaleString() ||
+                                    "0"}
+                                  )
+                                </p>
+                              </div>
+                            )}
+
+                            {/* Card Amount */}
+                            {shopOrder.cardAmount > 0 && (
+                              <div>
+                                <p className="text-xs text-gray-600 font-semibold uppercase tracking-wide">
+                                  💳 Card Payment
+                                </p>
+                                <p className="text-lg font-bold text-gray-900 mt-1">
+                                  ${" "}
+                                  {shopOrder.cardAmount?.toLocaleString() ||
+                                    "0"}
+                                </p>
+                              </div>
+                            )}
+
+                            {/* Shop Total */}
+                            <div className="md:col-span-1">
+                              <p className="text-xs text-primary font-semibold uppercase tracking-wide">
+                                Total
+                              </p>
+                              <p className="text-xl font-black text-primary mt-1">
+                                ${" "}
+                                {shopOrder.totalAmount?.toLocaleString() || "0"}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
                       </div>
                     ),
                   )
@@ -809,8 +903,106 @@ function PaymentSuccessContent() {
 
               {/* Order Summary */}
               <div className="mt-12 bg-white border-2 border-gray-100 rounded-2xl p-6 shadow-sm">
-                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-                  <div className="w-full md:w-1/2">
+                <h3 className="text-lg font-bold text-gray-900 mb-6 flex items-center gap-2">
+                  <svg
+                    className="w-6 h-6 text-primary"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
+                  </svg>
+                  Order Summary & Payment Breakdown
+                </h3>
+
+                {/* Per-Shop Summary Table */}
+                {orderDetails.shopOrders &&
+                orderDetails.shopOrders.length > 0 ? (
+                  <div className="overflow-x-auto rounded-lg border border-gray-200 mb-6">
+                    <table className="w-full text-sm">
+                      <thead>
+                        <tr className="bg-gray-100 border-b border-gray-200">
+                          <th className="text-left px-4 py-3 font-bold text-gray-700">
+                            Shop
+                          </th>
+                          <th className="text-right px-4 py-3 font-bold text-gray-700">
+                            Subtotal
+                          </th>
+                          <th className="text-right px-4 py-3 font-bold text-gray-700">
+                            Shipping
+                          </th>
+                          <th className="text-right px-4 py-3 font-bold text-blue-600">
+                            ⭐ Points
+                          </th>
+                          <th className="text-right px-4 py-3 font-bold text-gray-700">
+                            💳 Card
+                          </th>
+                          <th className="text-right px-4 py-3 font-bold text-primary">
+                            Total
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {orderDetails.shopOrders.map(
+                          (shop: any, idx: number) => (
+                            <tr
+                              key={idx}
+                              className="border-b border-gray-100 hover:bg-gray-50"
+                            >
+                              <td className="px-4 py-3 font-medium text-gray-800">
+                                {shop.shopName}
+                              </td>
+                              <td className="text-right px-4 py-3 text-gray-700">
+                                ${shop.subtotal?.toLocaleString() || "0"}
+                              </td>
+                              <td className="text-right px-4 py-3 text-gray-700">
+                                ${shop.shippingCost?.toLocaleString() || "0"}
+                              </td>
+                              <td className="text-right px-4 py-3">
+                                {shop.pointsUsed > 0 ? (
+                                  <span className="font-bold text-blue-600">
+                                    {shop.pointsUsed} pts
+                                    <br />
+                                    <span className="text-sm">
+                                      (-$
+                                      {shop.pointsValue?.toLocaleString() ||
+                                        "0"}
+                                      )
+                                    </span>
+                                  </span>
+                                ) : (
+                                  <span className="text-gray-400">—</span>
+                                )}
+                              </td>
+                              <td className="text-right px-4 py-3">
+                                {shop.cardAmount > 0 ? (
+                                  <span className="font-bold text-gray-800">
+                                    ${shop.cardAmount?.toLocaleString() || "0"}
+                                  </span>
+                                ) : (
+                                  <span className="text-gray-400">—</span>
+                                )}
+                              </td>
+                              <td className="text-right px-4 py-3 font-bold text-primary text-base">
+                                ${shop.totalAmount?.toLocaleString() || "0"}
+                              </td>
+                            </tr>
+                          ),
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+                ) : null}
+
+                {/* Overall Totals */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {/* Left: Tips */}
+                  <div>
                     <h4 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
                       <svg
                         className="w-5 h-5 text-primary"
@@ -822,10 +1014,10 @@ function PaymentSuccessContent() {
                           strokeLinecap="round"
                           strokeLinejoin="round"
                           strokeWidth="2"
-                          d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                          d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
                         />
                       </svg>
-                      Payment & Success Tips
+                      Payment Tips
                     </h4>
                     <div className="space-y-4 text-sm text-gray-600">
                       <div className="flex gap-3 bg-green-50/50 p-3 rounded-lg border border-green-100">
@@ -833,42 +1025,44 @@ function PaymentSuccessContent() {
                           1
                         </div>
                         <p>
-                          Present the <strong>specific QR code</strong> for each
-                          shop when picking up your items.
+                          <strong>Points-Only Shops:</strong> No card payment
+                          needed.
                         </p>
                       </div>
-                      <div className="flex gap-3 bg-green-50/50 p-3 rounded-lg border border-green-100">
-                        <div className="shrink-0 h-5 w-5 rounded-full bg-green-500 text-white flex items-center justify-center text-[10px] font-bold">
+                      <div className="flex gap-3 bg-purple-50/50 p-3 rounded-lg border border-purple-100">
+                        <div className="shrink-0 h-5 w-5 rounded-full bg-purple-500 text-white flex items-center justify-center text-[10px] font-bold">
                           2
                         </div>
                         <p>
-                          You can download the QR codes as images for easy
-                          offline access during pickup.
+                          <strong>Hybrid Shops:</strong> Points covered part,
+                          card covers the rest.
+                        </p>
+                      </div>
+                      <div className="flex gap-3 bg-blue-50/50 p-3 rounded-lg border border-blue-100">
+                        <div className="shrink-0 h-5 w-5 rounded-full bg-blue-500 text-white flex items-center justify-center text-[10px] font-bold">
+                          3
+                        </div>
+                        <p>
+                          Each shop total is calculated separately with their
+                          own shipping costs.
                         </p>
                       </div>
                     </div>
                   </div>
 
-                  <div className="w-full md:w-1/3 space-y-3 bg-gray-50 rounded-xl p-5 border border-gray-100">
-                    <div className="flex justify-between text-gray-600 text-sm">
-                      <span>Subtotal:</span>
+                  {/* Right: Summary Totals */}
+                  <div className="space-y-3 bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl p-5 border border-gray-200">
+                    <div className="flex justify-between text-gray-700 text-sm">
+                      <span>Order Subtotal:</span>
                       <span className="font-semibold">
                         $ {orderDetails.subtotal?.toLocaleString()}
                       </span>
                     </div>
                     {orderDetails.shipping > 0 && (
-                      <div className="flex justify-between text-gray-600 text-sm">
-                        <span>Shipping:</span>
+                      <div className="flex justify-between text-gray-700 text-sm">
+                        <span>Total Shipping:</span>
                         <span className="font-semibold">
                           $ {orderDetails.shipping?.toLocaleString()}
-                        </span>
-                      </div>
-                    )}
-                    {orderDetails.tax > 0 && (
-                      <div className="flex justify-between text-gray-600 text-sm">
-                        <span>Tax:</span>
-                        <span className="font-semibold">
-                          $ {orderDetails.tax?.toLocaleString()}
                         </span>
                       </div>
                     )}
@@ -881,84 +1075,150 @@ function PaymentSuccessContent() {
                       </div>
                     )}
 
-                    {/* Order Total Before Points */}
-                    <div className="pt-2 border-t border-gray-200 flex justify-between text-gray-800 text-sm font-semibold">
+                    {/* Order Total */}
+                    <div className="pt-2 border-t-2 border-gray-300 flex justify-between text-gray-900 text-base font-bold">
                       <span>Order Total:</span>
                       <span>$ {orderDetails.total?.toLocaleString()}</span>
                     </div>
 
-                    {/* Points Info */}
-                    {((pointsUsed && pointsUsed > 0) ||
-                      (orderDetails?.transaction?.pointsUsed &&
-                        orderDetails.transaction.pointsUsed > 0)) && (
-                      <div className="pt-2 border-t border-green-200 mt-2 space-y-2 bg-green-50 -mx-5 px-5 pb-3 rounded-b-lg">
-                        <div className="flex justify-between text-green-800 text-sm font-medium pt-2">
-                          <span className="flex items-center gap-1">
-                            <svg
-                              className="w-4 h-4"
-                              fill="currentColor"
-                              viewBox="0 0 20 20"
-                            >
-                              <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                            </svg>
-                            Points Applied:
-                          </span>
-                          <span className="font-bold">
-                            {(
-                              pointsUsed ||
-                              orderDetails?.transaction?.pointsUsed ||
-                              0
-                            ).toLocaleString()}{" "}
-                            pts
-                          </span>
-                        </div>
-                        <div className="flex justify-between text-green-700 text-sm">
-                          <span>Points Value:</span>
-                          <span className="font-semibold text-green-600">
-                            -$
-                            {(
-                              pointsValue ||
-                              orderDetails?.transaction?.pointsValue ||
-                              0
-                            ).toLocaleString()}
-                          </span>
-                        </div>
-                      </div>
-                    )}
+                    {/* Payment Methods Breakdown */}
+                    <div className="pt-3 border-t-2 border-blue-200 mt-3 space-y-2 bg-blue-50 -mx-5 px-5 pb-3 rounded-b-lg">
+                      {(() => {
+                        const totalPoints =
+                          orderDetails.shopOrders?.reduce(
+                            (sum: number, s: any) => sum + (s.pointsUsed || 0),
+                            0,
+                          ) || 0;
+                        const totalPointsValue =
+                          orderDetails.shopOrders?.reduce(
+                            (sum: number, s: any) => sum + (s.pointsValue || 0),
+                            0,
+                          ) || 0;
+                        const totalCardAmount =
+                          orderDetails.shopOrders?.reduce(
+                            (sum: number, s: any) => sum + (s.cardAmount || 0),
+                            0,
+                          ) || 0;
+
+                        return (
+                          <>
+                            {totalPointsValue > 0 && (
+                              <div className="flex justify-between text-blue-800 text-sm font-medium pt-2">
+                                <span className="flex items-center gap-1">
+                                  <svg
+                                    className="w-4 h-4"
+                                    fill="currentColor"
+                                    viewBox="0 0 20 20"
+                                  >
+                                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                  </svg>
+                                  Points Applied:
+                                </span>
+                                <span className="font-bold">
+                                  {totalPoints.toLocaleString()} pts
+                                </span>
+                              </div>
+                            )}
+                            {totalPointsValue > 0 && (
+                              <div className="flex justify-between text-blue-700 text-sm">
+                                <span>Points Value:</span>
+                                <span className="font-semibold text-blue-600">
+                                  -${totalPointsValue.toLocaleString()}
+                                </span>
+                              </div>
+                            )}
+                            {totalCardAmount > 0 && (
+                              <div className="flex justify-between text-gray-800 text-sm font-medium pt-2 border-t border-blue-200">
+                                <span className="flex items-center gap-1">
+                                  <svg
+                                    className="w-4 h-4"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                  >
+                                    <path
+                                      strokeLinecap="round"
+                                      strokeLinejoin="round"
+                                      strokeWidth="2"
+                                      d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"
+                                    />
+                                  </svg>
+                                  Card Payment:
+                                </span>
+                                <span className="font-bold text-gray-900">
+                                  ${totalCardAmount.toLocaleString()}
+                                </span>
+                              </div>
+                            )}
+                          </>
+                        );
+                      })()}
+                    </div>
 
                     {/* Final Amount Paid */}
-                    <div className="pt-3 border-t-2 border-gray-200 mt-3 flex justify-between items-center text-xl font-black text-gray-900">
-                      <span>
-                        {(pointsUsed && pointsUsed > 0) ||
-                        (orderDetails?.transaction?.pointsUsed &&
-                          orderDetails.transaction.pointsUsed > 0)
-                          ? "AMOUNT PAID"
-                          : "TOTAL"}
-                      </span>
+                    <div className="pt-4 border-t-2 border-gray-300 mt-4 flex justify-between items-center text-xl font-black text-gray-900">
+                      <span>TOTAL PAID</span>
                       <span className="text-primary">
                         ${" "}
                         {(() => {
-                          const total = orderDetails.total || 0;
-                          const ptsValue =
-                            pointsValue ||
-                            orderDetails?.transaction?.pointsValue ||
-                            0;
-                          const amountPaid = Math.max(0, total - ptsValue);
+                          const totalCardAmount =
+                            orderDetails.shopOrders?.reduce(
+                              (sum: number, s: any) =>
+                                sum + (s.cardAmount || 0),
+                              0,
+                            ) || 0;
+                          const totalPoints =
+                            orderDetails.shopOrders?.reduce(
+                              (sum: number, s: any) =>
+                                sum + (s.pointsValue || 0),
+                              0,
+                            ) || 0;
+                          const amountPaid = totalCardAmount;
                           return amountPaid.toLocaleString();
                         })()}
                       </span>
                     </div>
 
-                    {/* Show if fully covered by points */}
-                    {((pointsValue &&
-                      pointsValue >= (orderDetails.total || 0)) ||
-                      (orderDetails?.transaction?.pointsValue &&
-                        orderDetails.transaction.pointsValue >=
-                          (orderDetails.total || 0))) && (
-                      <div className="text-center text-green-600 text-sm font-semibold bg-green-50 rounded-lg py-2 mt-2">
-                        ✓ Fully paid with points!
-                      </div>
-                    )}
+                    {/* Payment Status Summary */}
+                    {(() => {
+                      const pointsOnlyShops =
+                        orderDetails.shopOrders?.filter(
+                          (s: any) => s.paymentStatus === "POINTS_ONLY",
+                        ) || [];
+                      const hybridShops =
+                        orderDetails.shopOrders?.filter(
+                          (s: any) => s.paymentStatus === "HYBRID",
+                        ) || [];
+                      const cardOnlyShops =
+                        orderDetails.shopOrders?.filter(
+                          (s: any) => s.paymentStatus === "CARD_ONLY",
+                        ) || [];
+
+                      return (
+                        <div className="pt-3 space-y-1 text-xs">
+                          {pointsOnlyShops.length > 0 && (
+                            <div className="flex items-center gap-2 text-blue-700 font-medium">
+                              <span className="inline-block w-2 h-2 bg-blue-500 rounded-full"></span>
+                              {pointsOnlyShops.length} shop(s) fully covered by
+                              points
+                            </div>
+                          )}
+                          {hybridShops.length > 0 && (
+                            <div className="flex items-center gap-2 text-purple-700 font-medium">
+                              <span className="inline-block w-2 h-2 bg-purple-500 rounded-full"></span>
+                              {hybridShops.length} shop(s) paid with points +
+                              card
+                            </div>
+                          )}
+                          {cardOnlyShops.length > 0 && (
+                            <div className="flex items-center gap-2 text-gray-700 font-medium">
+                              <span className="inline-block w-2 h-2 bg-gray-500 rounded-full"></span>
+                              {cardOnlyShops.length} shop(s) paid with card only
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })()}
                   </div>
                 </div>
               </div>
