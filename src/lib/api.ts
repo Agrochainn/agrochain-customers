@@ -192,7 +192,7 @@ export const apiCall = async <T>(
     const response = await fetch(url, config);
 
     if (!response.ok) {
-      let errorMessage = `HTTP error! status: ${response.status}`;
+      let errorMessage = `${response.status == 403 ? "Not logged in" : "Something went wrong"}`;
       try {
         const errorData = await response.json();
         errorMessage = errorData.message || errorData.error || errorMessage;
@@ -200,12 +200,13 @@ export const apiCall = async <T>(
         // Fallback if not JSON
       }
 
-      // Show toast error in top center
-      toast.error("Process Failed", {
-        description: errorMessage,
-        position: "top-center",
-        duration: 5000,
-      });
+      if (errorMessage.toLowerCase() !== "access denied") {
+        toast.error("Process Failed", {
+          description: errorMessage,
+          position: "top-center",
+          duration: 5000,
+        });
+      }
 
       throw new Error(errorMessage);
     }

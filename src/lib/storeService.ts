@@ -39,7 +39,7 @@ export const StoreService = {
     page: number = 0,
     size: number = 10,
     sort: string = "followers-desc",
-    followedOnly: boolean = false
+    followedOnly: boolean = false,
   ): Promise<ShopSearchResponse> => {
     const params = new URLSearchParams();
     if (search) params.append("search", search);
@@ -50,26 +50,28 @@ export const StoreService = {
     params.append("sort", sort);
 
     const url = `${API_ENDPOINTS.SEARCH_SHOPS}?${params.toString()}`;
-    
+
     // Send auth token if available so backend can include isFollowing status
     const token = localStorage.getItem("authToken");
     const headers: HeadersInit = {
       "Content-Type": "application/json",
     };
-    
+
     if (token) {
       headers.Authorization = `Bearer ${token}`;
     }
-    
+
     const response = await fetch(url, {
       method: "GET",
       headers,
     });
-    
+
     if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+      throw new Error(
+        `${response.status == 403 ? "Not logged in" : "Something went wrong"}`,
+      );
     }
-    
+
     return await response.json();
   },
 
@@ -122,21 +124,23 @@ export const StoreService = {
     const headers: HeadersInit = {
       "Content-Type": "application/json",
     };
-    
+
     // Add auth header if token exists (for authenticated users to get isFollowing)
     if (token) {
       headers.Authorization = `Bearer ${token}`;
     }
-    
+
     const response = await fetch(API_ENDPOINTS.SHOP_DETAILS(shopId), {
       method: "GET",
       headers,
     });
-    
+
     if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+      throw new Error(
+        `${response.status == 403 ? "Not logged in" : "Something went wrong"}`,
+      );
     }
-    
+
     return await response.json();
   },
 
@@ -146,7 +150,7 @@ export const StoreService = {
   getWarehouses: async (
     shopId: string,
     page: number = 0,
-    size: number = 10
+    size: number = 10,
   ): Promise<{
     content: Warehouse[];
     totalPages: number;
@@ -161,11 +165,13 @@ export const StoreService = {
         headers: {
           "Content-Type": "application/json",
         },
-      }
+      },
     );
 
     if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+      throw new Error(
+        `${response.status == 403 ? "Not logged in" : "Something went wrong"}`,
+      );
     }
 
     return await response.json();
@@ -177,7 +183,7 @@ export const StoreService = {
   getDeliveryAreas: async (
     shopId: string,
     page: number = 0,
-    size: number = 10
+    size: number = 10,
   ): Promise<{
     content: DeliveryArea[];
     totalPages: number;
@@ -192,11 +198,13 @@ export const StoreService = {
         headers: {
           "Content-Type": "application/json",
         },
-      }
+      },
     );
 
     if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+      throw new Error(
+        `${response.status == 403 ? "Not logged in" : "Something went wrong"}`,
+      );
     }
 
     return await response.json();

@@ -168,8 +168,8 @@ function PaymentSuccessContent() {
         // Create a mock verification result for points-based payment
         setVerificationResult({
           status: "paid",
-          amount: Math.round((orderDetails.total || 0) * 100), // Convert to cents
-          currency: "usd",
+          amount: Math.round(orderDetails.total || 0), // RWF is zero-decimal
+          currency: "rwf",
           customerEmail: orderDetails.customerInfo?.email || "N/A",
           receiptUrl: null,
           paymentIntentId: `points_payment_${orderNumber}`,

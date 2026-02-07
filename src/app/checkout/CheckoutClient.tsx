@@ -13,6 +13,7 @@ import {
   MapPin,
   Package,
   Truck,
+  Info,
 } from "lucide-react";
 
 // Components
@@ -49,7 +50,20 @@ import { ErrorDialog } from "@/components/ErrorDialog";
 import { toast } from "sonner";
 // Google Maps removed - using mock location data
 import { CountrySelector } from "@/components/CountrySelector";
+import dynamic from "next/dynamic";
 import { PointsPaymentModal } from "@/components/PointsPaymentModal";
+
+const LeafletMap = dynamic(
+  () => import("@/components/LeafletMap").then((mod) => mod.LeafletMap),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="h-[350px] w-full rounded-lg border bg-muted animate-pulse flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+      </div>
+    ),
+  },
+);
 import {
   formatStockErrorMessage,
   extractErrorDetails,
@@ -138,7 +152,15 @@ export function CheckoutClient() {
     longitude: undefined as number | undefined,
     notes: "",
   });
+  const [isMapVisible, setIsMapVisible] = useState(true);
   const [addressSelected, setAddressSelected] = useState(false);
+
+  // Check if all shops in the cart are PICKUP only
+  const isAllPickupOnly = paymentSummary?.shopSummaries?.every(
+    (shop) =>
+      shop.shopCapability === "PICKUP_ORDERS" &&
+      shop.fulfillmentType === "PICKUP",
+  );
 
   // Mock location data generator - returns coordinates on or near major roads
   // Note: Road validation is disabled in backend, but we still use road coordinates for accuracy
@@ -307,7 +329,31 @@ export function CheckoutClient() {
     }));
   };
 
-  // Handle manual address input - generate mock coordinates
+  const handleLocationSelect = (location: {
+    streetAddress: string;
+    city: string;
+    state: string;
+    country: string;
+    latitude: number;
+    longitude: number;
+    formattedAddress: string;
+  }) => {
+    setFormData((prev) => ({
+      ...prev,
+      streetAddress: location.formattedAddress,
+      city: location.city,
+      stateProvince: location.state,
+      country: location.country,
+      latitude: location.latitude,
+      longitude: location.longitude,
+    }));
+    setAddressSelected(true);
+    // Automatically trigger payment summary if cart exists and has items
+    if (cart && cart.items.length > 0) {
+      setTimeout(() => fetchPaymentSummary(), 100);
+    }
+  };
+
   const handleAddressInput = () => {
     if (formData.streetAddress && formData.city && formData.country) {
       const mockLocation = generateMockLocation(
@@ -778,7 +824,7 @@ export function CheckoutClient() {
         const checkoutRequest: CheckoutRequest = {
           items: cartItems,
           shippingAddress: address,
-          currency: "usd",
+          currency: "rwf",
           userId: user.id,
           platform: "web",
           shopFulfillmentPreferences:
@@ -1372,7 +1418,59 @@ export function CheckoutClient() {
               </CardDescription>
             </CardHeader>
             <CardContent className="p-6 space-y-4">
-              <div className="space-y-4">
+              <div className="flex items-center justify-between mb-2">
+                <Label className="text-base font-semibold">
+                  Select Location on Map
+                </Label>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setIsMapVisible(!isMapVisible)}
+                  className="text-primary hover:text-primary/80"
+                >
+                  {isMapVisible ? "Hide Map" : "Show Map"}
+                </Button>
+              </div>
+
+              {isMapVisible && (
+                <div className="mb-6 relative">
+                  {isAllPickupOnly && (
+                    <div className="absolute top-14 left-1/2 -translate-x-1/2 z-[401] w-[90%] md:w-[80%]">
+                      <div className="bg-amber-100 border border-amber-300 text-amber-900 px-4 py-3 rounded-md shadow-lg flex items-start gap-3 animate-in fade-in zoom-in duration-300">
+                        <Info className="h-5 w-5 text-amber-600 mt-0.5 flex-shrink-0" />
+                        <div>
+                          <p className="text-sm font-bold">
+                            Pickup Only Order Detected
+                          </p>
+                          <p className="text-xs leading-relaxed opacity-90">
+                            All items in your cart are for pickup only. The
+                            location you select here will not affect your
+                            delivery as you will pick up your orders directly
+                            from the shop(s). You can choose any location or
+                            skip precision.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                  <LeafletMap
+                    onLocationSelect={handleLocationSelect}
+                    initialLocation={
+                      formData.latitude && formData.longitude
+                        ? { lat: formData.latitude, lng: formData.longitude }
+                        : undefined
+                    }
+                  />
+                  <p className="text-xs text-muted-foreground mt-2">
+                    Tip: You can search for your address or click directly on
+                    the map to set your delivery location.
+                  </p>
+                </div>
+              )}
+
+              <Separator className="my-4" />
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="streetAddress">Street Address*</Label>
                   <Input

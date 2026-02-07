@@ -73,7 +73,7 @@ const getAuthToken = (): string | null => {
 };
 
 class WishlistServices {
-  private baseUrl = API_BASE_URL
+  private baseUrl = API_BASE_URL;
   private async getAuthHeaders(): Promise<HeadersInit> {
     const token = getAuthToken();
     return {
@@ -140,7 +140,7 @@ class WishlistServices {
 
   async getWishlist(
     page: number = 0,
-    size: number = 10
+    size: number = 10,
   ): Promise<WishlistResponse> {
     const token = getAuthToken();
 
@@ -154,7 +154,7 @@ class WishlistServices {
       {
         method: "GET",
         headers: await this.getAuthHeaders(),
-      }
+      },
     );
 
     if (!response.ok) {
@@ -181,7 +181,6 @@ class WishlistServices {
     const token = getAuthToken();
 
     if (!token) {
- 
       if (typeof wishlistProductId === "string") {
         removeFromLocalStorageWishlistByProductId(wishlistProductId);
       } else {
@@ -195,7 +194,7 @@ class WishlistServices {
       {
         method: "DELETE",
         headers: await this.getAuthHeaders(),
-      }
+      },
     );
 
     if (!response.ok) {
@@ -240,7 +239,7 @@ class WishlistServices {
 
   async moveToCart(
     wishlistProductId: number,
-    quantity: number = 1
+    quantity: number = 1,
   ): Promise<void> {
     const token = getAuthToken();
 
@@ -254,7 +253,7 @@ class WishlistServices {
       {
         method: "POST",
         headers: await this.getAuthHeaders(),
-      }
+      },
     );
 
     if (!response.ok) {
@@ -286,7 +285,7 @@ class WishlistServices {
         {
           method: "GET",
           headers: await this.getAuthHeaders(),
-        }
+        },
       );
 
       if (!response.ok) {
@@ -298,7 +297,7 @@ class WishlistServices {
           if (!wishlistItems) return false;
 
           const wishlist = JSON.parse(
-            wishlistItems
+            wishlistItems,
           ) as LocalStorageWishlistItem[];
           return wishlist.some((item) => item.productId === productId);
         }
@@ -308,7 +307,7 @@ class WishlistServices {
       const result = await response.json();
       const products = result.data.products;
       return products.some(
-        (product: WishlistProduct) => product.productId === productId
+        (product: WishlistProduct) => product.productId === productId,
       );
     } catch (error) {
       console.error("Error checking wishlist status:", error);
@@ -317,7 +316,7 @@ class WishlistServices {
   }
 
   async updateWishlistProduct(
-    request: UpdateWishlistProductRequest
+    request: UpdateWishlistProductRequest,
   ): Promise<WishlistProduct> {
     const token = getAuthToken();
 
@@ -365,7 +364,7 @@ class WishlistServices {
       }
 
       const localWishlist = JSON.parse(
-        wishlistItems
+        wishlistItems,
       ) as LocalStorageWishlistItem[];
       if (localWishlist.length === 0) {
         console.log("Empty localStorage wishlist, nothing to migrate");
@@ -373,7 +372,7 @@ class WishlistServices {
       }
 
       console.log(
-        `Migrating ${localWishlist.length} items from localStorage to database`
+        `Migrating ${localWishlist.length} items from localStorage to database`,
       );
 
       // Add each localStorage item to the database wishlist
@@ -385,7 +384,7 @@ class WishlistServices {
         } catch (error) {
           console.warn(
             `Failed to migrate wishlist item ${item.productId} to database:`,
-            error
+            error,
           );
           // Continue with other items even if one fails
         }
@@ -394,7 +393,7 @@ class WishlistServices {
       // Clear localStorage wishlist after successful migration
       localStorage.removeItem("wishlist");
       console.log(
-        "Wishlist migration completed, localStorage wishlist cleared"
+        "Wishlist migration completed, localStorage wishlist cleared",
       );
     } catch (error) {
       console.error("Error migrating wishlist to database:", error);
@@ -418,7 +417,7 @@ async function getWishlistFromBackend(): Promise<WishlistResponse> {
     }
 
     const localWishlist = JSON.parse(
-      wishlistItems
+      wishlistItems,
     ) as LocalStorageWishlistItem[];
     if (localWishlist.length === 0) {
       return {
@@ -443,7 +442,9 @@ async function getWishlistFromBackend(): Promise<WishlistResponse> {
     });
 
     if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+      throw new Error(
+        `${response.status == 403 ? "Not logged in" : "Something went wrong"}`,
+      );
     }
 
     const data = await response.json();
@@ -484,7 +485,7 @@ async function getWishlistFromBackend(): Promise<WishlistResponse> {
             }
           : null,
         compareAtPrice: product.compareAtPrice || null,
-      })
+      }),
     );
 
     return {
@@ -563,7 +564,7 @@ function removeFromLocalStorageWishlistByProductId(productId: string): void {
       : [];
 
     const filteredWishlist = wishlist.filter(
-      (item) => item.productId !== productId
+      (item) => item.productId !== productId,
     );
     localStorage.setItem("wishlist", JSON.stringify(filteredWishlist));
 
@@ -572,7 +573,7 @@ function removeFromLocalStorageWishlistByProductId(productId: string): void {
   } catch (error) {
     console.error(
       "Error removing from localStorage wishlist by product ID:",
-      error
+      error,
     );
   }
 }

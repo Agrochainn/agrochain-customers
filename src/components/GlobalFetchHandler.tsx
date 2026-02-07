@@ -46,7 +46,9 @@ export function GlobalFetchHandler() {
               data.message ||
               data.error ||
               `Error ${response.status}: ${response.statusText}`;
-
+            if (errorMessage.toLowerCase() === "access denied") {
+              return response;
+            }
             toast.error("Process Failed", {
               description: errorMessage,
               position: "top-center",
@@ -58,7 +60,7 @@ export function GlobalFetchHandler() {
             //   position: "top-center",
             //   duration: 5000,
             // });
-            console.error(e)
+            console.error(e);
           }
         }
 
