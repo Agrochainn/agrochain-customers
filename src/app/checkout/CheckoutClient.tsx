@@ -67,6 +67,7 @@ const LeafletMap = dynamic(
 import {
   formatStockErrorMessage,
   extractErrorDetails,
+  formatEnhancedStockError,
 } from "@/lib/utils/errorParser";
 
 // Services
@@ -924,8 +925,24 @@ export function CheckoutClient() {
           case "PRODUCT_NOT_AVAILABLE":
           case "VARIANT_INACTIVE":
           case "VARIANT_NOT_AVAILABLE":
-            // Use the enhanced error parser for stock-related issues
-            if (errorDetails.details || errorDetails.message) {
+            // Use enhanced stock error formatting with product details
+            if (
+              errorDetails.productName ||
+              errorDetails.variantName ||
+              errorDetails.availableStock !== undefined
+            ) {
+              const enhancedMessage = formatEnhancedStockError(
+                errorDetails.productName,
+                errorDetails.variantName,
+                errorDetails.requestedQuantity,
+                errorDetails.availableStock,
+              );
+              setErrorDialog({
+                open: true,
+                title: "Product Unavailable",
+                message: enhancedMessage,
+              });
+            } else if (errorDetails.details || errorDetails.message) {
               const stockMessage = formatStockErrorMessage(
                 errorDetails.details || errorDetails.message || "",
               );
@@ -944,8 +961,24 @@ export function CheckoutClient() {
             }
             break;
           case "INSUFFICIENT_STOCK":
-            // Enhanced stock error handling
-            if (errorDetails.details || errorDetails.message) {
+            // Enhanced stock error handling with product details
+            if (
+              errorDetails.productName ||
+              errorDetails.variantName ||
+              errorDetails.availableStock !== undefined
+            ) {
+              const enhancedMessage = formatEnhancedStockError(
+                errorDetails.productName,
+                errorDetails.variantName,
+                errorDetails.requestedQuantity,
+                errorDetails.availableStock,
+              );
+              setErrorDialog({
+                open: true,
+                title: "Insufficient Stock",
+                message: enhancedMessage,
+              });
+            } else if (errorDetails.details || errorDetails.message) {
               const stockMessage = formatStockErrorMessage(
                 errorDetails.details || errorDetails.message || "",
               );
@@ -973,9 +1006,37 @@ export function CheckoutClient() {
               "🔍 DEBUG: errorDetails.message:",
               errorDetails.message,
             );
+            console.log(
+              "🔍 DEBUG: errorDetails.productName:",
+              errorDetails.productName,
+            );
+            console.log(
+              "🔍 DEBUG: errorDetails.availableStock:",
+              errorDetails.availableStock,
+            );
 
             // Handle internal errors that might contain stock information
             if (
+              errorDetails.productName ||
+              errorDetails.variantName ||
+              errorDetails.availableStock !== undefined
+            ) {
+              console.log(
+                "🔍 DEBUG: Stock error detected with enhanced details, formatting message...",
+              );
+              const enhancedMessage = formatEnhancedStockError(
+                errorDetails.productName,
+                errorDetails.variantName,
+                errorDetails.requestedQuantity,
+                errorDetails.availableStock,
+              );
+              console.log("🔍 DEBUG: Formatted enhanced message:", enhancedMessage);
+              setErrorDialog({
+                open: true,
+                title: "Stock Error",
+                message: enhancedMessage,
+              });
+            } else if (
               errorDetails.details &&
               (errorDetails.details.includes("not available") ||
                 errorDetails.details.includes("out of stock"))
@@ -1027,8 +1088,27 @@ export function CheckoutClient() {
               "🔍 DEBUG: Default case triggered for error code:",
               errorDetails.errorCode,
             );
-            // Check if the default case also contains stock information
+            // Check if we have enhanced stock information
             if (
+              errorDetails.productName ||
+              errorDetails.variantName ||
+              errorDetails.availableStock !== undefined
+            ) {
+              console.log("🔍 DEBUG: Stock error detected in default case with enhanced details");
+              const enhancedMessage = formatEnhancedStockError(
+                errorDetails.productName,
+                errorDetails.variantName,
+                errorDetails.requestedQuantity,
+                errorDetails.availableStock,
+              );
+              setErrorDialog({
+                open: true,
+                title: "Checkout Error",
+                message: enhancedMessage,
+              });
+            }
+            // Check if the default case also contains stock information in message text
+            else if (
               (errorDetails.details &&
                 (errorDetails.details.includes("not available") ||
                   errorDetails.details.includes("out of stock"))) ||

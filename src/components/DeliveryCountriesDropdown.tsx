@@ -1,7 +1,14 @@
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
-import { ChevronDown, Search, MapPin, Truck, Loader2, Globe } from "lucide-react";
+import {
+  ChevronDown,
+  Search,
+  MapPin,
+  Truck,
+  Loader2,
+  Globe,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -12,7 +19,10 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
-import { shopDeliveryService, type CountryDeliveryInfo } from "@/lib/services/shopDeliveryService";
+import {
+  shopDeliveryService,
+  type CountryDeliveryInfo,
+} from "@/lib/services/shopDeliveryService";
 import { ShopsDeliveryDialog } from "@/components/ShopsDeliveryDialog";
 
 interface DeliveryCountriesDropdownProps {
@@ -23,31 +33,34 @@ interface DeliveryCountriesDropdownProps {
 
 const ITEMS_PER_PAGE = 8;
 
-export function DeliveryCountriesDropdown({ 
-  className = "", 
+export function DeliveryCountriesDropdown({
+  className = "",
   currentCountry,
-  onCountrySelect 
+  onCountrySelect,
 }: DeliveryCountriesDropdownProps) {
   const [countries, setCountries] = useState<CountryDeliveryInfo[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [isOpen, setIsOpen] = useState(false);
-  const [selectedCountryForShops, setSelectedCountryForShops] = useState<string | null>(null);
+  const [selectedCountryForShops, setSelectedCountryForShops] = useState<
+    string | null
+  >(null);
   const [showShopsDialog, setShowShopsDialog] = useState(false);
 
   // Fetch available countries with shop counts
   const fetchCountries = async () => {
     try {
       setIsLoading(true);
-      const countriesData = await shopDeliveryService.getCountriesWithDelivery();
+      const countriesData =
+        await shopDeliveryService.getCountriesWithDelivery();
       // Sort alphabetically by country name
-      const sortedCountries = countriesData.sort((a, b) => 
-        a.country.localeCompare(b.country)
+      const sortedCountries = countriesData.sort((a, b) =>
+        a.country.localeCompare(b.country),
       );
       setCountries(sortedCountries);
     } catch (error) {
-      console.error('Error fetching countries:', error);
+      console.error("Error fetching countries:", error);
     } finally {
       setIsLoading(false);
     }
@@ -62,8 +75,8 @@ export function DeliveryCountriesDropdown({
   // Filter countries based on search term
   const filteredCountries = useMemo(() => {
     if (!searchTerm) return countries;
-    return countries.filter(countryInfo =>
-      countryInfo.country.toLowerCase().includes(searchTerm.toLowerCase())
+    return countries.filter((countryInfo) =>
+      countryInfo.country.toLowerCase().includes(searchTerm.toLowerCase()),
     );
   }, [countries, searchTerm]);
 
@@ -116,20 +129,20 @@ export function DeliveryCountriesDropdown({
         <Button
           variant="ghost"
           size="sm"
-          className={`flex items-center gap-2 h-auto p-2 hover:bg-accent/50 ${className}`}
+          className={`flex items-center gap-2 h-auto p-2 hover:bg-accent/50 whitespace-nowrap truncate ${className}`}
         >
-          <Globe className="h-4 w-4 text-muted-foreground" />
-          <span className="text-sm font-medium">
+          <Globe className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+          <span className="text-sm font-medium truncate max-w-[120px]">
             {currentCountry || "Select Country"}
           </span>
-          <ChevronDown className="h-3 w-3 text-muted-foreground" />
+          <ChevronDown className="h-3 w-3 text-muted-foreground flex-shrink-0" />
         </Button>
       </DropdownMenuTrigger>
-      
-      <DropdownMenuContent 
-        align="end" 
-        className="w-80 p-0"
-        sideOffset={8}
+
+      <DropdownMenuContent
+        align="end"
+        className="w-80 max-w-[90vw] p-0"
+        sideOffset={6}
       >
         <div className="p-4 pb-2">
           <div className="flex items-center gap-2 mb-3">
@@ -144,11 +157,11 @@ export function DeliveryCountriesDropdown({
                   Loading...
                 </div>
               ) : (
-                `${countries.length} ${countries.length === 1 ? 'country' : 'countries'}`
+                `${countries.length} ${countries.length === 1 ? "country" : "countries"}`
               )}
             </Badge>
           </div>
-          
+
           {/* Search Input */}
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -177,7 +190,9 @@ export function DeliveryCountriesDropdown({
               <div className="flex flex-col items-center justify-center py-8 text-center">
                 <MapPin className="h-8 w-8 text-muted-foreground mb-2" />
                 <p className="text-sm text-muted-foreground">
-                  {searchTerm ? "No countries found" : "No delivery countries available"}
+                  {searchTerm
+                    ? "No countries found"
+                    : "No delivery countries available"}
                 </p>
                 {searchTerm && (
                   <p className="text-xs text-muted-foreground mt-1">
@@ -191,7 +206,9 @@ export function DeliveryCountriesDropdown({
                   <div
                     key={countryInfo.country}
                     className={`w-full mb-1 border rounded-lg transition-all duration-200 ${
-                      currentCountry === countryInfo.country ? 'bg-accent border-primary/20 shadow-sm' : 'border-transparent'
+                      currentCountry === countryInfo.country
+                        ? "bg-accent border-primary/20 shadow-sm"
+                        : "border-transparent"
                     }`}
                   >
                     <Button
@@ -218,11 +235,14 @@ export function DeliveryCountriesDropdown({
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={(e) => handleShopCountClick(e, countryInfo.country)}
+                        onClick={(e) =>
+                          handleShopCountClick(e, countryInfo.country)
+                        }
                         className="h-6 px-2 text-xs hover:bg-primary/10 text-primary"
                       >
                         <Truck className="h-3 w-3 mr-1" />
-                        {countryInfo.shopCount} shop{countryInfo.shopCount !== 1 ? 's' : ''}
+                        {countryInfo.shopCount} shop
+                        {countryInfo.shopCount !== 1 ? "s" : ""}
                       </Button>
                     </div>
                   </div>
@@ -238,7 +258,7 @@ export function DeliveryCountriesDropdown({
             <Separator />
             <div className="p-3 flex items-center justify-between">
               <div className="text-xs text-muted-foreground">
-                Page {currentPage} of {totalPages} 
+                Page {currentPage} of {totalPages}
                 <span className="ml-1">
                   ({filteredCountries.length} countries)
                 </span>
@@ -275,7 +295,7 @@ export function DeliveryCountriesDropdown({
           </p>
         </div>
       </DropdownMenuContent>
-      
+
       {/* Shops Dialog */}
       {selectedCountryForShops && (
         <ShopsDeliveryDialog
