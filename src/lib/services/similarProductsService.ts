@@ -27,7 +27,7 @@ export interface SimilarProductsResponse {
 
 class SimilarProductsService {
   async getSimilarProducts(
-    request: SimilarProductsRequest
+    request: SimilarProductsRequest,
   ): Promise<SimilarProductsResponse> {
     try {
       const params = new URLSearchParams();
@@ -38,8 +38,8 @@ class SimilarProductsService {
         String(
           request.includeOutOfStock !== undefined
             ? request.includeOutOfStock
-            : true
-        )
+            : true,
+        ),
       );
       params.append("algorithm", request.algorithm || "mixed");
 
@@ -48,11 +48,13 @@ class SimilarProductsService {
         {
           method: "GET",
           headers: getAuthHeaders(),
-        }
+        },
       );
 
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        throw new Error(
+          `${response.status == 403 ? "Not logged in" : "Something went wrong"}`,
+        );
       }
 
       const data = await response.json();
@@ -70,7 +72,7 @@ class SimilarProductsService {
       size?: number;
       includeOutOfStock?: boolean;
       algorithm?: "brand" | "category" | "keywords" | "popular" | "mixed";
-    } = {}
+    } = {},
   ): Promise<SimilarProductsResponse> {
     try {
       const params = new URLSearchParams();
@@ -81,8 +83,8 @@ class SimilarProductsService {
         String(
           options.includeOutOfStock !== undefined
             ? options.includeOutOfStock
-            : true
-        )
+            : true,
+        ),
       );
       params.append("algorithm", options.algorithm || "mixed");
 
@@ -91,11 +93,13 @@ class SimilarProductsService {
         {
           method: "GET",
           headers: getAuthHeaders(),
-        }
+        },
       );
 
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        throw new Error(
+          `${response.status == 403 ? "Not logged in" : "Something went wrong"}`,
+        );
       }
 
       const data = await response.json();

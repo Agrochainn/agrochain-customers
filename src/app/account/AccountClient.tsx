@@ -725,7 +725,11 @@ export function AccountClient() {
                   {t("account.currencyDesc") ||
                     "Select your preferred currency"}
                 </p>
-                <select className="w-full p-2 border rounded-lg mt-1">
+                <select
+                  className="w-full p-2 border rounded-lg mt-1"
+                  defaultValue="rwf"
+                >
+                  <option value="rwf">RWF</option>
                   <option value="usd">USD ($)</option>
                   <option value="eur">EUR (€)</option>
                   <option value="gbp">GBP (£)</option>

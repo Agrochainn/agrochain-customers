@@ -11,7 +11,7 @@ export interface CartItemResponse {
   quantity: number;
   stock: number;
   totalPrice: number;
-  weight?: number; 
+  weight?: number;
   averageRating: number;
   ratingCount: number;
 
@@ -20,9 +20,13 @@ export interface CartItemResponse {
   discountName?: string;
   discountAmount?: number; // Amount saved due to discount
   hasDiscount?: boolean;
-  
+
   // Shop capability
-  shopCapability?: "VISUALIZATION_ONLY" | "PICKUP_ORDERS" | "FULL_ECOMMERCE" | "HYBRID";
+  shopCapability?:
+    | "VISUALIZATION_ONLY"
+    | "PICKUP_ORDERS"
+    | "FULL_ECOMMERCE"
+    | "HYBRID";
 }
 
 export interface CartResponse {
@@ -86,7 +90,11 @@ interface CartProductsResponse {
     discountAmount?: number;
     hasDiscount?: boolean;
     // Shop capability
-    shopCapability?: "VISUALIZATION_ONLY" | "PICKUP_ORDERS" | "FULL_ECOMMERCE" | "HYBRID";
+    shopCapability?:
+      | "VISUALIZATION_ONLY"
+      | "PICKUP_ORDERS"
+      | "FULL_ECOMMERCE"
+      | "HYBRID";
   }[];
   subtotal: number;
   totalItems: number;
@@ -131,7 +139,7 @@ export const CartService = {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
           },
-        }
+        },
       );
 
       if (!response.ok) {
@@ -141,7 +149,9 @@ export const CartService = {
           console.warn("Authentication token expired, treating as guest user");
           return getCartFromBackend();
         }
-        throw new Error(`HTTP error! status: ${response.status}`);
+        throw new Error(
+          `${response.status == 403 ? "Not logged in" : "Something went wrong"}`,
+        );
       }
 
       const data = await response.json();
@@ -199,12 +209,14 @@ export const CartService = {
       try {
         const productId = request.productId || request.variantId || "";
         if (productId) {
-          const productResponse = await fetch(`${API_ENDPOINTS.PRODUCT_BY_ID(productId)}`);
+          const productResponse = await fetch(
+            `${API_ENDPOINTS.PRODUCT_BY_ID(productId)}`,
+          );
           if (productResponse.ok) {
             const product = await productResponse.json();
             if (product.shopCapability === "VISUALIZATION_ONLY") {
               throw new Error(
-                "This product is from a shop that only displays products and does not accept orders. Please contact the shop directly for inquiries."
+                "This product is from a shop that only displays products and does not accept orders. Please contact the shop directly for inquiries.",
               );
             }
           }
@@ -215,13 +227,16 @@ export const CartService = {
           throw error;
         }
         // For other errors (network, etc.), log but continue (backend will validate)
-        console.warn("Could not validate product capability for guest user:", error);
+        console.warn(
+          "Could not validate product capability for guest user:",
+          error,
+        );
       }
-      
+
       addToLocalStorageCart(
         request.productId || request.variantId || "",
         request.variantId,
-        request.quantity
+        request.quantity,
       );
       return await getCartFromBackend();
     }
@@ -243,13 +258,14 @@ export const CartService = {
           addToLocalStorageCart(
             request.productId || request.variantId || "",
             request.variantId,
-            request.quantity
+            request.quantity,
           );
           return await getCartFromBackend();
         }
         const errorData = await response.json();
         throw new Error(
-          errorData.message || `HTTP error! status: ${response.status}`
+          errorData.message ||
+            `${response.status == 403 ? "Not logged in" : "Something went wrong"}`,
         );
       }
 
@@ -277,7 +293,7 @@ export const CartService = {
    */
   updateCartItem: async (
     itemId: string,
-    request: CartItemRequest
+    request: CartItemRequest,
   ): Promise<CartResponse> => {
     const token = getAuthToken();
 
@@ -308,7 +324,8 @@ export const CartService = {
         }
         const errorData = await response.json();
         throw new Error(
-          errorData.message || `HTTP error! status: ${response.status}`
+          errorData.message ||
+            `${response.status == 403 ? "Not logged in" : "Something went wrong"}`,
         );
       }
 
@@ -363,7 +380,8 @@ export const CartService = {
         }
         const errorData = await response.json();
         throw new Error(
-          errorData.message || `HTTP error! status: ${response.status}`
+          errorData.message ||
+            `${response.status == 403 ? "Not logged in" : "Something went wrong"}`,
         );
       }
 
@@ -426,7 +444,8 @@ export const CartService = {
         }
         const errorData = await response.json();
         throw new Error(
-          errorData.message || `HTTP error! status: ${response.status}`
+          errorData.message ||
+            `${response.status == 403 ? "Not logged in" : "Something went wrong"}`,
         );
       }
 
@@ -488,14 +507,14 @@ export const CartService = {
 
       const cart = JSON.parse(cartItems) as LocalStorageCartItem[];
       return cart.some(
-        (item) => item.productId === productId && item.variantId === variantId
+        (item) => item.productId === productId && item.variantId === variantId,
       );
     }
 
     try {
       const cart = await CartService.getCart();
       return cart.items.some(
-        (item) => item.productId === productId && item.variantId === variantId
+        (item) => item.productId === productId && item.variantId === variantId,
       );
     } catch (error) {
       console.error("Error checking if item is in cart:", error);
@@ -532,7 +551,9 @@ export const CartService = {
   /**
    * Get cart items for a specific product (including variants)
    */
-  getProductCartItems: async (productId: string): Promise<CartItemResponse[]> => {
+  getProductCartItems: async (
+    productId: string,
+  ): Promise<CartItemResponse[]> => {
     try {
       const cart = await CartService.getCart();
       return cart.items.filter((item) => item.productId === productId);
@@ -567,7 +588,7 @@ export const CartService = {
       }
 
       console.log(
-        `Migrating ${localCart.length} items from localStorage to database`
+        `Migrating ${localCart.length} items from localStorage to database`,
       );
 
       // Add each localStorage item to the database cart
@@ -581,7 +602,7 @@ export const CartService = {
         } catch (error) {
           console.warn(
             `Failed to migrate item ${item.productId} to database:`,
-            error
+            error,
           );
           // Continue with other items even if one fails
         }
@@ -645,7 +666,9 @@ async function getCartFromBackend(): Promise<CartResponse> {
     });
 
     if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+      throw new Error(
+        `${response.status == 403 ? "Not logged in" : "Something went wrong"}`,
+      );
     }
 
     const data = await response.json();
@@ -659,13 +682,20 @@ async function getCartFromBackend(): Promise<CartResponse> {
         const originalPrice = item.previousPrice || item.price;
         const currentPrice = item.price;
         // Use backend discount info if available, otherwise calculate
-        const hasDiscount = item.hasDiscount ?? (item.previousPrice && item.previousPrice > item.price);
-        const discountAmount = item.discountAmount ?? (hasDiscount ? (originalPrice - currentPrice) * item.quantity : 0);
-        const discountPercentage = item.discountPercentage 
-          ? Number(item.discountPercentage) 
-          : (hasDiscount ? ((originalPrice - currentPrice) / originalPrice) * 100 : 0);
-        const discountName = item.discountName || (hasDiscount ? "Discount" : undefined);
-        
+        const hasDiscount =
+          item.hasDiscount ??
+          (item.previousPrice && item.previousPrice > item.price);
+        const discountAmount =
+          item.discountAmount ??
+          (hasDiscount ? (originalPrice - currentPrice) * item.quantity : 0);
+        const discountPercentage = item.discountPercentage
+          ? Number(item.discountPercentage)
+          : hasDiscount
+            ? ((originalPrice - currentPrice) / originalPrice) * 100
+            : 0;
+        const discountName =
+          item.discountName || (hasDiscount ? "Discount" : undefined);
+
         return {
           id: item.itemId,
           productId: item.productId.toString(),
@@ -714,7 +744,7 @@ async function getCartFromBackend(): Promise<CartResponse> {
 function addToLocalStorageCart(
   productId: string,
   variantId: string | undefined,
-  quantity: number
+  quantity: number,
 ): void {
   try {
     const cartItems = localStorage.getItem("cart");
@@ -724,7 +754,7 @@ function addToLocalStorageCart(
 
     // Check if item already exists
     const existingItemIndex = cart.findIndex(
-      (item) => item.productId === productId && item.variantId === variantId
+      (item) => item.productId === productId && item.variantId === variantId,
     );
 
     if (existingItemIndex !== -1) {
@@ -751,7 +781,7 @@ function addToLocalStorageCart(
 
 async function updateLocalStorageCartItem(
   itemId: string,
-  quantity: number
+  quantity: number,
 ): Promise<CartResponse> {
   try {
     const cartItems = localStorage.getItem("cart");
@@ -775,7 +805,7 @@ async function updateLocalStorageCartItem(
 }
 
 async function removeFromLocalStorageCart(
-  itemId: string
+  itemId: string,
 ): Promise<CartResponse> {
   try {
     const cartItems = localStorage.getItem("cart");

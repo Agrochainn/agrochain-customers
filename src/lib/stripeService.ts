@@ -22,21 +22,20 @@ export const StripeService = {
   createCheckoutSession: async (
     items: any[],
     successUrl: string,
-    cancelUrl: string
+    cancelUrl: string,
   ): Promise<StripeCheckoutSession> => {
-
     return {
       id: `cs_test_${Date.now()}`,
       url: `${successUrl}?session_id=cs_test_${Date.now()}`,
       payment_status: "paid",
       customer_email: "test@example.com",
       amount_total: 2000,
-      currency: "usd",
+      currency: "rwf",
     };
   },
 
   verifyCheckoutSession: async (
-    sessionId: string
+    sessionId: string,
   ): Promise<StripeCheckoutSession> => {
     return {
       id: sessionId,
@@ -44,7 +43,7 @@ export const StripeService = {
       payment_status: "paid",
       customer_email: "test@example.com",
       amount_total: 2000,
-      currency: "usd",
+      currency: "rwf",
     };
   },
 
@@ -75,7 +74,7 @@ export const StripeService = {
 // Stripe Elements configuration (for future use)
 export const stripeElementsOptions = {
   mode: "payment" as const,
-  currency: "usd",
+  currency: "rwf",
   appearance: {
     theme: "stripe" as const,
     variables: {
@@ -89,4 +88,3 @@ export const stripeElementsOptions = {
     },
   },
 };
-

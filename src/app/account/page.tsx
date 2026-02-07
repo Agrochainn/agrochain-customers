@@ -180,28 +180,56 @@ export default function AccountPage() {
 
   // Show account page
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="max-w-4xl mx-auto">
-        <AccountHeader
-          title={t("account.title")}
-          subtitle={t("account.overviewDesc")}
-        />
+    <div className="min-h-screen bg-[#fcfdfc]">
+      <div className="container mx-auto px-4 py-12">
+        <div className="max-w-5xl mx-auto">
+          <AccountHeader
+            title={t("account.title")}
+            subtitle={t("account.overviewDesc")}
+          />
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <div className="lg:col-span-1">
-            {userData && (
-              <AccountProfileCard
-                userData={userData}
-                getUserInitials={getUserInitials}
-                formatDate={formatDate}
-              />
-            )}
-          </div>
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
+            <div className="lg:col-span-4 xl:col-span-4">
+              {userData && (
+                <AccountProfileCard
+                  userData={userData}
+                  getUserInitials={getUserInitials}
+                  formatDate={formatDate}
+                />
+              )}
+            </div>
 
-          <div className="lg:col-span-2 space-y-6">
-            <AccountQuickActions />
-            <AccountSettingsCard />
-            <AccountActionsCard onLogout={handleLogout} />
+            <div className="lg:col-span-8 xl:col-span-8 space-y-10">
+              <section>
+                <div className="flex items-center gap-2 mb-4 px-2">
+                  <div className="h-6 w-1 bg-green-500 rounded-full" />
+                  <h2 className="text-xl font-black text-gray-900 uppercase tracking-tight">
+                    Quick Access
+                  </h2>
+                </div>
+                <AccountQuickActions />
+              </section>
+
+              <section>
+                <div className="flex items-center gap-2 mb-4 px-2">
+                  <div className="h-6 w-1 bg-blue-500 rounded-full" />
+                  <h2 className="text-xl font-black text-gray-900 uppercase tracking-tight">
+                    Preferences
+                  </h2>
+                </div>
+                <AccountSettingsCard />
+              </section>
+
+              <section>
+                <div className="flex items-center gap-2 mb-4 px-2">
+                  <div className="h-6 w-1 bg-red-500 rounded-full" />
+                  <h2 className="text-xl font-black text-gray-900 uppercase tracking-tight">
+                    Management
+                  </h2>
+                </div>
+                <AccountActionsCard onLogout={handleLogout} />
+              </section>
+            </div>
           </div>
         </div>
       </div>

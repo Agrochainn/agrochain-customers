@@ -26,14 +26,16 @@ class OrderActivitiesService {
   /**
    * Get order activity timeline for authenticated users
    */
-  async getOrderActivities(orderId: string | number): Promise<OrderActivitiesResponse> {
+  async getOrderActivities(
+    orderId: string | number,
+  ): Promise<OrderActivitiesResponse> {
     try {
       const response = await fetch(
         `${API_BASE_URL}/orders/${orderId}/activity-logs`,
         {
           method: "GET",
           headers: getAuthHeaders(),
-        }
+        },
       );
 
       if (!response.ok) {
@@ -43,7 +45,9 @@ class OrderActivitiesService {
         if (response.status === 401 || response.status === 403) {
           throw new Error("Unauthorized access");
         }
-        throw new Error(`HTTP error! status: ${response.status}`);
+        throw new Error(
+          `${response.status == 403 ? "Not logged in" : "Something went wrong"}`,
+        );
       }
 
       const data = await response.json();
@@ -59,7 +63,7 @@ class OrderActivitiesService {
    */
   async getOrderActivitiesWithToken(
     orderId: string | number,
-    token: string
+    token: string,
   ): Promise<OrderActivitiesResponse> {
     try {
       const response = await fetch(
@@ -69,7 +73,7 @@ class OrderActivitiesService {
           headers: {
             "Content-Type": "application/json",
           },
-        }
+        },
       );
 
       if (!response.ok) {
@@ -79,7 +83,9 @@ class OrderActivitiesService {
         if (response.status === 401) {
           throw new Error("Invalid or expired tracking token");
         }
-        throw new Error(`HTTP error! status: ${response.status}`);
+        throw new Error(
+          `${response.status == 403 ? "Not logged in" : "Something went wrong"}`,
+        );
       }
 
       const data = await response.json();
@@ -95,7 +101,7 @@ class OrderActivitiesService {
    */
   async getRecentActivities(
     orderId: string | number,
-    limit: number = 10
+    limit: number = 10,
   ): Promise<OrderActivitiesResponse> {
     try {
       const response = await fetch(
@@ -103,11 +109,13 @@ class OrderActivitiesService {
         {
           method: "GET",
           headers: getAuthHeaders(),
-        }
+        },
       );
 
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        throw new Error(
+          `${response.status == 403 ? "Not logged in" : "Something went wrong"}`,
+        );
       }
 
       const data = await response.json();
@@ -128,11 +136,13 @@ class OrderActivitiesService {
         {
           method: "GET",
           headers: getAuthHeaders(),
-        }
+        },
       );
 
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        throw new Error(
+          `${response.status == 403 ? "Not logged in" : "Something went wrong"}`,
+        );
       }
 
       const data = await response.json();
