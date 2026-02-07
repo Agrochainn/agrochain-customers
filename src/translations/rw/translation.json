@@ -1,6 +1,6 @@
 {
   "header": {
-    "createShop": "Fungura iduka ryawe",
+    "createShop": "Fungura iduka",
     "help": "Ubufasha",
     "giveFeedback": "Tanga igitekerezo",
     "trackOrder": "Kurikirana ibyo watumije",
@@ -364,7 +364,7 @@
     "clear": "Hanagura"
   },
   "trackOrder": {
-    "title": "Kur kureba aho ibicuruzwa byawe bigeze",
+    "title": "kureba aho ibicuruzwa byawe bigeze",
     "enterEmail": "Nyamuneka andika imeri yawe",
     "emailSent": "Imeri yo kureba aho ibicuruzwa byawe bigeze yoherejwe! Reba muri inbox yawe.",
     "enterEmailDesc": "Andika imeri yawe kugira ngo uhabwe uburyo bwo kureba aho ibicuruzwa byawe bigeze",

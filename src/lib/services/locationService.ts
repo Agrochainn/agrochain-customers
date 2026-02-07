@@ -44,50 +44,64 @@ class LocationService {
 
     try {
       // Method 1: Try IP-based geolocation API
-      const response = await fetch('https://ipapi.co/json/');
+      const response = await fetch("https://ipapi.co/json/");
       if (response.ok) {
         const data = await response.json();
+        const code = (data.country_code || data.country || "")
+          .toString()
+          .toUpperCase();
+        const countryName =
+          data.country_name || this.mapCountryCodeToName(code);
+
         this.cachedLocation = {
-          country: data.country_name || 'Unknown',
-          countryCode: data.country_code || 'XX',
+          country: countryName || "Unknown",
+          countryCode: code || "XX",
           city: data.city,
-          region: data.region
+          region: data.region,
         };
+        console.log(
+          "Location obtained from IP geolocation API:",
+          this.cachedLocation,
+        );
         return this.cachedLocation;
       }
     } catch (error) {
-      console.warn('IP geolocation failed, trying fallback:', error);
+      console.warn("IP geolocation failed, trying fallback:", error);
     }
 
     try {
-      // Method 2: Fallback to another IP service
-      const response = await fetch('https://api.country.is/');
+      const response = await fetch("https://api.country.is/");
       if (response.ok) {
         const data = await response.json();
+        const code = (data.country || "").toString().toUpperCase();
+        const countryName = this.mapCountryCodeToName(code);
         this.cachedLocation = {
-          country: data.country || 'Unknown',
-          countryCode: data.country || 'XX',
+          country: countryName || "Unknown",
+          countryCode: code || "XX",
         };
         return this.cachedLocation;
       }
     } catch (error) {
-      console.warn('Fallback geolocation failed:', error);
+      console.warn("Fallback geolocation failed:", error);
     }
 
     // Method 3: Use browser's built-in geolocation (requires user permission)
     try {
       const position = await this.getBrowserLocation();
-      const locationData = await this.reverseGeocode(position.coords.latitude, position.coords.longitude);
+      const locationData = await this.reverseGeocode(
+        position.coords.latitude,
+        position.coords.longitude,
+      );
       this.cachedLocation = locationData;
       return locationData;
     } catch (error) {
-      console.warn('Browser geolocation failed:', error);
+      console.warn("Browser geolocation failed:", error);
     }
 
     // Default fallback
     this.cachedLocation = {
-      country: 'Unknown',
-      countryCode: 'XX'
+      country: "Unknown",
+      countryCode: "XX",
     };
     return this.cachedLocation;
   }
@@ -98,45 +112,83 @@ class LocationService {
   private getBrowserLocation(): Promise<GeolocationPosition> {
     return new Promise((resolve, reject) => {
       if (!navigator.geolocation) {
-        reject(new Error('Geolocation not supported'));
+        reject(new Error("Geolocation not supported"));
         return;
       }
 
-      navigator.geolocation.getCurrentPosition(
-        resolve,
-        reject,
-        { timeout: 10000, enableHighAccuracy: false }
-      );
+      navigator.geolocation.getCurrentPosition(resolve, reject, {
+        timeout: 10000,
+        enableHighAccuracy: false,
+      });
     });
   }
 
   /**
    * Reverse geocode coordinates to get country
    */
-  private async reverseGeocode(lat: number, lng: number): Promise<LocationData> {
+  private async reverseGeocode(
+    lat: number,
+    lng: number,
+  ): Promise<LocationData> {
     try {
       // Using a free reverse geocoding service
       const response = await fetch(
-        `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lng}&localityLanguage=en`
+        `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lng}&localityLanguage=en`,
       );
-      
+
       if (response.ok) {
         const data = await response.json();
+        const code = (data.countryCode || "").toString().toUpperCase();
+        const countryName = data.countryName || this.mapCountryCodeToName(code);
+
         return {
-          country: data.countryName || 'Unknown',
-          countryCode: data.countryCode || 'XX',
+          country: countryName || "Unknown",
+          countryCode: code || "XX",
           city: data.city,
-          region: data.principalSubdivision
+          region: data.principalSubdivision,
         };
       }
     } catch (error) {
-      console.error('Reverse geocoding failed:', error);
+      console.error("Reverse geocoding failed:", error);
     }
 
     return {
-      country: 'Unknown',
-      countryCode: 'XX'
+      country: "Unknown",
+      countryCode: "XX",
     };
+  }
+
+  /**
+   * Map an ISO country code (e.g. 'RW') to a display name (e.g. 'Rwanda').
+   * Uses Intl.DisplayNames when available, otherwise falls back to a small map.
+   */
+  private mapCountryCodeToName(code?: string): string {
+    if (!code) return "";
+    const upper = code.toUpperCase();
+
+    try {
+      // Use the Intl API when available in the runtime (browsers/Node)
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      if (typeof Intl !== "undefined" && (Intl as any).DisplayNames) {
+        // @ts-ignore - DisplayNames type may not be available in all TS libs
+        const dn = new (Intl as any).DisplayNames(["en"], { type: "region" });
+        const name = dn.of(upper);
+        if (name) return name;
+      }
+    } catch (e) {
+      // ignore and fall back
+    }
+
+    // Minimal fallback map for commonly used codes
+    const fallback: Record<string, string> = {
+      RW: "Rwanda",
+      US: "United States",
+      FR: "France",
+      GB: "United Kingdom",
+      IN: "India",
+    };
+
+    return fallback[upper] || upper;
   }
 
   /**
@@ -145,21 +197,22 @@ class LocationService {
   async checkDeliveryAvailability(): Promise<DeliveryStatus> {
     try {
       const location = await this.getUserLocation();
-      
+
       // Call backend API to check warehouse availability using the API configuration
-      const apiUrl = API_ENDPOINTS.DELIVERY_CHECK_AVAILABILITY(location.country);
+      const apiUrl = API_ENDPOINTS.DELIVERY_CHECK_AVAILABILITY(
+        location.country,
+      );
       const data = await publicApiCall<DeliveryApiResponse>(apiUrl);
-      
+
       return {
         available: data.available,
         country: location.country,
         countryCode: location.countryCode,
-        message: data.message
+        message: data.message,
       };
-      
     } catch (error) {
-      console.error('Error checking delivery availability:', error);
-      
+      console.error("Error checking delivery availability:", error);
+
       // Fallback to location data even if API call fails
       try {
         const location = await this.getUserLocation();
@@ -167,15 +220,15 @@ class LocationService {
           available: false,
           country: location.country,
           countryCode: location.countryCode,
-          message: 'Unable to check delivery availability at this time'
+          message: "Unable to check delivery availability at this time",
         };
       } catch (locationError) {
-        console.error('Error getting location:', locationError);
+        console.error("Error getting location:", locationError);
         return {
           available: false,
-          country: 'Unknown',
-          countryCode: 'XX',
-          message: 'Location and delivery status unavailable'
+          country: "Unknown",
+          countryCode: "XX",
+          message: "Location and delivery status unavailable",
         };
       }
     }
@@ -188,21 +241,20 @@ class LocationService {
     try {
       const apiUrl = API_ENDPOINTS.DELIVERY_CHECK_AVAILABILITY(country);
       const data = await publicApiCall<DeliveryApiResponse>(apiUrl);
-      
+
       return {
         available: data.available,
         country: country,
-        countryCode: 'XX', // We don't have country code mapping for manual selection
-        message: data.message
+        countryCode: "XX", // We don't have country code mapping for manual selection
+        message: data.message,
       };
-      
     } catch (error) {
-      console.error('Error checking delivery for country:', country, error);
+      console.error("Error checking delivery for country:", country, error);
       return {
         available: false,
         country: country,
-        countryCode: 'XX',
-        message: 'Unable to check delivery availability for this country'
+        countryCode: "XX",
+        message: "Unable to check delivery availability for this country",
       };
     }
   }
@@ -212,12 +264,14 @@ class LocationService {
    */
   async getAvailableCountries(): Promise<string[]> {
     try {
-      const data = await publicApiCall<{ countries: string[]; totalCountries: number; message: string }>(
-        API_ENDPOINTS.DELIVERY_AVAILABLE_COUNTRIES
-      );
+      const data = await publicApiCall<{
+        countries: string[];
+        totalCountries: number;
+        message: string;
+      }>(API_ENDPOINTS.DELIVERY_AVAILABLE_COUNTRIES);
       return data.countries || [];
     } catch (error) {
-      console.error('Error fetching available countries:', error);
+      console.error("Error fetching available countries:", error);
       return [];
     }
   }
