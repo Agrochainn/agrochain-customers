@@ -1,6 +1,6 @@
 "use client";
 
-import { FC } from "react";
+import { FC, memo } from "react";
 import { useTranslation } from "react-i18next";
 import Link from "next/link";
 import {
@@ -60,7 +60,7 @@ const AccountActionsCard: FC<AccountActionsCardProps> = ({ onLogout }) => {
             >
               <span className="flex items-center gap-2">
                 <HeartHandshake className="h-4 w-4 text-gray-400 group-hover:text-gray-600" />
-                Help & Support
+                {t("account.helpSupport")}
               </span>
               <ChevronRight className="h-4 w-4 group-hover/btn:translate-x-1 transition-transform" />
             </Button>
@@ -80,4 +80,4 @@ const AccountActionsCard: FC<AccountActionsCardProps> = ({ onLogout }) => {
   );
 };
 
-export default AccountActionsCard;
+export default memo(AccountActionsCard);
