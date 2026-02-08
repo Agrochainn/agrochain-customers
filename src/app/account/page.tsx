@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { useAppSelector, useAppDispatch } from "@/lib/store/hooks";
 import { logout } from "@/lib/store/slices/authSlice";
@@ -73,7 +73,7 @@ export default function AccountPage() {
     }
   }, [isAuthenticated]);
 
-  const handleLogout = async () => {
+  const handleLogout = useCallback(async () => {
     try {
       await authService.logout();
       dispatch(logout());
@@ -82,9 +82,9 @@ export default function AccountPage() {
       console.error("Logout error:", error);
       toast.error("Failed to logout");
     }
-  };
+  }, [dispatch]);
 
-  const getUserInitials = () => {
+  const getUserInitials = useCallback(() => {
     if (!userData) return "U";
 
     const firstName = userData.firstName || "";
@@ -96,11 +96,11 @@ export default function AccountPage() {
     const lastInitial = lastName.charAt(0) || "";
 
     return `${firstInitial}${lastInitial}`.toUpperCase() || "U";
-  };
+  }, [userData]);
 
-  const formatDate = (dateString: string) => {
+  const formatDate = useCallback((dateString: string) => {
     return new Date(dateString).toLocaleDateString();
-  };
+  }, []);
 
   // Show loading state
   if (loading) {
@@ -111,7 +111,8 @@ export default function AccountPage() {
             <div className="text-center">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
               <p className="text-muted-foreground">
-                {t("home.loading") || "Loading account information..."}
+                {t("account.loadingAccountInfo") ||
+                  "Loading account information..."}
               </p>
             </div>
           </div>
@@ -169,7 +170,7 @@ export default function AccountPage() {
                 </p>
               </div>
               <Button onClick={() => window.location.reload()}>
-                Try Again
+                {t("account.tryAgain")}
               </Button>
             </div>
           </div>
@@ -204,7 +205,7 @@ export default function AccountPage() {
                 <div className="flex items-center gap-2 mb-4 px-2">
                   <div className="h-6 w-1 bg-green-500 rounded-full" />
                   <h2 className="text-xl font-black text-gray-900 uppercase tracking-tight">
-                    Quick Access
+                    {t("account.quickAccess")}
                   </h2>
                 </div>
                 <AccountQuickActions />
@@ -214,7 +215,7 @@ export default function AccountPage() {
                 <div className="flex items-center gap-2 mb-4 px-2">
                   <div className="h-6 w-1 bg-blue-500 rounded-full" />
                   <h2 className="text-xl font-black text-gray-900 uppercase tracking-tight">
-                    Preferences
+                    {t("account.preferences")}
                   </h2>
                 </div>
                 <AccountSettingsCard />
@@ -224,7 +225,7 @@ export default function AccountPage() {
                 <div className="flex items-center gap-2 mb-4 px-2">
                   <div className="h-6 w-1 bg-red-500 rounded-full" />
                   <h2 className="text-xl font-black text-gray-900 uppercase tracking-tight">
-                    Management
+                    {t("account.management")}
                   </h2>
                 </div>
                 <AccountActionsCard onLogout={handleLogout} />

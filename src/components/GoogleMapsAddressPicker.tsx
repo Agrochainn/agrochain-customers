@@ -8,7 +8,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { MapPin, Search, Loader2, Navigation, Check } from "lucide-react";
 import { toast } from "sonner";
 
-// Google Maps types
 declare global {
   interface Window {
     google: any;

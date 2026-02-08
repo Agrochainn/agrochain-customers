@@ -1,6 +1,6 @@
 "use client";
 
-import { FC, useEffect, useState } from "react";
+import { FC, useEffect, useState, memo } from "react";
 import { useTranslation } from "react-i18next";
 import {
   Card,
@@ -128,14 +128,14 @@ const AccountProfileCard: FC<AccountProfileCardProps> = ({
                 <Gift className="h-4 w-4 text-green-600" />
               </div>
               <span className="text-sm font-bold text-gray-700">
-                Loyalty Rewards
+                {t("account.loyaltyRewards")}
               </span>
             </div>
             <Link
               href="/account/points"
               className="text-[10px] font-bold text-green-600 uppercase tracking-tight flex items-center gap-0.5 hover:underline"
             >
-              Details <ArrowUpRight className="h-3 w-3" />
+              {t("account.details")} <ArrowUpRight className="h-3 w-3" />
             </Link>
           </div>
 
@@ -143,17 +143,19 @@ const AccountProfileCard: FC<AccountProfileCardProps> = ({
             <div className="text-3xl font-black text-gray-900 flex items-baseline gap-1">
               {points.toLocaleString()}
               <span className="text-xs font-bold text-gray-400 uppercase tracking-widest ml-1">
-                pts
+                {t("account.pointsAbbr")}
               </span>
             </div>
             <div className="text-sm font-bold text-green-600">
-              ≈ {pointsValue.toLocaleString()} RWF
+              {t("account.pointsValue", {
+                value: pointsValue.toLocaleString(),
+              })}
             </div>
           </div>
 
           <div className="space-y-2 relative z-10">
             <div className="flex justify-between text-[10px] font-bold text-gray-500 uppercase">
-              <span>Next Reward Level</span>
+              <span>{t("account.nextRewardLevel") || "Next Reward Level"}</span>
               <span>{Math.min(points, 500)}/500</span>
             </div>
             <Progress
@@ -169,7 +171,8 @@ const AccountProfileCard: FC<AccountProfileCardProps> = ({
             className="w-full mt-4 bg-green-50 hover:bg-green-100 text-green-700 text-xs font-bold py-5 rounded-xl border border-green-100 group/btn"
           >
             <Link href="/account/points">
-              View Shop-Specific Points
+              {t("account.viewShopSpecificPoints") ||
+                "View Shop-Specific Points"}
               <ChevronRight className="h-4 w-4 ml-1 group-hover/btn:translate-x-1 transition-transform" />
             </Link>
           </Button>
@@ -184,10 +187,12 @@ const AccountProfileCard: FC<AccountProfileCardProps> = ({
               </div>
               <div className="flex flex-col">
                 <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">
-                  Phone Number
+                  {t("account.phone")}
                 </span>
                 <span className="text-sm font-bold text-gray-700">
-                  {userData.phoneNumber || "Not provided"}
+                  {userData.phoneNumber ||
+                    t("account.notProvided") ||
+                    "Not provided"}
                 </span>
               </div>
             </div>
@@ -200,7 +205,7 @@ const AccountProfileCard: FC<AccountProfileCardProps> = ({
               </div>
               <div className="flex flex-col">
                 <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">
-                  Account Role
+                  {t("account.accountRole") || "Account Role"}
                 </span>
                 <span className="text-sm font-bold text-gray-700 capitalize">
                   {userData?.role
@@ -218,14 +223,16 @@ const AccountProfileCard: FC<AccountProfileCardProps> = ({
           <div className="flex items-center gap-2 text-[11px] font-medium text-gray-400">
             <Clock className="h-3.5 w-3.5" />
             <span>
-              Member since{" "}
+              {t("account.memberSince")}{" "}
               {userData?.createdAt ? formatDate(userData.createdAt) : "N/A"}
             </span>
           </div>
           {userData?.lastLogin && (
             <div className="flex items-center gap-2 text-[11px] font-medium text-gray-400">
               <CreditCard className="h-3.5 w-3.5" />
-              <span>Last login: {formatDate(userData.lastLogin)}</span>
+              <span>
+                {t("account.lastLogin")}: {formatDate(userData.lastLogin)}
+              </span>
             </div>
           )}
         </div>
@@ -234,4 +241,4 @@ const AccountProfileCard: FC<AccountProfileCardProps> = ({
   );
 };
 
-export default AccountProfileCard;
+export default memo(AccountProfileCard);

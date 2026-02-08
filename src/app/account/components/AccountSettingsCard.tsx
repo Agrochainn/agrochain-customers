@@ -1,6 +1,6 @@
 "use client";
 
-import { FC } from "react";
+import { FC, memo } from "react";
 import { useTranslation } from "react-i18next";
 import Link from "next/link";
 import {
@@ -84,7 +84,7 @@ const AccountSettingsCard: FC = () => {
             >
               <span className="flex items-center gap-2">
                 <Bell className="h-4 w-4 text-gray-400 group-hover:text-green-600" />
-                Notifications
+                {t("account.notifications")}
               </span>
               <ChevronRight className="h-4 w-4 group-hover/btn:translate-x-1 transition-transform" />
             </Button>
@@ -95,4 +95,4 @@ const AccountSettingsCard: FC = () => {
   );
 };
 
-export default AccountSettingsCard;
+export default memo(AccountSettingsCard);

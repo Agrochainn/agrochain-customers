@@ -1,6 +1,6 @@
 "use client";
 
-import { FC } from "react";
+import { FC, memo } from "react";
 import { useTranslation } from "react-i18next";
 import Link from "next/link";
 import {
@@ -88,4 +88,4 @@ const AccountQuickActions: FC = () => {
   );
 };
 
-export default AccountQuickActions;
+export default memo(AccountQuickActions);
