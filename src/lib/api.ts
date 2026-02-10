@@ -200,7 +200,7 @@ export const apiCall = async <T>(
         // Fallback if not JSON
       }
 
-      if (errorMessage.toLowerCase() !== "access denied") {
+      if (errorMessage.toLowerCase() !== "access denied" && errorMessage.toLowerCase() !== "wishlist is empty" && errorMessage.toLowerCase() !== "cart is empty") {
         toast.error("Process Failed", {
           description: errorMessage,
           position: "top-center",
